@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import {
   ArrowLeft, MapPin, Ruler, Bed, Home, Euro, Calendar,
   Building2, Phone, ExternalLink, Leaf, Zap, BadgeCheck,
-  Map as MapIcon, Share2, Heart
+  Map as MapIcon, Share2, Heart, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -77,6 +77,18 @@ export function PropertyDetailPage() {
 
   const currentImage = allImages[currentImageIndex] || property.main_image || '';
 
+  const goToPrevious = () => {
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? allImages.length - 1 : prev - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentImageIndex((prev) =>
+      prev === allImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
   // DPE color mapping
   const dpeColors: Record<string, string> = {
     A: 'bg-green-500',
@@ -125,7 +137,7 @@ export function PropertyDetailPage() {
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl"
+              className="relative rounded-3xl overflow-hidden shadow-2xl group"
             >
               <img
                 src={currentImage}
@@ -133,7 +145,25 @@ export function PropertyDetailPage() {
                 className="w-full h-[500px] object-cover"
               />
 
-              {/* Image navigation */}
+              {/* Previous/Next buttons */}
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrevious}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+
+              {/* Dot navigation */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 bg-black/50 rounded-full px-4 py-2">
                   {allImages.slice(0, 10).map((_, index) => (

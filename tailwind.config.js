@@ -48,6 +48,34 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Charte "Cocon Immobilier"
+        cream: {
+          50: '#FFFCF7',
+          100: '#FAF8F3',
+          200: '#F5F1E8',
+          300: '#EFE9DC',
+          400: '#E8DFC9',
+        },
+        warm: {
+          beige: '#F5F1E8',
+          taupe: '#9C8B7A',
+          terracotta: '#D4A59A',
+          sand: '#C9B8A6',
+        },
+        nature: {
+          sage: '#A8B69C',
+          olive: '#8A9580',
+          moss: '#6B7562',
+        },
+        elegant: {
+          charcoal: '#3A3A3A',
+          stone: '#6B6458',
+          pearl: '#FFFCF7',
+        },
+      },
+      fontFamily: {
+        serif: ['Cormorant Garamond', 'serif'],
+        sans: ['Inter', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
