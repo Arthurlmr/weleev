@@ -266,11 +266,14 @@ export function OnboardingPage() {
       // 3. Create Melo search
       const meloSearch = await createSearch(meloSearchData);
 
+      // Extract UUID from @id (format: "/searches/uuid")
+      const meloUuid = meloSearch['@id'].split('/').pop();
+
       // 4. Save Melo search reference
       await (supabase.from('melo_searches') as any).insert({
         user_id: user.id,
         search_id: searchData.id,
-        melo_uuid: meloSearch.uuid,
+        melo_uuid: meloUuid,
         melo_token: meloSearch.token,
         location_id: fixedPrefs.locationId!,
         location_name: fixedPrefs.locationName!,
