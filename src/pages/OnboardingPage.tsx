@@ -43,6 +43,32 @@ export function OnboardingPage() {
     scrollToBottom();
   }, [messages]);
 
+  // Check if user is already onboarded and redirect to feed
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('onboarded')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        // If user is already onboarded, redirect to feed
+        if (data && (data as { onboarded: boolean }).onboarded) {
+          navigate('/feed', { replace: true });
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, [user, navigate]);
+
   const addMessage = (content: string, type: 'bot' | 'user') => {
     const newMessage: OnboardingMessage = {
       id: Date.now().toString(),
