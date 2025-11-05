@@ -573,10 +573,10 @@ export function OnboardingPage() {
                       </div>
                       <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                         {[1, 2, 3, 4, 5, 6].map((rooms) => (
-                          <motion.button key={rooms} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleRoomsSelect(rooms)} className="p-6 rounded-xl border-2 border-gray-200 hover:border-primary hover:bg-primary/5 transition-all group">
+                          <motion.button key={rooms} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleRoomsSelect(rooms)} className="p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all group">
                             <div className="flex flex-col items-center gap-2">
-                              <span className="text-3xl font-bold text-gray-600 group-hover:text-primary transition-colors">{rooms}</span>
-                              <span className="text-xs text-muted-foreground">{rooms === 1 ? 'pièce' : 'pièces'}</span>
+                              <span className="text-3xl font-bold text-elegant-stone group-hover:text-warm-terracotta transition-colors">{rooms}</span>
+                              <span className="text-xs text-elegant-stone">{rooms === 1 ? 'pièce' : 'pièces'}</span>
                             </div>
                           </motion.button>
                         ))}
@@ -610,7 +610,7 @@ export function OnboardingPage() {
                           Continuer sans affiner<ArrowRight className="w-5 h-5 ml-2" />
                         </Button>
                       </div>
-                      <p className="text-xs text-center text-muted-foreground mt-6">L'affinement IA vous posera 3-5 questions contextuelles pour des résultats plus précis</p>
+                      <p className="text-xs text-center text-elegant-stone mt-6">L'affinement IA vous posera 3-5 questions contextuelles pour des résultats plus précis</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -621,8 +621,8 @@ export function OnboardingPage() {
                   <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center justify-between mb-6">
-                        <span className="text-sm font-medium text-muted-foreground">Question {currentAiQuestionIndex + 1} sur {aiQuestions.length}</span>
-                        <Button variant="ghost" size="sm" onClick={handleSkipAiQuestion} className="text-muted-foreground">Passer</Button>
+                        <span className="text-sm font-medium text-elegant-stone">Question {currentAiQuestionIndex + 1} sur {aiQuestions.length}</span>
+                        <Button variant="ghost" size="sm" onClick={handleSkipAiQuestion} className="text-elegant-stone">Passer</Button>
                       </div>
                       <h3 className="text-2xl font-bold mb-6">{aiQuestions[currentAiQuestionIndex].question}</h3>
 
@@ -673,7 +673,7 @@ export function OnboardingPage() {
                           <Sparkles className="w-16 h-16 text-warm-terracotta" />
                         </motion.div>
                         <h3 className="text-2xl font-bold text-center">Finalisation de votre profil</h3>
-                        <p className="text-muted-foreground text-center">Nous récupérons les meilleures annonces pour vous...</p>
+                        <p className="text-elegant-stone text-center">Nous récupérons les meilleures annonces pour vous...</p>
                         <Loader2 className="w-8 h-8 animate-spin text-warm-terracotta" />
                       </div>
                     </CardContent>
