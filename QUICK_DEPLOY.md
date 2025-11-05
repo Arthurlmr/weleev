@@ -34,11 +34,11 @@ Guide ultra-simplifié pour déployer Weleev en production.
 3. Sélectionner : Arthurlmr/weleev
 4. Branch : claude/weleev-real-estate-app-011CUpWv1vJhCfxFvxRYomhU
 5. ⚠️ AVANT de deployer : Cliquer "Show advanced"
-6. Ajouter les 3 variables :
-
-   VITE_SUPABASE_URL          = https://xxxxx.supabase.co
-   VITE_SUPABASE_ANON_KEY     = eyJhbG...
-   VITE_GEMINI_API_KEY        = AIzaSy...
+6. Ajouter les 3 variables d'environnement :
+   - VITE_SUPABASE_URL
+   - VITE_SUPABASE_ANON_KEY
+   - VITE_GEMINI_API_KEY
+   (Utilisez les valeurs obtenues à l'étape "Obtenir vos Clés API")
 
 7. Deploy site ! ✨
 ```

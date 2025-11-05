@@ -120,13 +120,17 @@ export function OnboardingPage() {
   }, [locationQuery]);
 
   const handleLocationSelect = (location: any) => {
+    console.log('🔍 DEBUG - Location selected:', location);
+    console.log('🔍 DEBUG - location.id:', location.id);
+    console.log('🔍 DEBUG - location["@id"]:', location['@id']);
+
     setFixedPrefs(prev => ({
       ...prev,
       location: location['@id'],
       locationId: location['@id'],
-      locationName: location.name,
+      locationName: location.displayName || location.name,  // Use displayName with fallback
     }));
-    setLocationQuery(location.name);
+    setLocationQuery(location.displayName || location.name);  // Use displayName with fallback
     setLocationSuggestions([]);
     setStep('transaction');
   };
@@ -227,6 +231,10 @@ export function OnboardingPage() {
       if (searchError || !searchData) throw searchError || new Error('Failed to create search');
 
       // 2. Build Melo search criteria
+      console.log('🔍 DEBUG - fixedPrefs before building payload:', fixedPrefs);
+      console.log('🔍 DEBUG - fixedPrefs.locationId:', fixedPrefs.locationId);
+      console.log('🔍 DEBUG - Type of locationId:', typeof fixedPrefs.locationId);
+
       const meloSearchData: any = {
         title: `Recherche ${fixedPrefs.locationName}`,
         transactionType: fixedPrefs.transactionType!,
@@ -235,6 +243,9 @@ export function OnboardingPage() {
         roomMin: fixedPrefs.roomMin || 1,
         includedCities: [fixedPrefs.locationId!],
       };
+
+      console.log('🔍 DEBUG - meloSearchData to send:', meloSearchData);
+      console.log('🔍 DEBUG - includedCities:', meloSearchData.includedCities);
 
       // Add AI refinements to Melo criteria
       aiQuestions.forEach(q => {
@@ -369,7 +380,7 @@ export function OnboardingPage() {
                           {locationSuggestions.map((location, index) => (
                             <motion.button key={location.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }} onClick={() => handleLocationSelect(location)} className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-all text-left group">
                               <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                              <span className="flex-1 font-medium">{location.name}</span>
+                              <span className="flex-1 font-medium">{location.displayName || location.name}</span>
                               <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                             </motion.button>
                           ))}

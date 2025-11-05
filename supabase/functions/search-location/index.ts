@@ -28,9 +28,9 @@ serve(async (req) => {
       );
     }
 
-    // Call Melo API
-    const url = new URL(`${MELO_API_URL}/indicators/locations`);
-    url.searchParams.set('search', search);
+    // Call Melo API - using public location autocomplete endpoint
+    const url = new URL(`${MELO_API_URL}/public/location-autocomplete`);
+    url.searchParams.set('query', search);  // Changed from 'search' to 'query'
     url.searchParams.set('type', type);
 
     const response = await fetch(url.toString(), {
