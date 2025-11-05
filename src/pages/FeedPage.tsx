@@ -46,13 +46,19 @@ export function FeedPage() {
     id: prop.id.toString(),
     title: prop.title,
     price: prop.price,
+    surface: prop.surface || 0,
+    rooms: prop.rooms || 0,
     bedrooms: prop.bedrooms || 0,
     bathrooms: 1,
-    area: prop.surface || 0,
-    location: prop.city,
     city: prop.city,
-    image: prop.main_image || prop.images?.[0] || '',
-    saved: false,
+    address: prop.zipcode ? `${prop.city} ${prop.zipcode}` : prop.city,
+    description: prop.description || '',
+    images: prop.images || [],
+    propertyType: prop.property_type === 'house' ? 'house' : 'apartment',
+    hasParking: false,
+    energyClass: prop.dpe_category,
+    yearBuilt: prop.construction_year,
+    floor: prop.floor,
   }));
 
   const filteredListings = listings.filter(listing =>
