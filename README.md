@@ -1,32 +1,32 @@
 # Weleev - Real Estate Finder
 
-Une application SaaS moderne pour trouver votre bien immobilier idéal en France, enrichie par l'intelligence artificielle.
+Une application SaaS moderne pour trouver votre bien immobilier idéal en France, propulsée par l'API Melo.io.
 
 ## 🚀 Fonctionnalités
 
-- **Authentification Hybride** : Connexion par Magic Link ou mot de passe via Supabase Auth
-- **Onboarding Conversationnel** : Interface de chat intelligente pour collecter vos préférences
-- **Recherche Enrichie par IA** : Analyses et recommandations personnalisées via Google Gemini
-- **Feed d'Annonces** : Navigation fluide dans les biens immobiliers
-- **Enrichissement IA** : Analyses financières, comparaison marché, et évaluation des commodités
-- **Interface Moderne** : Design épuré avec animations et thème responsive
+- **Authentification Magic Link** : Connexion sécurisée sans mot de passe via Supabase Auth
+- **Onboarding Moderne** : Interface fluide avec animations pour collecter vos préférences
+- **Annonces Réelles** : Intégration avec l'API Melo.io pour des milliers d'annonces immobilières
+- **Recherche Avancée** : Filtres par ville, type de bien, budget, nombre de pièces
+- **Feed d'Annonces** : Navigation fluide dans les biens avec images et détails
+- **Interface Moderne** : Design épuré avec Tailwind CSS, shadcn/ui et Framer Motion
 
 ## 🛠 Stack Technique
 
-- **Frontend** : React 18 + TypeScript
-- **Build Tool** : Vite
-- **Backend** : Supabase (PostgreSQL + Auth + Storage)
-- **IA** : Google Gemini API
+- **Frontend** : React 18 + TypeScript + Vite
+- **Styling** : Tailwind CSS v3 + shadcn/ui components
+- **Backend** : Supabase (PostgreSQL + Auth + Edge Functions)
+- **API Immobilière** : Melo.io (annonces réelles)
 - **Routing** : React Router v6
 - **Animations** : Framer Motion
 - **Icons** : Lucide React
-- **Styling** : CSS Custom Properties avec architecture moderne
 
 ## 📋 Prérequis
 
 - Node.js 18+ et npm
 - Un compte Supabase
-- Une clé API Google Gemini
+- Un compte Melo.io avec clé API
+- Un compte Netlify (pour le déploiement)
 
 ## 🔧 Installation
 
@@ -47,35 +47,19 @@ Créez un fichier `.env` à la racine du projet :
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_GEMINI_API_KEY=your_gemini_api_key
 ```
 
-4. **Configuration de Supabase**
+⚠️ **Note** : La clé API Melo est configurée côté serveur dans Supabase Edge Functions (pas dans le frontend).
 
-Exécutez le script SQL dans votre projet Supabase :
-- Allez dans le SQL Editor de votre projet Supabase
-- Copiez le contenu de `supabase/schema.sql`
-- Exécutez le script
+4. **Configuration complète**
 
-Cela créera :
-- Les tables `profiles` et `searches`
-- Les politiques RLS (Row Level Security)
-- Les triggers pour la création automatique de profils
-- Le bucket storage pour les avatars
+Voir le guide de déploiement complet : **[DEPLOYMENT.md](./DEPLOYMENT.md)**
 
-5. **Configuration de l'authentification Supabase**
-
-Dans votre dashboard Supabase :
-- Allez dans Authentication > Settings
-- Activez "Enable email confirmations" si vous voulez que les utilisateurs confirment leur email
-- Dans "Email Templates", personnalisez le template du Magic Link si nécessaire
-- Dans "Auth Providers", assurez-vous que "Email" est activé
-
-6. **Obtenir une clé API Gemini**
-
-- Allez sur [Google AI Studio](https://makersuite.google.com/app/apikey)
-- Créez une nouvelle clé API
-- Ajoutez-la dans votre fichier `.env`
+Ce guide couvre :
+- Configuration Supabase (tables, Edge Functions, authentication)
+- Déploiement Netlify
+- Configuration Melo.io
+- Tests et vérification
 
 ## 🚀 Démarrage
 
@@ -132,39 +116,37 @@ weleev/
 
 ## 🎨 Fonctionnalités Détaillées
 
-### Authentification Hybride
+### Authentification Magic Link
 
-Le système d'authentification combine deux méthodes :
-1. **Magic Link** : Pour les nouveaux utilisateurs, envoi d'un lien sécurisé par email
-2. **Mot de passe** : Pour les utilisateurs existants, connexion traditionnelle
-
-Le flux :
+Le système d'authentification utilise Supabase Auth :
 - L'utilisateur entre son email
-- L'app vérifie si l'email existe dans la base
-- Nouveau → Magic Link | Existant → Formulaire de mot de passe
+- Un Magic Link sécurisé est envoyé par email
+- Clic sur le lien → authentification automatique
+- Redirection vers l'onboarding
 
-### Onboarding Conversationnel
+### Onboarding Moderne
 
-Interface de type chat qui collecte :
-- **Phase 1 - Critères de base** :
-  - Localisation
-  - Type de bien (appartement/maison)
-  - Budget maximum
-  - Nombre de pièces
-  - Besoin de parking
+Interface avec animations qui collecte les critères :
+- **Localisation** : Autocomplete avec recherche de villes via Melo.io
+- **Type de transaction** : Achat ou location
+- **Type de bien** : Appartement, maison, ou tous
+- **Budget** : Slider interactif avec affichage dynamique
+- **Nombre de pièces** : Sélection rapide par boutons
 
-- **Phase 2 - Affinage IA** :
-  - Questions personnalisées générées par Gemini
-  - Basées sur les réponses précédentes
-  - Stockage dans `refinements` JSONB
+Les préférences sont enregistrées dans :
+- Table `searches` (Supabase) : Critères utilisateur
+- Table `melo_searches` : Référence de la recherche Melo.io
+- Table `melo_properties` : Annonces importées
 
-### Enrichissement par IA
+### Intégration Melo.io
 
-Pour chaque annonce, Gemini génère :
-- **Résumé intelligent** : Analyse contextuelle du bien
-- **Analyse financière** : Mensualités, apport, charges
-- **Comparaison marché** : Prix au m², positionnement
-- **Commodités** : Transports, commerces, écoles à proximité
+L'application utilise 3 Edge Functions Supabase pour communiquer avec Melo.io :
+
+1. **search-location** : Autocomplete des villes
+2. **create-melo-search** : Création d'une recherche sauvegardée
+3. **get-properties** : Récupération des annonces immobilières
+
+Voir la documentation complète : **[MELO_API.md](./MELO_API.md)**
 
 ## 🔒 Sécurité
 
