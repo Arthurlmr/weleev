@@ -315,9 +315,9 @@ export function OnboardingPage() {
 
       // 6. Save properties to Supabase
       if (propertiesResponse['hydra:member'].length > 0) {
-        const propertiesToInsert = propertiesResponse['hydra:member'].map(prop => {
+        const propertiesToInsert = propertiesResponse['hydra:member'].map((prop: any) => {
           // Get the latest advert (most recent data)
-          const latestAdvert = prop.adverts?.[0] || {};
+          const latestAdvert: any = prop.adverts?.[0] || {};
 
           return {
             // Basic fields
