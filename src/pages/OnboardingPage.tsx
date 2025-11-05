@@ -128,9 +128,9 @@ export function OnboardingPage() {
       ...prev,
       location: location['@id'],
       locationId: location['@id'],
-      locationName: location.name,
+      locationName: location.displayName || location.name,  // Use displayName with fallback
     }));
-    setLocationQuery(location.name);
+    setLocationQuery(location.displayName || location.name);  // Use displayName with fallback
     setLocationSuggestions([]);
     setStep('transaction');
   };
@@ -380,7 +380,7 @@ export function OnboardingPage() {
                           {locationSuggestions.map((location, index) => (
                             <motion.button key={location.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }} onClick={() => handleLocationSelect(location)} className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-all text-left group">
                               <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                              <span className="flex-1 font-medium">{location.name}</span>
+                              <span className="flex-1 font-medium">{location.displayName || location.name}</span>
                               <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                             </motion.button>
                           ))}
