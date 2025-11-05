@@ -1,11 +1,13 @@
-// Melo.io API Service
+// Melo.io API Service via Supabase Edge Functions
 // Documentation: https://docs.melo.io
+// Edge Functions are used to avoid CORS issues with Melo.io API
 
-const MELO_API_URL = 'https://api.notif.immo';
-const API_KEY = import.meta.env.VITE_MELO_API_KEY;
+import { supabase } from './supabase';
 
-if (!API_KEY) {
-  console.warn('VITE_MELO_API_KEY is not defined. Melo.io features will not work.');
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+if (!SUPABASE_URL) {
+  console.warn('VITE_SUPABASE_URL is not defined. Melo.io features will not work.');
 }
 
 // =====================================================
@@ -105,29 +107,19 @@ export interface MeloPropertiesResponse {
 // =====================================================
 
 /**
- * Search for a location (city, department, region)
+ * Search for a location (city, department, region) via Edge Function
  */
 export async function searchLocation(
   query: string,
   type: 'city' | 'department' | 'region' = 'city'
 ): Promise<MeloLocation[]> {
   try {
-    const url = new URL(`${MELO_API_URL}/indicators/locations`);
-    url.searchParams.set('search', query);
-    url.searchParams.set('type', type);
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': API_KEY!,
-      },
+    const { data, error } = await supabase.functions.invoke('search-location', {
+      body: { search: query, type },
     });
 
-    if (!response.ok) {
-      throw new Error(`Melo API error: ${response.statusText}`);
-    }
+    if (error) throw error;
 
-    const data = await response.json();
     return data.locations || [];
   } catch (error) {
     console.error('Error searching location:', error);
@@ -136,25 +128,17 @@ export async function searchLocation(
 }
 
 /**
- * Create a new search in Melo
+ * Create a new search in Melo via Edge Function
  */
 export async function createSearch(criteria: MeloSearchCriteria): Promise<MeloSearchResponse> {
   try {
-    const response = await fetch(`${MELO_API_URL}/searches`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': API_KEY!,
-      },
-      body: JSON.stringify(criteria),
+    const { data, error } = await supabase.functions.invoke('create-melo-search', {
+      body: criteria,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Melo API error: ${response.statusText} - ${errorText}`);
-    }
+    if (error) throw error;
 
-    return await response.json();
+    return data;
   } catch (error) {
     console.error('Error creating search:', error);
     throw error;
@@ -162,7 +146,7 @@ export async function createSearch(criteria: MeloSearchCriteria): Promise<MeloSe
 }
 
 /**
- * Get properties based on search criteria
+ * Get properties based on search criteria via Edge Function
  */
 export async function getProperties(params: {
   includedCities?: string[];
@@ -177,46 +161,13 @@ export async function getProperties(params: {
   [key: string]: any;
 }): Promise<MeloPropertiesResponse> {
   try {
-    const url = new URL(`${MELO_API_URL}/documents/properties`);
-
-    // Add search params
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === undefined || value === null) return;
-
-      if (Array.isArray(value)) {
-        // Handle array parameters
-        value.forEach((item) => {
-          url.searchParams.append(`${key}[]`, item.toString());
-        });
-      } else if (typeof value === 'object') {
-        // Handle object parameters (like expressions)
-        url.searchParams.set(key, JSON.stringify(value));
-      } else {
-        url.searchParams.set(key, value.toString());
-      }
+    const { data, error } = await supabase.functions.invoke('get-properties', {
+      body: params,
     });
 
-    // Default params
-    if (!params.page) url.searchParams.set('page', '1');
-    if (!params.itemsPerPage) url.searchParams.set('itemsPerPage', '10');
-    if (!params.hasOwnProperty('expired')) url.searchParams.set('expired', 'false');
-    if (!params.hasOwnProperty('withCoherentPrice')) url.searchParams.set('withCoherentPrice', 'true');
+    if (error) throw error;
 
-    // Sort by most recent
-    url.searchParams.set('order[createdAt]', 'desc');
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': API_KEY!,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Melo API error: ${response.statusText}`);
-    }
-
-    return await response.json();
+    return data;
   } catch (error) {
     console.error('Error getting properties:', error);
     throw error;
@@ -225,52 +176,21 @@ export async function getProperties(params: {
 
 /**
  * Update an existing search
+ * TODO: Implement Edge Function for this when needed
  */
 export async function updateSearch(
-  searchId: string,
-  criteria: Partial<MeloSearchCriteria>
+  _searchId: string,
+  _criteria: Partial<MeloSearchCriteria>
 ): Promise<MeloSearchResponse> {
-  try {
-    const response = await fetch(`${MELO_API_URL}/searches/${searchId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': API_KEY!,
-      },
-      body: JSON.stringify(criteria),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Melo API error: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error updating search:', error);
-    throw error;
-  }
+  throw new Error('updateSearch not implemented yet - needs Edge Function');
 }
 
 /**
  * Delete a search
+ * TODO: Implement Edge Function for this when needed
  */
-export async function deleteSearch(searchId: string): Promise<void> {
-  try {
-    const response = await fetch(`${MELO_API_URL}/searches/${searchId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': API_KEY!,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Melo API error: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error('Error deleting search:', error);
-    throw error;
-  }
+export async function deleteSearch(_searchId: string): Promise<void> {
+  throw new Error('deleteSearch not implemented yet - needs Edge Function');
 }
 
 // =====================================================
