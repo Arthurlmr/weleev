@@ -120,6 +120,10 @@ export function OnboardingPage() {
   }, [locationQuery]);
 
   const handleLocationSelect = (location: any) => {
+    console.log('🔍 DEBUG - Location selected:', location);
+    console.log('🔍 DEBUG - location.id:', location.id);
+    console.log('🔍 DEBUG - location["@id"]:', location['@id']);
+
     setFixedPrefs(prev => ({
       ...prev,
       location: location['@id'],
@@ -227,6 +231,10 @@ export function OnboardingPage() {
       if (searchError || !searchData) throw searchError || new Error('Failed to create search');
 
       // 2. Build Melo search criteria
+      console.log('🔍 DEBUG - fixedPrefs before building payload:', fixedPrefs);
+      console.log('🔍 DEBUG - fixedPrefs.locationId:', fixedPrefs.locationId);
+      console.log('🔍 DEBUG - Type of locationId:', typeof fixedPrefs.locationId);
+
       const meloSearchData: any = {
         title: `Recherche ${fixedPrefs.locationName}`,
         transactionType: fixedPrefs.transactionType!,
@@ -235,6 +243,9 @@ export function OnboardingPage() {
         roomMin: fixedPrefs.roomMin || 1,
         includedCities: [fixedPrefs.locationId!],
       };
+
+      console.log('🔍 DEBUG - meloSearchData to send:', meloSearchData);
+      console.log('🔍 DEBUG - includedCities:', meloSearchData.includedCities);
 
       // Add AI refinements to Melo criteria
       aiQuestions.forEach(q => {
