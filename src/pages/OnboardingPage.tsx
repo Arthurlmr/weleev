@@ -291,6 +291,26 @@ export function OnboardingPage() {
         page: 1,
       });
 
+      // Helper function to generate default title when prop.title is null
+      const generateDefaultTitle = (prop: any): string => {
+        const propertyTypeNames: Record<number, string> = {
+          0: 'Appartement',
+          1: 'Maison',
+          2: 'Immeuble',
+          3: 'Parking',
+          4: 'Bureau',
+          5: 'Terrain',
+          6: 'Boutique',
+        };
+
+        const typeName = propertyTypeNames[prop.propertyType] || 'Bien';
+        const rooms = prop.room ? `${prop.room} pièces` : '';
+        const surface = prop.surface ? `${prop.surface}m²` : '';
+        const city = prop.city?.name || '';
+
+        return `${typeName} ${rooms} ${surface} - ${city}`.replace(/\s+/g, ' ').trim();
+      };
+
       // 6. Save properties to Supabase
       if (propertiesResponse['hydra:member'].length > 0) {
         const propertiesToInsert = propertiesResponse['hydra:member'].map(prop => ({
@@ -298,7 +318,7 @@ export function OnboardingPage() {
           user_id: user.id,
           melo_search_id: searchData.id,
           property_data: prop,
-          title: prop.title,
+          title: prop.title || generateDefaultTitle(prop),
           price: prop.price,
           surface: prop.surface || null,
           rooms: prop.room || null,
