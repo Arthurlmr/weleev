@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
+import { supabase } from '@/lib/supabase';
 import { ListingCard } from '@/components/ListingCard';
-import { ListingDetailModal } from '@/components/ListingDetailModal';
-import { mockListings } from '@/lib/mockData';
 import { Listing } from '@/types';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import './FeedPage.css';
@@ -11,10 +11,51 @@ import './FeedPage.css';
 export function FeedPage() {
   const { user } = useAuth();
   const { profile } = useProfile(user?.id);
-  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredListings = mockListings.filter(listing =>
+  // Load user's properties from Supabase
+  useEffect(() => {
+    const loadProperties = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('melo_properties')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        setProperties(data || []);
+      } catch (error) {
+        console.error('Error loading properties:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperties();
+  }, [user]);
+
+  // Convert Supabase properties to Listing format
+  const listings: Listing[] = properties.map(prop => ({
+    id: prop.id.toString(),
+    title: prop.title,
+    price: prop.price,
+    bedrooms: prop.bedrooms || 0,
+    bathrooms: 1,
+    area: prop.surface || 0,
+    location: prop.city,
+    city: prop.city,
+    image: prop.main_image || prop.images?.[0] || '',
+    saved: false,
+  }));
+
+  const filteredListings = listings.filter(listing =>
     listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     listing.city.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -59,21 +100,24 @@ export function FeedPage() {
       </header>
 
       <div className="listings-grid">
-        {filteredListings.map(listing => (
-          <ListingCard
-            key={listing.id}
-            listing={listing}
-            onClick={() => setSelectedListing(listing)}
-          />
-        ))}
+        {loading ? (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
+            Chargement de vos annonces...
+          </div>
+        ) : filteredListings.length === 0 ? (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
+            Aucune annonce trouvée
+          </div>
+        ) : (
+          filteredListings.map(listing => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              onClick={() => navigate(`/property/${listing.id}`)}
+            />
+          ))
+        )}
       </div>
-
-      {selectedListing && (
-        <ListingDetailModal
-          listing={selectedListing}
-          onClose={() => setSelectedListing(null)}
-        />
-      )}
     </div>
   );
 }
