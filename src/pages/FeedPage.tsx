@@ -70,6 +70,20 @@ export function FeedPage() {
     return matchesSearch && matchesFilter;
   });
 
+  // Check if there are properties of each type
+  const hasApartments = listings.some(listing => listing.propertyType === 'apartment');
+  const hasHouses = listings.some(listing => listing.propertyType === 'house');
+
+  // Reset filter to 'all' if the selected type doesn't exist
+  useEffect(() => {
+    if (filter === 'apartment' && !hasApartments) {
+      setFilter('all');
+    }
+    if (filter === 'house' && !hasHouses) {
+      setFilter('all');
+    }
+  }, [filter, hasApartments, hasHouses]);
+
   return (
     <div className="min-h-screen bg-cream-100">
       {/* Header */}
@@ -119,38 +133,44 @@ export function FeedPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex gap-3 overflow-x-auto pb-2"
+            className="sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 bg-cream-100 border-b border-warm-taupe/10 backdrop-blur-sm"
           >
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
-                filter === 'all'
-                  ? 'bg-warm-terracotta text-cream-50 shadow-md'
-                  : 'bg-cream-50 text-elegant-stone hover:bg-warm-beige'
-              }`}
-            >
-              Tous
-            </button>
-            <button
-              onClick={() => setFilter('apartment')}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
-                filter === 'apartment'
-                  ? 'bg-warm-terracotta text-cream-50 shadow-md'
-                  : 'bg-cream-50 text-elegant-stone hover:bg-warm-beige'
-              }`}
-            >
-              Appartements
-            </button>
-            <button
-              onClick={() => setFilter('house')}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
-                filter === 'house'
-                  ? 'bg-warm-terracotta text-cream-50 shadow-md'
-                  : 'bg-cream-50 text-elegant-stone hover:bg-warm-beige'
-              }`}
-            >
-              Maisons
-            </button>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                  filter === 'all'
+                    ? 'bg-warm-terracotta text-cream-50 shadow-md'
+                    : 'bg-cream-50 text-elegant-stone hover:bg-warm-beige'
+                }`}
+              >
+                Tous
+              </button>
+              {hasApartments && (
+                <button
+                  onClick={() => setFilter('apartment')}
+                  className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                    filter === 'apartment'
+                      ? 'bg-warm-terracotta text-cream-50 shadow-md'
+                      : 'bg-cream-50 text-elegant-stone hover:bg-warm-beige'
+                  }`}
+                >
+                  Appartements
+                </button>
+              )}
+              {hasHouses && (
+                <button
+                  onClick={() => setFilter('house')}
+                  className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                    filter === 'house'
+                      ? 'bg-warm-terracotta text-cream-50 shadow-md'
+                      : 'bg-cream-50 text-elegant-stone hover:bg-warm-beige'
+                  }`}
+                >
+                  Maisons
+                </button>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>
