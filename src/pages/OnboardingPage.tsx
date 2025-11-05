@@ -270,7 +270,7 @@ export function OnboardingPage() {
       const meloUuid = meloSearch['@id'].split('/').pop();
 
       // 4. Save Melo search reference
-      await (supabase.from('melo_searches') as any).insert({
+      const { data: meloSearchRecord, error: meloSearchError } = await (supabase.from('melo_searches') as any).insert({
         user_id: user.id,
         search_id: searchData.id,
         melo_uuid: meloUuid,
@@ -282,7 +282,9 @@ export function OnboardingPage() {
         budget_max: fixedPrefs.budgetMax!,
         room_min: fixedPrefs.roomMin || 1,
         melo_search_data: meloSearchData,
-      });
+      }).select().single();
+
+      if (meloSearchError || !meloSearchRecord) throw meloSearchError || new Error('Failed to save Melo search');
 
       // 5. Fetch initial 10 properties
       const propertiesResponse = await getProperties({
@@ -316,7 +318,7 @@ export function OnboardingPage() {
         const propertiesToInsert = propertiesResponse['hydra:member'].map(prop => ({
           melo_uuid: prop.uuid,
           user_id: user.id,
-          melo_search_id: searchData.id,
+          melo_search_id: meloSearchRecord.id,
           property_data: prop,
           title: prop.title || generateDefaultTitle(prop),
           price: prop.price,
