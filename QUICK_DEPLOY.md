@@ -37,8 +37,8 @@ Guide ultra-simplifié pour déployer Weleev en production.
 6. Ajouter les 3 variables :
 
    VITE_SUPABASE_URL          = https://xxxxx.supabase.co
-   VITE_SUPABASE_ANON_KEY     = eyJhbG...
-   VITE_GEMINI_API_KEY        = AIzaSy...
+   VITE_SUPABASE_ANON_KEY     = eyJhbG...xxxxx
+   VITE_GEMINI_API_KEY        = AIzaSy...xxxxx
 
 7. Deploy site ! ✨
 ```
