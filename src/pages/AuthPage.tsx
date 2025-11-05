@@ -16,6 +16,9 @@ export function AuthPage() {
 
   const checkUserExists = async (email: string) => {
     try {
+      // Check if user has a profile in the profiles table
+      // NOTE: This assumes profiles are properly synced with auth.users via triggers
+      // If you have data inconsistencies, run: supabase/fix_missing_profiles.sql
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
