@@ -1,49 +1,44 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { getRefinementQuestions } from '@/lib/gemini';
 import { useAuth } from '@/hooks/useAuth';
-import { SearchPreferences, OnboardingMessage, RefinementQuestion } from '@/types';
-import { Send } from 'lucide-react';
+import { searchLocation, createSearch, getProperties, mapPropertyTypeToMelo } from '@/lib/melo';
+import { generateAiQuestions } from '@/lib/gemini';
+import { Send, Loader2, Check } from 'lucide-react';
 import './OnboardingPage.css';
 
-type OnboardingStep =
-  | 'location'
-  | 'propertyType'
-  | 'budget'
-  | 'rooms'
-  | 'parking'
-  | 'refinement'
-  | 'complete';
+type OnboardingStep = 'location' | 'transaction' | 'propertyType' | 'budget' | 'rooms' | 'refine' | 'ai-questions' | 'loading';
+
+interface FixedPreferences {
+  location: string;
+  locationId: string;
+  locationName: string;
+  transactionType: 0 | 1;
+  propertyType: 'apartment' | 'house' | 'any';
+  budgetMax: number;
+  roomMin: number;
+}
+
+interface AiQuestion {
+  id: string;
+  question: string;
+  type: 'toggle' | 'slider' | 'chips' | 'text';
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+  options?: string[];
+  meloMapping: {
+    field: string;
+    value: any;
+  };
+}
 
 export function OnboardingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState<OnboardingStep>('location');
-  const [messages, setMessages] = useState<OnboardingMessage[]>([
-    {
-      id: '1',
-      type: 'bot',
-      content: 'Bonjour ! Je vais vous aider à trouver votre bien idéal. Dans quelle ville cherchez-vous ?',
-      timestamp: new Date()
-    }
-  ]);
-  const [preferences, setPreferences] = useState<Partial<SearchPreferences>>({});
-  const [inputValue, setInputValue] = useState('');
-  const [refinementQuestions, setRefinementQuestions] = useState<RefinementQuestion[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Check if user is already onboarded and redirect to feed
+  // Check if already onboarded
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (!user) return;
@@ -57,7 +52,6 @@ export function OnboardingPage() {
 
         if (error) throw error;
 
-        // If user is already onboarded, redirect to feed
         if (data && (data as { onboarded: boolean }).onboarded) {
           navigate('/feed', { replace: true });
         }
@@ -69,232 +63,523 @@ export function OnboardingPage() {
     checkOnboardingStatus();
   }, [user, navigate]);
 
-  const addMessage = (content: string, type: 'bot' | 'user') => {
-    const newMessage: OnboardingMessage = {
-      id: Date.now().toString(),
-      type,
-      content,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, newMessage]);
+  const [step, setStep] = useState<OnboardingStep>('location');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fixed preferences
+  const [fixedPrefs, setFixedPrefs] = useState<Partial<FixedPreferences>>({});
+
+  // AI questions
+  const [aiQuestions, setAiQuestions] = useState<AiQuestion[]>([]);
+  const [aiAnswers, setAiAnswers] = useState<Record<string, any>>({});
+  const [currentAiQuestionIndex, setCurrentAiQuestionIndex] = useState(0);
+
+  // Location autocomplete
+  const [locationQuery, setLocationQuery] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [searchingLocation, setSearchingLocation] = useState(false);
+
+  // Budget slider values based on transaction type
+  const budgetRanges = {
+    sale: { min: 50000, max: 5000000, step: 10000, default: 300000 },
+    rental: { min: 300, max: 5000, step: 50, default: 1000 },
   };
 
-  const handleLocationSubmit = async (location: string) => {
-    addMessage(location, 'user');
-    setPreferences(prev => ({ ...prev, location }));
+  // Search location with debounce
+  useEffect(() => {
+    if (locationQuery.length < 2) {
+      setLocationSuggestions([]);
+      return;
+    }
 
-    setTimeout(() => {
-      addMessage('Parfait ! Quel type de bien recherchez-vous ?', 'bot');
-      setStep('propertyType');
-    }, 500);
-  };
-
-  const handlePropertyType = (type: 'apartment' | 'house' | 'any') => {
-    const labels = {
-      apartment: 'Un appartement',
-      house: 'Une maison',
-      any: 'Appartement ou maison'
-    };
-    addMessage(labels[type], 'user');
-    setPreferences(prev => ({ ...prev, propertyType: type }));
-
-    setTimeout(() => {
-      addMessage('Quel est votre budget maximum ?', 'bot');
-      setStep('budget');
-    }, 500);
-  };
-
-  const handleBudget = (budget: number) => {
-    addMessage(`${budget.toLocaleString('fr-FR')}€`, 'user');
-    setPreferences(prev => ({ ...prev, maxBudget: budget }));
-
-    setTimeout(() => {
-      addMessage('Combien de pièces minimum souhaitez-vous ?', 'bot');
-      setStep('rooms');
-    }, 500);
-  };
-
-  const handleRooms = (rooms: number) => {
-    addMessage(`${rooms} pièce${rooms > 1 ? 's' : ''}`, 'user');
-    setPreferences(prev => ({ ...prev, minRooms: rooms }));
-
-    setTimeout(() => {
-      addMessage('Avez-vous besoin d\'un parking ?', 'bot');
-      setStep('parking');
-    }, 500);
-  };
-
-  const handleParking = async (wantsParking: boolean) => {
-    addMessage(wantsParking ? 'Oui' : 'Non', 'user');
-    const updatedPreferences = { ...preferences, wantsParking };
-    setPreferences(updatedPreferences);
-
-    // Get AI refinement questions
-    setLoading(true);
-    setTimeout(async () => {
-      addMessage('Parfait ! Quelques questions supplémentaires pour affiner votre recherche...', 'bot');
-
+    const timer = setTimeout(async () => {
+      setSearchingLocation(true);
       try {
-        const questions = await getRefinementQuestions(updatedPreferences as SearchPreferences);
-        setRefinementQuestions(questions);
-
-        if (questions.length > 0) {
-          setTimeout(() => {
-            addMessage(questions[0].question, 'bot');
-            setStep('refinement');
-          }, 800);
-        }
-      } catch (error) {
-        console.error('Error getting refinement questions:', error);
-        await completeOnboarding(updatedPreferences);
+        const results = await searchLocation(locationQuery, 'city');
+        setLocationSuggestions(results.slice(0, 5));
+      } catch (err) {
+        console.error('Error searching location:', err);
       } finally {
-        setLoading(false);
+        setSearchingLocation(false);
       }
-    }, 500);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [locationQuery]);
+
+  const handleLocationSelect = (location: any) => {
+    setFixedPrefs(prev => ({
+      ...prev,
+      location: location.id,
+      locationId: location.id,
+      locationName: location.name,
+    }));
+    setLocationQuery(location.name);
+    setLocationSuggestions([]);
+    setStep('transaction');
   };
 
-  const handleRefinementAnswer = async (answer: string) => {
-    addMessage(answer, 'user');
+  const handleTransactionSelect = (type: 0 | 1) => {
+    setFixedPrefs(prev => ({ ...prev, transactionType: type }));
+    setStep('propertyType');
+  };
 
-    const currentQuestion = refinementQuestions[currentQuestionIndex];
-    const refinements = {
-      ...preferences.refinements,
-      [currentQuestion.id]: answer
-    };
-    setPreferences(prev => ({ ...prev, refinements }));
+  const handlePropertyTypeSelect = (type: 'apartment' | 'house' | 'any') => {
+    setFixedPrefs(prev => ({ ...prev, propertyType: type }));
+    setStep('budget');
+  };
 
-    const nextIndex = currentQuestionIndex + 1;
+  const handleBudgetSelect = (budget: number) => {
+    setFixedPrefs(prev => ({ ...prev, budgetMax: budget }));
+    setStep('rooms');
+  };
 
-    if (nextIndex < refinementQuestions.length) {
-      setCurrentQuestionIndex(nextIndex);
-      setTimeout(() => {
-        addMessage(refinementQuestions[nextIndex].question, 'bot');
-      }, 500);
-    } else {
-      await completeOnboarding({ ...preferences, refinements });
+  const handleRoomsSelect = (rooms: number) => {
+    setFixedPrefs(prev => ({ ...prev, roomMin: rooms }));
+    setStep('refine');
+  };
+
+  const handleSkipRefinement = async () => {
+    await completeOnboarding({});
+  };
+
+  const handleStartRefinement = async () => {
+    setLoading(true);
+    setStep('ai-questions');
+
+    try {
+      const context = {
+        location: fixedPrefs.locationName,
+        transactionType: fixedPrefs.transactionType === 0 ? 'Achat' : 'Location',
+        propertyType: fixedPrefs.propertyType,
+        budgetMax: fixedPrefs.budgetMax,
+        roomMin: fixedPrefs.roomMin,
+      };
+
+      const questions = await generateAiQuestions(context);
+      setAiQuestions(questions);
+      setCurrentAiQuestionIndex(0);
+    } catch (err) {
+      console.error('Error generating AI questions:', err);
+      setError('Erreur lors de la génération des questions. Continuons sans affinement.');
+      setTimeout(() => completeOnboarding({}), 2000);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const completeOnboarding = async (finalPreferences: Partial<SearchPreferences>) => {
-    if (!user) return;
+  const handleAiQuestionAnswer = (answer: any) => {
+    const currentQuestion = aiQuestions[currentAiQuestionIndex];
+    setAiAnswers(prev => ({ ...prev, [currentQuestion.id]: answer }));
+
+    if (currentAiQuestionIndex < aiQuestions.length - 1) {
+      setCurrentAiQuestionIndex(prev => prev + 1);
+    } else {
+      completeOnboarding(aiAnswers);
+    }
+  };
+
+  const handleSkipAiQuestion = () => {
+    if (currentAiQuestionIndex < aiQuestions.length - 1) {
+      setCurrentAiQuestionIndex(prev => prev + 1);
+    } else {
+      completeOnboarding(aiAnswers);
+    }
+  };
+
+  const completeOnboarding = async (aiRefinements: Record<string, any>) => {
+    if (!user || !fixedPrefs.locationId || !fixedPrefs.transactionType === undefined) {
+      setError('Informations manquantes');
+      return;
+    }
+
+    setStep('loading');
+    setLoading(true);
 
     try {
-      // Save search preferences
-      await supabase.from('searches').insert({
-        user_id: user.id,
-        location: finalPreferences.location || '',
-        property_type: finalPreferences.propertyType || 'any',
-        max_budget: finalPreferences.maxBudget || 0,
-        min_rooms: finalPreferences.minRooms || 1,
-        wants_parking: finalPreferences.wantsParking || false,
-        refinements: finalPreferences.refinements || null
-      } as any);
+      // 1. Save to Supabase searches table
+      const { data: searchData, error: searchError } = await (supabase
+        .from('searches') as any)
+        .insert({
+          user_id: user.id,
+          location: fixedPrefs.locationName!,
+          property_type: fixedPrefs.propertyType || 'any',
+          max_budget: fixedPrefs.budgetMax!,
+          min_rooms: fixedPrefs.roomMin || 1,
+          wants_parking: false,
+          refinements: aiRefinements,
+        })
+        .select()
+        .single();
 
-      // Update profile
+      if (searchError || !searchData) throw searchError || new Error('Failed to create search');
+
+      // 2. Build Melo search criteria
+      const meloSearchData: any = {
+        title: `Recherche ${fixedPrefs.locationName}`,
+        transactionType: fixedPrefs.transactionType!,
+        propertyTypes: mapPropertyTypeToMelo(fixedPrefs.propertyType!),
+        budgetMax: fixedPrefs.budgetMax!,
+        roomMin: fixedPrefs.roomMin || 1,
+        includedCities: [fixedPrefs.locationId!],
+      };
+
+      // Add AI refinements to Melo criteria
+      aiQuestions.forEach(q => {
+        const answer = aiRefinements[q.id];
+        if (answer !== undefined && answer !== null) {
+          const mapping = q.meloMapping;
+          if (mapping.field === 'expressions') {
+            if (!meloSearchData.expressions) meloSearchData.expressions = [];
+            meloSearchData.expressions.push(mapping.value);
+          } else {
+            meloSearchData[mapping.field] = typeof mapping.value === 'string' && mapping.value.includes('{{value}}')
+              ? answer
+              : mapping.value;
+          }
+        }
+      });
+
+      // 3. Create Melo search
+      const meloSearch = await createSearch(meloSearchData);
+
+      // 4. Save Melo search reference
+      await (supabase.from('melo_searches') as any).insert({
+        user_id: user.id,
+        search_id: searchData.id,
+        melo_uuid: meloSearch.uuid,
+        melo_token: meloSearch.token,
+        location_id: fixedPrefs.locationId!,
+        location_name: fixedPrefs.locationName!,
+        transaction_type: fixedPrefs.transactionType!,
+        property_types: mapPropertyTypeToMelo(fixedPrefs.propertyType!),
+        budget_max: fixedPrefs.budgetMax!,
+        room_min: fixedPrefs.roomMin || 1,
+        melo_search_data: meloSearchData,
+      });
+
+      // 5. Fetch initial 10 properties
+      const propertiesResponse = await getProperties({
+        ...meloSearchData,
+        itemsPerPage: 10,
+        page: 1,
+      });
+
+      // 6. Save properties to Supabase
+      if (propertiesResponse['hydra:member'].length > 0) {
+        const propertiesToInsert = propertiesResponse['hydra:member'].map(prop => ({
+          melo_uuid: prop.uuid,
+          user_id: user.id,
+          melo_search_id: searchData.id,
+          property_data: prop,
+          title: prop.title,
+          price: prop.price,
+          surface: prop.surface || null,
+          rooms: prop.room || null,
+          bedrooms: prop.bedroom || null,
+          city: prop.city?.name || '',
+          zipcode: prop.city?.zipcode || null,
+          property_type: mapPropertyTypeToMelo(fixedPrefs.propertyType!).includes(1) ? 'house' : 'apartment',
+          transaction_type: fixedPrefs.transactionType!,
+          main_image: prop.pictures?.[0] || prop.picturesRemote?.[0] || null,
+          images: prop.pictures || prop.picturesRemote || [],
+          virtual_tour: prop.virtualTour || null,
+          melo_created_at: prop.createdAt,
+          melo_updated_at: prop.updatedAt || null,
+        }));
+
+        await (supabase.from('melo_properties') as any).insert(propertiesToInsert);
+      }
+
+      // 7. Mark user as onboarded
       await (supabase
         .from('profiles') as any)
         .update({ onboarded: true })
         .eq('id', user.id);
 
-      setTimeout(() => {
-        addMessage('Merci ! Je cherche maintenant les meilleurs biens pour vous...', 'bot');
-        setTimeout(() => {
-          setStep('complete');
-          navigate('/feed');
-        }, 1500);
-      }, 500);
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
+      // 8. Navigate to feed
+      navigate('/feed');
+    } catch (err: any) {
+      console.error('Error completing onboarding:', err);
+      setError(err.message || 'Une erreur est survenue. Veuillez réessayer.');
+      setLoading(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
+  // Render functions for each step
+  const renderLocationStep = () => (
+    <div className="onboarding-step">
+      <h2>Où cherchez-vous ?</h2>
+      <p className="step-subtitle">Entrez le nom d'une ville</p>
 
-    if (step === 'location') {
-      handleLocationSubmit(inputValue);
-    } else if (step === 'budget') {
-      const budget = parseInt(inputValue.replace(/\s/g, ''));
-      if (!isNaN(budget)) {
-        handleBudget(budget);
-      }
-    } else if (step === 'refinement') {
-      handleRefinementAnswer(inputValue);
-    }
+      <div className="input-group">
+        <input
+          type="text"
+          className="input"
+          placeholder="Paris, Lyon, Marseille..."
+          value={locationQuery}
+          onChange={(e) => setLocationQuery(e.target.value)}
+          autoFocus
+        />
+        {searchingLocation && <Loader2 className="spinner-inline" size={20} />}
+      </div>
 
-    setInputValue('');
-  };
-
-  const renderOptions = () => {
-    if (step === 'propertyType') {
-      return (
-        <div className="options-container">
-          <button className="chip" onClick={() => handlePropertyType('apartment')}>
-            Appartement
-          </button>
-          <button className="chip" onClick={() => handlePropertyType('house')}>
-            Maison
-          </button>
-          <button className="chip" onClick={() => handlePropertyType('any')}>
-            Indifférent
-          </button>
-        </div>
-      );
-    }
-
-    if (step === 'rooms') {
-      return (
-        <div className="options-container">
-          {[1, 2, 3, 4, 5].map(num => (
-            <button key={num} className="chip" onClick={() => handleRooms(num)}>
-              {num} {num === 1 ? 'pièce' : 'pièces'}
+      {locationSuggestions.length > 0 && (
+        <div className="suggestions">
+          {locationSuggestions.map((loc, idx) => (
+            <button
+              key={idx}
+              className="suggestion-item"
+              onClick={() => handleLocationSelect(loc)}
+            >
+              <div>
+                <strong>{loc.name}</strong>
+                {loc.zipcode && <span className="text-muted"> • {loc.zipcode}</span>}
+              </div>
+              {loc.department && <div className="text-small">{loc.department.name}</div>}
             </button>
           ))}
         </div>
-      );
-    }
+      )}
+    </div>
+  );
 
-    if (step === 'parking') {
-      return (
-        <div className="options-container">
-          <button className="chip" onClick={() => handleParking(true)}>
-            Oui
-          </button>
-          <button className="chip" onClick={() => handleParking(false)}>
-            Non
-          </button>
+  const renderTransactionStep = () => (
+    <div className="onboarding-step">
+      <h2>Que souhaitez-vous faire ?</h2>
+      <div className="button-grid">
+        <button
+          className="choice-button"
+          onClick={() => handleTransactionSelect(0)}
+        >
+          <div className="choice-icon">🏠</div>
+          <div className="choice-label">Acheter</div>
+        </button>
+        <button
+          className="choice-button"
+          onClick={() => handleTransactionSelect(1)}
+        >
+          <div className="choice-icon">🔑</div>
+          <div className="choice-label">Louer</div>
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderPropertyTypeStep = () => (
+    <div className="onboarding-step">
+      <h2>Quel type de bien ?</h2>
+      <div className="button-grid">
+        <button
+          className="choice-button"
+          onClick={() => handlePropertyTypeSelect('apartment')}
+        >
+          <div className="choice-icon">🏢</div>
+          <div className="choice-label">Appartement</div>
+        </button>
+        <button
+          className="choice-button"
+          onClick={() => handlePropertyTypeSelect('house')}
+        >
+          <div className="choice-icon">🏡</div>
+          <div className="choice-label">Maison</div>
+        </button>
+        <button
+          className="choice-button"
+          onClick={() => handlePropertyTypeSelect('any')}
+        >
+          <div className="choice-icon">✨</div>
+          <div className="choice-label">Les deux</div>
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderBudgetStep = () => {
+    const range = fixedPrefs.transactionType === 0 ? budgetRanges.sale : budgetRanges.rental;
+    const [budget, setBudget] = useState(range.default);
+
+    return (
+      <div className="onboarding-step">
+        <h2>Budget maximum ?</h2>
+        <p className="step-subtitle">
+          {fixedPrefs.transactionType === 0 ? 'Prix d\'achat' : 'Loyer mensuel'}
+        </p>
+
+        <div className="budget-display">
+          {budget.toLocaleString('fr-FR')} €
         </div>
-      );
-    }
 
-    if (step === 'refinement' && refinementQuestions.length > 0) {
-      const currentQuestion = refinementQuestions[currentQuestionIndex];
-      if (currentQuestion.type === 'multiple_choice' || currentQuestion.type === 'chips') {
-        return (
-          <div className="options-container">
-            {currentQuestion.options?.map((option, index) => (
+        <input
+          type="range"
+          className="slider"
+          min={range.min}
+          max={range.max}
+          step={range.step}
+          value={budget}
+          onChange={(e) => setBudget(Number(e.target.value))}
+        />
+
+        <div className="slider-labels">
+          <span>{range.min.toLocaleString('fr-FR')} €</span>
+          <span>{range.max.toLocaleString('fr-FR')} €</span>
+        </div>
+
+        <button
+          className="btn btn-primary btn-large"
+          onClick={() => handleBudgetSelect(budget)}
+        >
+          Continuer
+        </button>
+      </div>
+    );
+  };
+
+  const renderRoomsStep = () => (
+    <div className="onboarding-step">
+      <h2>Nombre de pièces minimum ?</h2>
+      <div className="chips-grid">
+        {[1, 2, 3, 4, 5].map(num => (
+          <button
+            key={num}
+            className="chip"
+            onClick={() => handleRoomsSelect(num)}
+          >
+            {num} {num === 1 ? 'pièce' : 'pièces'}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderRefineStep = () => (
+    <div className="onboarding-step">
+      <div className="completion-icon">
+        <Check size={48} />
+      </div>
+      <h2>Parfait !</h2>
+      <p className="step-subtitle">
+        Voulez-vous affiner votre recherche avec quelques questions supplémentaires ?
+      </p>
+
+      <button
+        className="btn btn-primary btn-large"
+        onClick={handleStartRefinement}
+        disabled={loading}
+      >
+        {loading ? <Loader2 className="spinner" size={20} /> : 'Oui, affiner'}
+      </button>
+
+      <button
+        className="btn btn-ghost"
+        onClick={handleSkipRefinement}
+        disabled={loading}
+      >
+        Non, c'est bon
+      </button>
+    </div>
+  );
+
+  const renderAiQuestion = () => {
+    if (aiQuestions.length === 0) return null;
+
+    const currentQuestion = aiQuestions[currentAiQuestionIndex];
+
+    return (
+      <div className="onboarding-step">
+        <div className="progress-indicator">
+          Question {currentAiQuestionIndex + 1} sur {aiQuestions.length}
+        </div>
+
+        <h2>{currentQuestion.question}</h2>
+
+        {currentQuestion.type === 'toggle' && (
+          <div className="button-grid">
+            <button
+              className="choice-button"
+              onClick={() => handleAiQuestionAnswer(true)}
+            >
+              Oui
+            </button>
+            <button
+              className="choice-button"
+              onClick={() => handleAiQuestionAnswer(false)}
+            >
+              Non
+            </button>
+          </div>
+        )}
+
+        {currentQuestion.type === 'slider' && (
+          <div className="slider-question">
+            <input
+              type="range"
+              className="slider"
+              min={currentQuestion.min}
+              max={currentQuestion.max}
+              step={currentQuestion.step}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                handleAiQuestionAnswer(value);
+              }}
+            />
+            <span className="slider-unit">{currentQuestion.unit}</span>
+          </div>
+        )}
+
+        {currentQuestion.type === 'chips' && (
+          <div className="chips-grid">
+            {currentQuestion.options?.map((option, idx) => (
               <button
-                key={index}
+                key={idx}
                 className="chip"
-                onClick={() => handleRefinementAnswer(option)}
+                onClick={() => handleAiQuestionAnswer(option)}
               >
                 {option}
               </button>
             ))}
           </div>
-        );
-      }
-    }
+        )}
 
-    return null;
+        {currentQuestion.type === 'text' && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const input = e.currentTarget.querySelector('input');
+              if (input) {
+                handleAiQuestionAnswer(input.value);
+              }
+            }}
+          >
+            <input
+              type="text"
+              className="input"
+              placeholder="Votre réponse..."
+              autoFocus
+            />
+            <button type="submit" className="btn btn-primary">
+              <Send size={20} />
+            </button>
+          </form>
+        )}
+
+        <button className="btn btn-ghost btn-small" onClick={handleSkipAiQuestion}>
+          Passer
+        </button>
+      </div>
+    );
   };
 
-  const needsTextInput =
-    step === 'location' ||
-    step === 'budget' ||
-    (step === 'refinement' &&
-      refinementQuestions[currentQuestionIndex]?.type === 'text');
+  const renderLoadingStep = () => (
+    <div className="onboarding-step">
+      <Loader2 className="spinner-large" size={48} />
+      <h2>Recherche en cours...</h2>
+      <p className="step-subtitle">
+        Nous recherchons les meilleurs biens pour vous
+      </p>
+    </div>
+  );
 
   return (
     <div className="onboarding-page">
@@ -305,55 +590,20 @@ export function OnboardingPage() {
       </div>
 
       <div className="onboarding-container">
-        <div className="messages-container">
-          {messages.map(message => (
-            <div
-              key={message.id}
-              className={`message ${message.type === 'bot' ? 'message-bot' : 'message-user'}`}
-            >
-              <div className="message-content">
-                {message.content}
-              </div>
-            </div>
-          ))}
-
-          {loading && (
-            <div className="message message-bot">
-              <div className="message-content">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {renderOptions()}
-
-        {needsTextInput && (
-          <form onSubmit={handleSubmit} className="input-form">
-            <input
-              type="text"
-              className="input"
-              placeholder={
-                step === 'location'
-                  ? 'Paris, Lyon, Bordeaux...'
-                  : step === 'budget'
-                  ? '300000'
-                  : 'Votre réponse...'
-              }
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-            <button type="submit" className="btn btn-primary" disabled={!inputValue.trim()}>
-              <Send size={20} />
-            </button>
-          </form>
+        {error && (
+          <div className="alert alert-error">
+            {error}
+          </div>
         )}
+
+        {step === 'location' && renderLocationStep()}
+        {step === 'transaction' && renderTransactionStep()}
+        {step === 'propertyType' && renderPropertyTypeStep()}
+        {step === 'budget' && renderBudgetStep()}
+        {step === 'rooms' && renderRoomsStep()}
+        {step === 'refine' && renderRefineStep()}
+        {step === 'ai-questions' && renderAiQuestion()}
+        {step === 'loading' && renderLoadingStep()}
       </div>
     </div>
   );
