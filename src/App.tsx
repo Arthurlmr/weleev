@@ -4,6 +4,7 @@ import { useProfile } from './hooks/useProfile';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { FeedPage } from './pages/FeedPage';
+import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { AccountPage } from './pages/AccountPage';
 import { MainLayout } from './components/MainLayout';
@@ -71,6 +72,15 @@ function App() {
             <OnboardingRoute>
               <OnboardingPage />
             </OnboardingRoute>
+          }
+        />
+
+        <Route
+          path="/property/:id"
+          element={
+            <ProtectedRoute>
+              <PropertyDetailPage />
+            </ProtectedRoute>
           }
         />
 
