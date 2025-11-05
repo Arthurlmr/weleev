@@ -76,6 +76,137 @@ Types disponibles: "multiple_choice" (avec options), "text" (réponse libre), "c
   }
 }
 
+// Generate AI questions for onboarding refinement
+export async function generateAiQuestions(context: {
+  location?: string;
+  transactionType?: string;
+  propertyType?: string;
+  budgetMax?: number;
+  roomMin?: number;
+}): Promise<any[]> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-thinking-exp' });
+
+  const prompt = `Tu es un assistant immobilier expert. L'utilisateur cherche :
+- Localisation : ${context.location || 'Non spécifié'}
+- Transaction : ${context.transactionType || 'Non spécifié'}
+- Type de bien : ${context.propertyType || 'Non spécifié'}
+- Budget max : ${context.budgetMax ? context.budgetMax.toLocaleString('fr-FR') + '€' : 'Non spécifié'}
+- Pièces min : ${context.roomMin || 'Non spécifié'}
+
+Génère 3 à 5 questions PERTINENTES et CONTEXTUELLES pour affiner sa recherche.
+Chaque question doit être associée à un type de composant UI adapté.
+
+Types de composants disponibles :
+- "toggle" : Oui/Non (ex: "Souhaitez-vous un parking ?")
+- "chips" : Choix multiple (ex: "Quels équipements ?")
+- "slider" : Plage de valeurs (ex: "Surface minimum ?")
+- "text" : Texte libre (ex: "Quartiers préférés ?")
+
+IMPORTANT : Sois intelligent et contextuel :
+- Si l'utilisateur cherche à Paris intra-muros, ne demande pas de parking (rare et cher)
+- Si le budget est élevé, demande des équipements premium (piscine, jacuzzi, etc.)
+- Si c'est une location, demande meublé/non meublé
+- Si c'est une maison, demande la surface de jardin
+- Adapte les questions au contexte précis
+
+Réponds en JSON (UNIQUEMENT du JSON valide, sans backticks ni texte avant/après):
+{
+  "questions": [
+    {
+      "id": "parking",
+      "question": "Souhaitez-vous un parking ?",
+      "type": "toggle",
+      "meloMapping": { "field": "expressions", "value": { "include": ["parking"] } }
+    },
+    {
+      "id": "surface",
+      "question": "Surface minimum souhaitée ?",
+      "type": "slider",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "unit": "m²",
+      "meloMapping": { "field": "surfaceMin", "value": "{{value}}" }
+    },
+    {
+      "id": "amenities",
+      "question": "Quels équipements ?",
+      "type": "chips",
+      "options": ["Ascenseur", "Cave", "Gardien", "Balcon"],
+      "meloMapping": { "field": "expressions", "value": { "include": ["{{value}}"] } }
+    }
+  ]
+}`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Extract JSON from the response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    return parsed.questions || [];
+  } catch (error) {
+    console.error('Error generating AI questions:', error);
+    // Return default contextual questions as fallback
+    const isRental = context.transactionType === 'Location';
+    const isHouse = context.propertyType === 'house';
+
+    const defaultQuestions: any[] = [
+      {
+        id: 'surface',
+        question: 'Surface minimum souhaitée ?',
+        type: 'slider',
+        min: 20,
+        max: 200,
+        step: 10,
+        unit: 'm²',
+        meloMapping: { field: 'surfaceMin', value: '{{value}}' }
+      }
+    ];
+
+    if (isRental) {
+      defaultQuestions.push({
+        id: 'furnished',
+        question: 'Souhaitez-vous un logement meublé ?',
+        type: 'toggle',
+        meloMapping: { field: 'furnished', value: true }
+      });
+    }
+
+    if (isHouse) {
+      defaultQuestions.push({
+        id: 'land',
+        question: 'Surface de jardin minimum ?',
+        type: 'slider',
+        min: 0,
+        max: 1000,
+        step: 50,
+        unit: 'm²',
+        meloMapping: { field: 'landSurfaceMin', value: '{{value}}' }
+      });
+    } else {
+      defaultQuestions.push({
+        id: 'floor',
+        question: 'Étage minimum ?',
+        type: 'slider',
+        min: 0,
+        max: 10,
+        step: 1,
+        unit: '',
+        meloMapping: { field: 'floor', value: '{{value}}' }
+      });
+    }
+
+    return defaultQuestions.slice(0, 3);
+  }
+}
+
 // Get districts for a city
 export async function getDistrictsFromGemini(city: string): Promise<string[]> {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
