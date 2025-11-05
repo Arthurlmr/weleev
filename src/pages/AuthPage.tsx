@@ -73,16 +73,25 @@ export function AuthPage() {
     setLoading(true);
 
     try {
+      // Redirect to /feed for existing users, /onboarding for new users
+      const redirectTo = userExists
+        ? `${window.location.origin}/feed`
+        : `${window.location.origin}/onboarding`;
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          emailRedirectTo: redirectTo,
         },
       });
 
       if (error) throw error;
 
-      setMessage('Un lien de connexion a été envoyé à votre adresse email. Vérifiez votre boîte de réception.');
+      const message = userExists
+        ? 'Content de vous revoir ! Un lien de connexion a été envoyé à votre adresse email.'
+        : 'Un lien de connexion a été envoyé à votre adresse email. Vérifiez votre boîte de réception.';
+
+      setMessage(message);
     } catch (err: any) {
       setError(err.message || 'Erreur lors de l\'envoi du lien');
     } finally {
