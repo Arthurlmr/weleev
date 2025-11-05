@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Mail, AlertCircle } from 'lucide-react';
-import './AuthPage.css';
+import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabase';
+import { Mail, AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 
 export function AuthPage() {
   const [email, setEmail] = useState('');
@@ -22,8 +25,6 @@ export function AuthPage() {
     setLoading(true);
 
     try {
-      // Always redirect to /onboarding
-      // OnboardingPage will check if user is already onboarded and redirect to /feed if needed
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -42,65 +43,171 @@ export function AuthPage() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-background">
-        <div className="abstract-shape shape-1"></div>
-        <div className="abstract-shape shape-2"></div>
-        <div className="abstract-shape shape-3"></div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute top-20 left-20 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          animate={{
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          animate={{
+            x: [-100, 100, -100],
+            y: [100, -100, 100],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
       </div>
 
-      <div className="auth-content">
-        <div className="auth-logo">
-          <h1>Weleev</h1>
-          <p>Trouvez votre bien idéal</p>
-        </div>
+      {/* Main content */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md relative z-10"
+      >
+        {/* Logo and title */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-center mb-8"
+        >
+          <motion.div
+            className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4 shadow-lg"
+            whileHover={{ scale: 1.05, rotate: 5 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          >
+            <Sparkles className="w-8 h-8 text-primary-foreground" />
+          </motion.div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Weleev</h1>
+          <p className="text-muted-foreground">Trouvez votre bien idéal en quelques clics</p>
+        </motion.div>
 
-        <div className="auth-form-container">
-          <form onSubmit={handleSubmit} className="auth-form slide-up">
-            <p className="auth-subtitle">
-              Entrez votre email pour recevoir un lien de connexion sécurisé.
-            </p>
+        {/* Auth card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="border-0 shadow-2xl backdrop-blur-sm bg-white/90">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-center">Connexion</CardTitle>
+              <CardDescription className="text-center">
+                Entrez votre email pour recevoir un lien de connexion sécurisé
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    Adresse email
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="vous@exemple.fr"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading}
+                      required
+                      className="pl-10 h-11"
+                    />
+                  </div>
+                </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Adresse email</label>
-              <div className="input-wrapper">
-                <Mail size={20} />
-                <input
-                  id="email"
-                  type="email"
-                  className="input"
-                  placeholder="vous@exemple.fr"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm"
+                  >
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{error}</span>
+                  </motion.div>
+                )}
+
+                {message && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"
+                  >
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                    <span>{message}</span>
+                  </motion.div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full h-11 text-base font-medium"
                   disabled={loading}
-                  required
-                />
-              </div>
-            </div>
+                >
+                  {loading ? (
+                    <motion.div
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    />
+                  ) : (
+                    'Continuer'
+                  )}
+                </Button>
 
-            {error && (
-              <div className="alert alert-error">
-                <AlertCircle size={20} />
-                <span>{error}</span>
-              </div>
-            )}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-xs text-center text-muted-foreground"
+                >
+                  Un lien magique sera envoyé à votre email.
+                  <br />
+                  Pas de mot de passe à retenir !
+                </motion.p>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-            {message && (
-              <div className="alert alert-success">
-                <span>{message}</span>
-              </div>
-            )}
-
-            <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
-              {loading ? <div className="spinner" /> : 'Continuer'}
-            </button>
-
-            <p className="auth-info">
-              Un lien magique sera envoyé à votre adresse email. Pas de mot de passe à retenir !
-            </p>
-          </form>
-        </div>
-      </div>
+        {/* Footer text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center text-sm text-muted-foreground mt-6"
+        >
+          En continuant, vous acceptez nos conditions d'utilisation
+        </motion.p>
+      </motion.div>
     </div>
   );
 }
