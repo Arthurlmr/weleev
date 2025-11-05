@@ -1,18 +1,23 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { RefinementQuestion, SearchPreferences, Listing, ListingEnrichment, AiImageAnalysis } from '@/types';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+// Temporarily disabled to prevent API key exposure in bundle
+// TODO: Move Gemini calls to Edge Function for security
+const AI_ENABLED = false;
 
-if (!apiKey) {
-  throw new Error('Missing Gemini API key');
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
+// Don't read API key to prevent it from being bundled
+const apiKey = AI_ENABLED ? import.meta.env.VITE_GEMINI_API_KEY : undefined;
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 // Get refinement questions based on initial preferences
 export async function getRefinementQuestions(
   preferences: SearchPreferences
 ): Promise<RefinementQuestion[]> {
+  // Skip AI call if disabled or no API key
+  if (!AI_ENABLED || !genAI) {
+    return getDefaultRefinementQuestions();
+  }
+
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
   const prompt = `Tu es un assistant immobilier expert en France. Un utilisateur cherche un bien avec les critères suivants:
@@ -53,27 +58,31 @@ Types disponibles: "multiple_choice" (avec options), "text" (réponse libre), "c
     return parsed.questions || [];
   } catch (error) {
     console.error('Error getting refinement questions:', error);
-    // Return default questions as fallback
-    return [
-      {
-        id: 'q1',
-        question: 'La proximité des transports en commun est-elle essentielle?',
-        type: 'multiple_choice',
-        options: ['Essentiel', 'Souhaitable', 'Pas important']
-      },
-      {
-        id: 'q2',
-        question: 'Quel type d\'environnement préférez-vous?',
-        type: 'multiple_choice',
-        options: ['Centre-ville animé', 'Quartier calme résidentiel', 'Proche nature', 'Indifférent']
-      },
-      {
-        id: 'q3',
-        question: 'Y a-t-il un défaut rédhibitoire pour vous?',
-        type: 'text'
-      }
-    ];
+    return getDefaultRefinementQuestions();
   }
+}
+
+// Helper function to get default refinement questions
+function getDefaultRefinementQuestions(): RefinementQuestion[] {
+  return [
+    {
+      id: 'q1',
+      question: 'La proximité des transports en commun est-elle essentielle?',
+      type: 'multiple_choice',
+      options: ['Essentiel', 'Souhaitable', 'Pas important']
+    },
+    {
+      id: 'q2',
+      question: 'Quel type d\'environnement préférez-vous?',
+      type: 'multiple_choice',
+      options: ['Centre-ville animé', 'Quartier calme résidentiel', 'Proche nature', 'Indifférent']
+    },
+    {
+      id: 'q3',
+      question: 'Y a-t-il un défaut rédhibitoire pour vous?',
+      type: 'text'
+    }
+  ];
 }
 
 // Generate AI questions for onboarding refinement
@@ -84,6 +93,11 @@ export async function generateAiQuestions(context: {
   budgetMax?: number;
   roomMin?: number;
 }): Promise<any[]> {
+  // Skip AI call if disabled or no API key (prevents key exposure in bundle)
+  if (!AI_ENABLED || !genAI) {
+    return getDefaultQuestions(context);
+  }
+
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-thinking-exp' });
 
   const prompt = `Tu es un assistant immobilier expert. L'utilisateur cherche :
@@ -153,62 +167,74 @@ Réponds en JSON (UNIQUEMENT du JSON valide, sans backticks ni texte avant/aprè
     return parsed.questions || [];
   } catch (error) {
     console.error('Error generating AI questions:', error);
-    // Return default contextual questions as fallback
-    const isRental = context.transactionType === 'Location';
-    const isHouse = context.propertyType === 'house';
-
-    const defaultQuestions: any[] = [
-      {
-        id: 'surface',
-        question: 'Surface minimum souhaitée ?',
-        type: 'slider',
-        min: 20,
-        max: 200,
-        step: 10,
-        unit: 'm²',
-        meloMapping: { field: 'surfaceMin', value: '{{value}}' }
-      }
-    ];
-
-    if (isRental) {
-      defaultQuestions.push({
-        id: 'furnished',
-        question: 'Souhaitez-vous un logement meublé ?',
-        type: 'toggle',
-        meloMapping: { field: 'furnished', value: true }
-      });
-    }
-
-    if (isHouse) {
-      defaultQuestions.push({
-        id: 'land',
-        question: 'Surface de jardin minimum ?',
-        type: 'slider',
-        min: 0,
-        max: 1000,
-        step: 50,
-        unit: 'm²',
-        meloMapping: { field: 'landSurfaceMin', value: '{{value}}' }
-      });
-    } else {
-      defaultQuestions.push({
-        id: 'floor',
-        question: 'Étage minimum ?',
-        type: 'slider',
-        min: 0,
-        max: 10,
-        step: 1,
-        unit: '',
-        meloMapping: { field: 'floor', value: '{{value}}' }
-      });
-    }
-
-    return defaultQuestions.slice(0, 3);
+    return getDefaultQuestions(context);
   }
+}
+
+// Helper function to generate default questions without AI
+function getDefaultQuestions(context: {
+  transactionType?: string;
+  propertyType?: string;
+}): any[] {
+  const isRental = context.transactionType === 'Location';
+  const isHouse = context.propertyType === 'house';
+
+  const defaultQuestions: any[] = [
+    {
+      id: 'surface',
+      question: 'Surface minimum souhaitée ?',
+      type: 'slider',
+      min: 20,
+      max: 200,
+      step: 10,
+      unit: 'm²',
+      meloMapping: { field: 'surfaceMin', value: '{{value}}' }
+    }
+  ];
+
+  if (isRental) {
+    defaultQuestions.push({
+      id: 'furnished',
+      question: 'Souhaitez-vous un logement meublé ?',
+      type: 'toggle',
+      meloMapping: { field: 'furnished', value: true }
+    });
+  }
+
+  if (isHouse) {
+    defaultQuestions.push({
+      id: 'land',
+      question: 'Surface de jardin minimum ?',
+      type: 'slider',
+      min: 0,
+      max: 1000,
+      step: 50,
+      unit: 'm²',
+      meloMapping: { field: 'landSurfaceMin', value: '{{value}}' }
+    });
+  } else {
+    defaultQuestions.push({
+      id: 'floor',
+      question: 'Étage minimum ?',
+      type: 'slider',
+      min: 0,
+      max: 10,
+      step: 1,
+      unit: '',
+      meloMapping: { field: 'floor', value: '{{value}}' }
+    });
+  }
+
+  return defaultQuestions.slice(0, 3);
 }
 
 // Get districts for a city
 export async function getDistrictsFromGemini(city: string): Promise<string[]> {
+  // Skip AI call if disabled or no API key
+  if (!AI_ENABLED || !genAI) {
+    return ['Centre-ville', 'Nord', 'Sud', 'Est', 'Ouest'];
+  }
+
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
   const prompt = `Liste les 5-8 principaux quartiers ou arrondissements de ${city} en France qui sont pertinents pour une recherche immobilière.
@@ -265,6 +291,11 @@ export async function analyzeImageWithGemini(_imageUrl: string): Promise<AiImage
 
 // Generate enrichment data for a listing
 export async function generateEnrichmentData(listing: Listing): Promise<ListingEnrichment> {
+  // Skip AI call if disabled or no API key - return fallback immediately
+  if (!AI_ENABLED || !genAI) {
+    return getFallbackEnrichment(listing);
+  }
+
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
   const prompt = `Analyse ce bien immobilier et génère un enrichissement complet:
@@ -331,35 +362,38 @@ Calcule les mensualités avec un apport de 20%, taux d'intérêt réaliste actue
     };
   } catch (error) {
     console.error('Error generating enrichment:', error);
-
-    // Return fallback enrichment
-    const monthlyPayment = Math.round((listing.price * 0.8 * 0.004));
-    return {
-      listingId: listing.id,
-      aiSummary: `${listing.title} - Un bien de ${listing.surface}m² proposé à ${listing.price.toLocaleString('fr-FR')}€.`,
-      financialAnalysis: {
-        monthlyPayment,
-        downPayment: listing.price * 0.2,
-        propertyTax: Math.round(listing.price * 0.001),
-        condoFees: listing.propertyType === 'apartment' ? 150 : 0,
-        totalMonthlyCost: monthlyPayment + Math.round(listing.price * 0.001) + (listing.propertyType === 'apartment' ? 150 : 0),
-        assumptions: {
-          interestRate: 3.5,
-          loanTerm: 25
-        }
-      },
-      amenities: [
-        { name: 'Métro', type: 'transport', distance: 300, walkTime: 4 },
-        { name: 'Supermarché', type: 'commerce', distance: 500, walkTime: 6 },
-      ],
-      marketComparison: {
-        averagePricePerSqm: Math.round(listing.price / listing.surface),
-        pricePositioning: 'average',
-        percentageDifference: 0,
-        marketTrend: 'stable',
-        similarListingsCount: 12
-      },
-      imageAnalysis: []
-    };
+    return getFallbackEnrichment(listing);
   }
+}
+
+// Helper function to get fallback enrichment data
+function getFallbackEnrichment(listing: Listing): ListingEnrichment {
+  const monthlyPayment = Math.round((listing.price * 0.8 * 0.004));
+  return {
+    listingId: listing.id,
+    aiSummary: `${listing.title} - Un bien de ${listing.surface}m² proposé à ${listing.price.toLocaleString('fr-FR')}€.`,
+    financialAnalysis: {
+      monthlyPayment,
+      downPayment: listing.price * 0.2,
+      propertyTax: Math.round(listing.price * 0.001),
+      condoFees: listing.propertyType === 'apartment' ? 150 : 0,
+      totalMonthlyCost: monthlyPayment + Math.round(listing.price * 0.001) + (listing.propertyType === 'apartment' ? 150 : 0),
+      assumptions: {
+        interestRate: 3.5,
+        loanTerm: 25
+      }
+    },
+    amenities: [
+      { name: 'Métro', type: 'transport', distance: 300, walkTime: 4 },
+      { name: 'Supermarché', type: 'commerce', distance: 500, walkTime: 6 },
+    ],
+    marketComparison: {
+      averagePricePerSqm: Math.round(listing.price / listing.surface),
+      pricePositioning: 'average',
+      percentageDifference: 0,
+      marketTrend: 'stable',
+      similarListingsCount: 12
+    },
+    imageAnalysis: []
+  };
 }
