@@ -43,7 +43,7 @@ export function PropertyDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-cream-100 flex items-center justify-center">
         <div className="text-center">
           <motion.div
             animate={{ rotate: 360 }}
@@ -58,7 +58,7 @@ export function PropertyDetailPage() {
 
   if (!property) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-cream-100 flex items-center justify-center">
         <div className="text-center">
           <p className="text-slate-600">Annonce non trouvée</p>
           <Button onClick={() => navigate('/feed')} className="mt-4">
@@ -101,12 +101,12 @@ export function PropertyDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-cream-100">
       {/* Header with back button */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50"
+        className="sticky top-0 z-50 bg-cream-50/90 backdrop-blur-lg border-b border-warm-taupe/20"
       >
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button
@@ -197,7 +197,7 @@ export function PropertyDetailPage() {
             >
               <Card className="border-2 border-slate-200/50 shadow-xl">
                 <CardContent className="p-6">
-                  <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-3xl font-serif font-bold text-elegant-charcoal mb-2">
                     {property.title}
                   </h1>
                   <div className="flex items-center gap-2 text-slate-600">
@@ -208,7 +208,7 @@ export function PropertyDetailPage() {
                   </div>
 
                   <div className="mt-6 flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-blue-600">
+                    <span className="text-4xl font-serif font-bold text-warm-terracotta">
                       {property.price.toLocaleString('fr-FR')} €
                     </span>
                     {property.price_per_meter && (
@@ -235,7 +235,7 @@ export function PropertyDetailPage() {
                         <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
                           <Ruler className="text-blue-600" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-slate-900">
+                        <span className="text-2xl font-bold text-elegant-charcoal">
                           {property.surface} m²
                         </span>
                         <span className="text-sm text-slate-500">Surface</span>
@@ -247,7 +247,7 @@ export function PropertyDetailPage() {
                         <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-2">
                           <Home className="text-purple-600" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-slate-900">
+                        <span className="text-2xl font-bold text-elegant-charcoal">
                           {property.rooms}
                         </span>
                         <span className="text-sm text-slate-500">Pièces</span>
@@ -259,7 +259,7 @@ export function PropertyDetailPage() {
                         <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mb-2">
                           <Bed className="text-pink-600" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-slate-900">
+                        <span className="text-2xl font-bold text-elegant-charcoal">
                           {property.bedrooms}
                         </span>
                         <span className="text-sm text-slate-500">Chambres</span>
@@ -271,7 +271,7 @@ export function PropertyDetailPage() {
                         <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-2">
                           <Calendar className="text-amber-600" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-slate-900">
+                        <span className="text-2xl font-bold text-elegant-charcoal">
                           {property.construction_year}
                         </span>
                         <span className="text-sm text-slate-500">Construction</span>
@@ -289,9 +289,9 @@ export function PropertyDetailPage() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="border-2 border-slate-200/50 shadow-xl">
+                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
                   <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                    <h2 className="text-2xl font-bold text-elegant-charcoal mb-4">
                       Description
                     </h2>
                     <p className="text-slate-700 whitespace-pre-line leading-relaxed">
@@ -309,9 +309,9 @@ export function PropertyDetailPage() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Card className="border-2 border-slate-200/50 shadow-xl">
+                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
                   <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <h2 className="text-2xl font-bold text-elegant-charcoal mb-4 flex items-center gap-2">
                       <BadgeCheck className="text-blue-600" />
                       Caractéristiques
                     </h2>
@@ -339,7 +339,7 @@ export function PropertyDetailPage() {
             >
               <Card className="border-2 border-slate-200/50 shadow-xl">
                 <CardContent className="p-6">
-                  <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                  <h2 className="text-2xl font-bold text-elegant-charcoal mb-4">
                     Informations complémentaires
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -393,9 +393,9 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <Card className="border-2 border-slate-200/50 shadow-xl">
+                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">
+                    <h3 className="text-xl font-bold text-elegant-charcoal mb-4">
                       Performance énergétique
                     </h3>
 
@@ -456,16 +456,16 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="border-2 border-slate-200/50 shadow-xl">
+                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">
+                    <h3 className="text-xl font-bold text-elegant-charcoal mb-4">
                       Contact
                     </h3>
 
                     {property.agency_name && (
                       <div className="mb-3">
                         <p className="text-sm text-slate-500 mb-1">Agence</p>
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-semibold text-elegant-charcoal">
                           {property.agency_name}
                         </p>
                       </div>
@@ -499,9 +499,9 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Card className="border-2 border-slate-200/50 shadow-xl">
+                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-elegant-charcoal mb-4 flex items-center gap-2">
                       <MapIcon className="text-blue-600" />
                       Localisation
                     </h3>
@@ -538,7 +538,7 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                <Card className="border-2 border-slate-200/50 shadow-xl">
+                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
                   <CardContent className="p-6">
                     <Button
                       variant="outline"
