@@ -315,26 +315,64 @@ export function OnboardingPage() {
 
       // 6. Save properties to Supabase
       if (propertiesResponse['hydra:member'].length > 0) {
-        const propertiesToInsert = propertiesResponse['hydra:member'].map(prop => ({
-          melo_uuid: prop.uuid,
-          user_id: user.id,
-          melo_search_id: meloSearchRecord.id,
-          property_data: prop,
-          title: prop.title || generateDefaultTitle(prop),
-          price: prop.price,
-          surface: prop.surface || null,
-          rooms: prop.room || null,
-          bedrooms: prop.bedroom || null,
-          city: prop.city?.name || '',
-          zipcode: prop.city?.zipcode || null,
-          property_type: mapPropertyTypeToMelo(fixedPrefs.propertyType!).includes(1) ? 'house' : 'apartment',
-          transaction_type: fixedPrefs.transactionType!,
-          main_image: prop.pictures?.[0] || prop.picturesRemote?.[0] || null,
-          images: prop.pictures || prop.picturesRemote || [],
-          virtual_tour: prop.virtualTour || null,
-          melo_created_at: prop.createdAt,
-          melo_updated_at: prop.updatedAt || null,
-        }));
+        const propertiesToInsert = propertiesResponse['hydra:member'].map((prop: any) => {
+          // Get the latest advert (most recent data)
+          const latestAdvert: any = prop.adverts?.[0] || {};
+
+          return {
+            // Basic fields
+            melo_uuid: prop.uuid,
+            user_id: user.id,
+            melo_search_id: meloSearchRecord.id,
+            property_data: prop,
+
+            // Core property info
+            title: prop.title || generateDefaultTitle(prop),
+            price: prop.price,
+            surface: prop.surface || null,
+            rooms: prop.room || null,
+            bedrooms: prop.bedroom || null,
+            city: prop.city?.name || '',
+            zipcode: prop.city?.zipcode || null,
+            property_type: mapPropertyTypeToMelo(fixedPrefs.propertyType!).includes(1) ? 'house' : 'apartment',
+            transaction_type: fixedPrefs.transactionType!,
+
+            // Images
+            main_image: prop.pictures?.[0] || latestAdvert.pictures?.[0] || null,
+            images: prop.pictures || latestAdvert.pictures || [],
+            pictures_remote: latestAdvert.picturesRemote || prop.picturesRemote || [],
+            virtual_tour: prop.virtualTour || latestAdvert.virtualTour || null,
+
+            // Description and features
+            description: prop.description || latestAdvert.description || null,
+            features: latestAdvert.features || [],
+
+            // Energy performance
+            dpe_category: latestAdvert.energy?.category || null,
+            dpe_value: latestAdvert.energy?.value || null,
+            ges_category: latestAdvert.greenHouseGas?.category || null,
+            ges_value: latestAdvert.greenHouseGas?.value || null,
+
+            // Location
+            latitude: prop.location?.lat || null,
+            longitude: prop.location?.lon || null,
+
+            // Additional details
+            floor: prop.floor || latestAdvert.floor || null,
+            land_surface: prop.landSurface || latestAdvert.landSurface || null,
+            construction_year: latestAdvert.constructionYear || null,
+            price_per_meter: prop.pricePerMeter || latestAdvert.pricePerMeter || null,
+
+            // Agency info
+            agency_name: latestAdvert.contact?.agency || null,
+            agency_phone: latestAdvert.contact?.phone || null,
+            advert_url: latestAdvert.url || null,
+
+            // Timestamps
+            melo_created_at: prop.createdAt,
+            melo_updated_at: prop.updatedAt || null,
+          };
+        });
 
         await (supabase.from('melo_properties') as any).insert(propertiesToInsert);
       }
