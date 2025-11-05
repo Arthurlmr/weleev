@@ -111,8 +111,8 @@ export function OnboardingPage() {
   const handleLocationSelect = (location: any) => {
     setFixedPrefs(prev => ({
       ...prev,
-      location: location.id,
-      locationId: location.id,
+      location: location['@id'],
+      locationId: location['@id'],
       locationName: location.name,
     }));
     setLocationQuery(location.name);
