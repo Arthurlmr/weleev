@@ -384,9 +384,20 @@ export function FeedPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredListings.map((listing, index) => {
                 const prop = properties.find(p => p.id.toString() === listing.id);
-                const images = prop?.pictures_remote || prop?.images || [];
+
+                // Properly combine all available images
+                const allImages = [
+                  ...(Array.isArray(prop?.pictures_remote) && prop.pictures_remote.length > 0 ? prop.pictures_remote : []),
+                  ...(Array.isArray(prop?.images) && prop.images.length > 0 ? prop.images : []),
+                ].filter(img => img && typeof img === 'string' && img.trim() !== '');
+
+                // Add main_image as fallback if no images in arrays
+                if (allImages.length === 0 && prop?.main_image) {
+                  allImages.push(prop.main_image);
+                }
+
                 const imgIndex = currentImageIndex[listing.id] || 0;
-                const currentImg = images[imgIndex] || prop?.main_image || '';
+                const currentImg = allImages[imgIndex] || allImages[0] || '';
 
                 return (
                   <motion.div
@@ -407,14 +418,14 @@ export function FeedPage() {
                         />
 
                         {/* Image navigation */}
-                        {images.length > 1 && (
+                        {allImages.length > 1 && (
                           <>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setCurrentImageIndex({
                                   ...currentImageIndex,
-                                  [listing.id]: imgIndex > 0 ? imgIndex - 1 : images.length - 1
+                                  [listing.id]: imgIndex > 0 ? imgIndex - 1 : allImages.length - 1
                                 });
                               }}
                               className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-cream-50/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-cream-50 transition-colors opacity-0 group-hover:opacity-100"
@@ -426,7 +437,7 @@ export function FeedPage() {
                                 e.stopPropagation();
                                 setCurrentImageIndex({
                                   ...currentImageIndex,
-                                  [listing.id]: imgIndex < images.length - 1 ? imgIndex + 1 : 0
+                                  [listing.id]: imgIndex < allImages.length - 1 ? imgIndex + 1 : 0
                                 });
                               }}
                               className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-cream-50/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-cream-50 transition-colors opacity-0 group-hover:opacity-100"
@@ -434,7 +445,7 @@ export function FeedPage() {
                               <ChevronRight size={16} className="text-elegant-stone" />
                             </button>
                             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
-                              {images.slice(0, 5).map((_, i) => (
+                              {allImages.slice(0, 5).map((_, i) => (
                                 <div
                                   key={i}
                                   className={`w-1.5 h-1.5 rounded-full ${
@@ -525,16 +536,29 @@ export function FeedPage() {
               style={{ zIndex: 0 }}
             >
               <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                subdomains="abcd"
+                maxZoom={20}
               />
               {filteredListings.map((listing) => {
                 const prop = properties.find(p => p.id.toString() === listing.id);
                 const lat = prop?.latitude || 48.8566 + (Math.random() - 0.5) * 0.1;
                 const lng = prop?.longitude || 2.3522 + (Math.random() - 0.5) * 0.1;
-                const images = prop?.pictures_remote || prop?.images || [];
+
+                // Properly combine all available images (same logic as list view)
+                const allImages = [
+                  ...(Array.isArray(prop?.pictures_remote) && prop.pictures_remote.length > 0 ? prop.pictures_remote : []),
+                  ...(Array.isArray(prop?.images) && prop.images.length > 0 ? prop.images : []),
+                ].filter(img => img && typeof img === 'string' && img.trim() !== '');
+
+                // Add main_image as fallback if no images in arrays
+                if (allImages.length === 0 && prop?.main_image) {
+                  allImages.push(prop.main_image);
+                }
+
                 const imgIndex = currentImageIndex[listing.id] || 0;
-                const currentImg = images[imgIndex] || prop?.main_image || '';
+                const currentImg = allImages[imgIndex] || allImages[0] || '';
 
                 return (
                   <CircleMarker
@@ -566,14 +590,14 @@ export function FeedPage() {
                             alt={listing.title}
                             className="w-full h-full object-cover"
                           />
-                          {images.length > 1 && (
+                          {allImages.length > 1 && (
                             <>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setCurrentImageIndex({
                                     ...currentImageIndex,
-                                    [listing.id]: imgIndex > 0 ? imgIndex - 1 : images.length - 1
+                                    [listing.id]: imgIndex > 0 ? imgIndex - 1 : allImages.length - 1
                                   });
                                 }}
                                 className="absolute left-1 top-1/2 transform -translate-y-1/2 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
@@ -585,13 +609,24 @@ export function FeedPage() {
                                   e.stopPropagation();
                                   setCurrentImageIndex({
                                     ...currentImageIndex,
-                                    [listing.id]: imgIndex < images.length - 1 ? imgIndex + 1 : 0
+                                    [listing.id]: imgIndex < allImages.length - 1 ? imgIndex + 1 : 0
                                   });
                                 }}
                                 className="absolute right-1 top-1/2 transform -translate-y-1/2 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
                               >
                                 <ChevronRight size={14} />
                               </button>
+                              {/* Image indicators */}
+                              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                                {allImages.slice(0, 5).map((_, i) => (
+                                  <div
+                                    key={i}
+                                    className={`w-1.5 h-1.5 rounded-full ${
+                                      i === imgIndex ? 'bg-white' : 'bg-white/40'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
                             </>
                           )}
                         </div>
