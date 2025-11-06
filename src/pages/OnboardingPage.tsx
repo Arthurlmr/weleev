@@ -506,23 +506,23 @@ export function OnboardingPage() {
                           <p className="text-sm text-elegant-stone">Que recherchez-vous ?</p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-4">
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('apartment')} className="group p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
-                          <div className="flex flex-col items-center gap-2">
-                            <Building2 className="w-10 h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
-                            <span className="font-semibold">Appartement</span>
+                      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('apartment')} className="group p-3 sm:p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                          <div className="flex flex-col items-center gap-1 sm:gap-2">
+                            <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
+                            <span className="font-semibold text-xs sm:text-base text-center">Appartement</span>
                           </div>
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('house')} className="group p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
-                          <div className="flex flex-col items-center gap-2">
-                            <Home className="w-10 h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
-                            <span className="font-semibold">Maison</span>
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('house')} className="group p-3 sm:p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                          <div className="flex flex-col items-center gap-1 sm:gap-2">
+                            <Home className="w-8 h-8 sm:w-10 sm:h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
+                            <span className="font-semibold text-xs sm:text-base text-center">Maison</span>
                           </div>
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('any')} className="group p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
-                          <div className="flex flex-col items-center gap-2">
-                            <Sparkles className="w-10 h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
-                            <span className="font-semibold">Tous</span>
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('any')} className="group p-3 sm:p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                          <div className="flex flex-col items-center gap-1 sm:gap-2">
+                            <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
+                            <span className="font-semibold text-xs sm:text-base text-center">Tous</span>
                           </div>
                         </motion.button>
                       </div>
