@@ -3,19 +3,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warm-terracotta/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lumine-accent/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
   {
     variants: {
       variant: {
-        default: "bg-warm-terracotta text-cream-50 hover:bg-warm-terracotta/90 shadow-sm hover:shadow-md",
+        default: "bg-lumine-accent text-white hover:bg-lumine-accent-dark shadow-sm hover:shadow-md",
         destructive:
-          "bg-red-500 text-white hover:bg-red-600 shadow-sm",
+          "bg-error text-white hover:bg-error/90 shadow-sm",
         outline:
-          "border-2 border-warm-taupe/30 bg-cream-50 hover:bg-warm-beige hover:border-warm-terracotta text-elegant-charcoal shadow-sm",
+          "border-2 border-lumine-neutral-400 bg-lumine-neutral-100 hover:bg-lumine-neutral-200 hover:border-lumine-accent text-lumine-primary shadow-sm",
         secondary:
-          "bg-nature-sage/20 text-nature-olive hover:bg-nature-sage/30 shadow-sm",
-        ghost: "hover:bg-warm-beige text-elegant-charcoal",
-        link: "text-warm-terracotta underline-offset-4 hover:underline",
+          "bg-success/20 text-lumine-primary hover:bg-success/30 shadow-sm",
+        ghost: "hover:bg-lumine-neutral-200 text-lumine-primary",
+        link: "text-lumine-accent underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conversational Profiling</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { width: 100%; margin: 0; padding: 0; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+  </style>
+  </head>
+  <body>
+    <div class="w-full max-w-none bg-gray-50">
+  <!-- Header -->
+  <div class="w-full bg-white border-b border-gray-200">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-4 md:py-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <i class="fas fa-home text-white text-lg"></i>
+          </div>
+          <span class="text-2xl font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;">Property Aficionado</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="px-3 md:px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">
+            <i class="fas fa-question-circle"></i> Help
+          </button>
+          <button class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors duration-200">
+            <i class="fas fa-user text-gray-600"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="w-full px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+      <!-- Left Column - Chat Interface -->
+      <div class="lg:col-span-8">
+        <!-- Progress Section -->
+        <div class="mb-6 md:mb-8">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide" style="font-family: 'Poppins', sans-serif;">Étape 2 de 7</p>
+              <h2 class="text-lg md:text-2xl font-bold text-gray-900 mt-1" style="font-family: 'Poppins', sans-serif;">Affinez votre profil</h2>
+            </div>
+            <span class="text-xs md:text-sm font-medium text-gray-500" style="font-family: 'Poppins', sans-serif;">29%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 29%;"></div>
+          </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6 lg:p-8 mb-6" style="min-height: 450px; display: flex; flex-direction: column;">
+          <!-- Chat Messages Area -->
+          <div class="flex-1 overflow-y-auto mb-6 space-y-4 pr-2">
+            <!-- Welcome Message -->
+            <div class="flex gap-3 mb-6">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-sparkles text-white text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium text-gray-500 mb-2" style="font-family: 'Poppins', sans-serif;">PROPERTY AFICIONADO</p>
+                <div class="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                  <p class="text-gray-800 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">Vous avez aimé ce bien à Montmartre. Parlons plus de vos priorités pour affiner nos recommandations.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 1 -->
+            <div class="flex gap-3">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-sparkles text-white text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium text-gray-500 mb-2" style="font-family: 'Poppins', sans-serif;">PROPERTY AFICIONADO</p>
+                <div class="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                  <p class="text-gray-800 text-sm md:text-base font-medium" style="font-family: 'Poppins', sans-serif;">Quel est votre budget total d'investissement ?</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- User Response -->
+            <div class="flex gap-3 justify-end mb-4">
+              <div class="max-w-xs md:max-w-md">
+                <div class="bg-blue-600 rounded-lg px-4 py-3">
+                  <p class="text-white text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">Entre 350 000 et 450 000 euros</p>
+                </div>
+              </div>
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-xs font-bold text-amber-700">JD</span>
+              </div>
+            </div>
+
+            <!-- Confirmation & Next Question -->
+            <div class="flex gap-3">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-sparkles text-white text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium text-gray-500 mb-2" style="font-family: 'Poppins', sans-serif;">PROPERTY AFICIONADO</p>
+                <div class="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100 mb-3">
+                  <p class="text-gray-800 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">Parfait ! J'ai bien noté : 350k - 450k €. C'est un bon budget pour le 11ᵉ à Paris.</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
+                  <p class="text-gray-800 text-sm md:text-base font-medium" style="font-family: 'Poppins', sans-serif;">Combien de personnes vivront dans votre futur bien ?</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input & Action Buttons -->
+          <div class="border-t border-gray-100 pt-4">
+            <div class="flex gap-2 mb-4">
+              <button class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-700 text-sm hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 font-medium" style="font-family: 'Poppins', sans-serif;">
+                <i class="fas fa-user mr-2"></i> 1 personne
+              </button>
+              <button class="flex-1 px-3 py-2 rounded-lg border-2 border-blue-600 bg-blue-50 text-blue-600 text-sm font-medium transition-all duration-200" style="font-family: 'Poppins', sans-serif;">
+                <i class="fas fa-users mr-2"></i> 2 personnes
+              </button>
+              <button class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-700 text-sm hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 font-medium" style="font-family: 'Poppins', sans-serif;">
+                <i class="fas fa-users mr-2"></i> 3+
+              </button>
+            </div>
+
+            <!-- Skip Option -->
+            <button class="w-full text-center text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200 py-2" style="font-family: 'Poppins', sans-serif;">
+              Sauter cette question
+            </button>
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
+          <i class="fas fa-lightbulb text-amber-600 text-lg flex-shrink-0 mt-0.5"></i>
+          <div>
+            <p class="text-xs md:text-sm font-medium text-amber-900 mb-1" style="font-family: 'Poppins', sans-serif;">Conseil</p>
+            <p class="text-xs md:text-sm text-amber-800" style="font-family: 'Poppins', sans-serif;">Plus vos réponses sont détaillées, plus nos recommandations seront précises et alignées avec vos besoins réels.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Profile Summary & Settings -->
+      <div class="lg:col-span-4">
+        <!-- Current Profile Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6 mb-6">
+          <h3 class="text-base md:text-lg font-bold text-gray-900 mb-4" style="font-family: 'Poppins', sans-serif;">Votre Profil</h3>
+
+          <!-- Profile Items -->
+          <div class="space-y-3 md:space-y-4">
+            <!-- Location -->
+            <div class="flex items-start gap-3 pb-3 md:pb-4 border-b border-gray-100">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-map-marker-alt text-blue-600"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-medium text-gray-500 uppercase" style="font-family: 'Poppins', sans-serif;">Localisation</p>
+                <p class="text-sm md:text-base text-gray-900 font-medium truncate" style="font-family: 'Poppins', sans-serif;">Paris 11ᵉ</p>
+              </div>
+              <button class="text-blue-600 hover:text-blue-700 transition-colors duration-200 flex-shrink-0">
+                <i class="fas fa-pen-to-square text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Budget -->
+            <div class="flex items-start gap-3 pb-3 md:pb-4 border-b border-gray-100">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-euro-sign text-blue-600"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-medium text-gray-500 uppercase" style="font-family: 'Poppins', sans-serif;">Budget</p>
+                <p class="text-sm md:text-base text-gray-900 font-medium" style="font-family: 'Poppins', sans-serif;">350k - 450k €</p>
+              </div>
+              <button class="text-blue-600 hover:text-blue-700 transition-colors duration-200 flex-shrink-0">
+                <i class="fas fa-pen-to-square text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Property Type -->
+            <div class="flex items-start gap-3 pb-3 md:pb-4 border-b border-gray-100">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-home text-blue-600"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium text-gray-500 uppercase" style="font-family: 'Poppins', sans-serif;">Type de bien</p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <span class="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2 py-1 rounded">Appartement</span>
+                  <span class="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2 py-1 rounded">Duplex</span>
+                </div>
+              </div>
+              <button class="text-blue-600 hover:text-blue-700 transition-colors duration-200 flex-shrink-0">
+                <i class="fas fa-pen-to-square text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Size -->
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-expand text-blue-600"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-medium text-gray-500 uppercase" style="font-family: 'Poppins', sans-serif;">Surface min.</p>
+                <p class="text-sm md:text-base text-gray-900 font-medium" style="font-family: 'Poppins', sans-serif;">2 chambres, 75m²+</p>
+              </div>
+              <button class="text-blue-600 hover:text-blue-700 transition-colors duration-200 flex-shrink-0">
+                <i class="fas fa-pen-to-square text-sm"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Setup Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6">
+          <h3 class="text-base md:text-lg font-bold text-gray-900 mb-4" style="font-family: 'Poppins', sans-serif;">Alertes</h3>
+
+          <div class="space-y-3 mb-6">
+            <!-- Email -->
+            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600 rounded cursor-pointer">
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900" style="font-family: 'Poppins', sans-serif;">Email</p>
+                <p class="text-xs text-gray-500" style="font-family: 'Poppins', sans-serif;">Résumé quotidien</p>
+              </div>
+            </label>
+
+            <!-- WhatsApp -->
+            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600 rounded cursor-pointer">
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900" style="font-family: 'Poppins', sans-serif;">WhatsApp</p>
+                <p class="text-xs text-gray-500" style="font-family: 'Poppins', sans-serif;">Biens en vedette</p>
+              </div>
+            </label>
+
+            <!-- SMS -->
+            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600 rounded cursor-pointer">
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-gray-900" style="font-family: 'Poppins', sans-serif;">SMS</p>
+                <p class="text-xs text-gray-500" style="font-family: 'Poppins', sans-serif;">Urgents uniquement</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Frequency -->
+          <div class="bg-gray-50 rounded-lg p-3 md:p-4">
+            <p class="text-xs md:text-sm font-medium text-gray-900 mb-2" style="font-family: 'Poppins', sans-serif;">Fréquence</p>
+            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" style="font-family: 'Poppins', sans-serif;">
+              <option selected>Temps réel pour opportunités, quotidien sinon</option>
+              <option>Quotidien seulement</option>
+              <option>Hebdomadaire</option>
+              <option>À la demande</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 md:mt-12">
+      <button class="px-4 md:px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">
+        <i class="fas fa-arrow-left mr-2"></i> Retour
+      </button>
+      <button class="px-4 md:px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">
+        <i class="fas fa-arrow-right mr-2"></i> Continuer
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Section - Key Benefits -->
+  <div class="w-full bg-white border-t border-gray-200 mt-8 md:mt-12 lg:mt-16">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-8 md:py-10 lg:py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <!-- Feature 1 -->
+        <div class="text-center">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-brain text-blue-600 text-lg"></i>
+          </div>
+          <h4 class="font-bold text-gray-900 mb-2 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">Intelligence IA</h4>
+          <p class="text-xs md:text-sm text-gray-600" style="font-family: 'Poppins', sans-serif;">Notre algorithme apprend vos préférences pour trouver les biens qui vous correspondent vraiment.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="text-center">
+          <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-bell text-amber-600 text-lg"></i>
+          </div>
+          <h4 class="font-bold text-gray-900 mb-2 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">Alertes Intelligentes</h4>
+          <p class="text-xs md:text-sm text-gray-600" style="font-family: 'Poppins', sans-serif;">Recevez les nouveaux biens correspondant à votre profil avant les autres.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="text-center">
+          <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-shield text-red-500 text-lg"></i>
+          </div>
+          <h4 class="font-bold text-gray-900 mb-2 text-sm md:text-base" style="font-family: 'Poppins', sans-serif;">Transparence</h4>
+          <p class="text-xs md:text-sm text-gray-600" style="font-family: 'Poppins', sans-serif;">Nous aggrégeons les données de 800+ sources avec enrichissement par IA.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  </body>
+  </html>

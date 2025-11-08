@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINᵉ - L'immobilier en pleine lumière</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .font-display {
+            font-family: 'GT America', 'Suisse Int\'l', system-ui, sans-serif;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        .lumine-brand {
+            color: #2B2621;
+        }
+
+        .lumine-accent {
+            color: #D4A574;
+        }
+
+        .lumine-bg {
+            background-color: #F5F1ED;
+        }
+
+        .lumine-bg-dark {
+            background-color: #2B2621;
+        }
+
+        .button-accent {
+            background-color: #D4A574;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .button-accent:hover {
+            background-color: #C49560;
+            transform: scale(1.02);
+        }
+
+        .editorial-text {
+            line-height: 1.8;
+            letter-spacing: 0.3px;
+        }
+
+        .hero-image-container {
+            aspect-ratio: 16/10;
+            overflow: hidden;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    </style>
+</head>
+<body class="lumine-bg">
+    <!-- Navigation Header -->
+    <header class="w-full max-w-none bg-white border-b border-gray-200 sticky top-0 z-50">
+        <nav class="px-4 md:px-8 lg:px-12 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full lumine-bg-dark flex items-center justify-center">
+                        <span class="text-white font-display text-sm font-bold">L</span>
+                    </div>
+                    <span class="font-display text-xl lumine-brand">
+                        LUMIN<span class="text-sm align-super">ᵉ</span>
+                    </span>
+                </div>
+                <div class="hidden md:flex items-center gap-12">
+                    <a href="#pourquoi" class="text-sm lumine-brand hover:lumine-accent transition">Pourquoi LUMINᵉ</a>
+                    <a href="#comment" class="text-sm lumine-brand hover:lumine-accent transition">Comment ça marche</a>
+                    <button class="button-accent px-6 py-2.5 rounded text-sm font-semibold">
+                        Commencer
+                    </button>
+                </div>
+                <button class="md:hidden lumine-brand text-lg">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="w-full max-w-none px-4 md:px-8 lg:px-12 py-16 md:py-24 lg:py-32">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div class="space-y-8 md:space-y-10">
+                <div class="space-y-4">
+                    <h1 class="font-display text-5xl md:text-6xl lg:text-7xl lumine-brand leading-tight">
+                        LUMIN<span class="text-sm align-super">ᵉ</span>
+                    </h1>
+                    <p class="text-2xl md:text-3xl lumine-accent font-display font-light tracking-wide">
+                        L'immobilier en pleine lumière
+                    </p>
+                </div>
+
+                <p class="editorial-text text-lg md:text-xl lumine-brand leading-relaxed max-w-md">
+                    Trouvez votre propriété parfaite plus rapidement. Accédez à 800+ plateformes immobilières via une interface intelligente. Notre IA enrichit chaque annonce avec des insights exclusifs, tandis que notre scoring personnalisé vous guide vers les biens vraiment adaptés à votre vie et votre budget.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button class="button-accent px-8 py-4 rounded text-base font-semibold flex items-center justify-center gap-2 w-full sm:w-auto">
+                        Commencer ma recherche
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="border-2 border-gray-400 lumine-brand px-8 py-4 rounded text-base font-semibold hover:border-gray-600 transition w-full sm:w-auto">
+                        En savoir plus
+                    </button>
+                </div>
+
+                <div class="pt-8 space-y-3 text-sm lumine-brand">
+                    <div class="flex items-center gap-3">
+                        <span class="text-base lumine-accent">✓</span>
+                        <span>Accès immédiat à 50 000+ propriétés vérifiées</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-base lumine-accent">✓</span>
+                        <span>Mise en place en 2 minutes</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-base lumine-accent">✓</span>
+                        <span>Scoring personnalisé et analyses financières</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden lg:block">
+                <div class="hero-image-container rounded-lg overflow-hidden shadow-lg">
+                    <div class="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+                        <div class="text-center space-y-4">
+                            <i class="fas fa-image text-5xl text-gray-500 opacity-30"></i>
+                            <p class="text-gray-600 font-medium">Propriété Premium</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value Proposition Section -->
+    <section id="pourquoi" class="w-full max-w-none bg-white px-4 md:px-8 lg:px-12 py-20 md:py-28 lg:py-36">
+        <div class="max-w-5xl mx-auto space-y-20">
+            <div class="text-center space-y-6 max-w-3xl mx-auto">
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl lumine-brand">
+                    Voir les propriétés différemment
+                </h2>
+                <p class="editorial-text text-lg md:text-xl lumine-brand leading-relaxed opacity-80">
+                    Au-delà des annonces standards, nous enrichissons chaque bien avec l'intelligence qui compte vraiment
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <p class="font-display text-3xl md:text-4xl lumine-accent">01</p>
+                        <h3 class="font-display text-2xl lumine-brand">Données enrichies par l'IA</h3>
+                    </div>
+                    <p class="editorial-text text-base md:text-lg lumine-brand opacity-80 leading-relaxed">
+                        Nos algorithmes analysent les images pour identifier l'état réel du bien, les besoins de rénovation et les indicateurs de qualité. Les détails oubliés sont extraits automatiquement.
+                    </p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <p class="font-display text-3xl md:text-4xl lumine-accent">02</p>
+                        <h3 class="font-display text-2xl lumine-brand">Scoring personnalisé</h3>
+                    </div>
+                    <p class="editorial-text text-base md:text-lg lumine-brand opacity-80 leading-relaxed">
+                        Chaque propriété est notée en fonction de votre profil, votre capacité financière et vos préférences réelles. Les biens vraiment adaptés remontent en priorité.
+                    </p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <p class="font-display text-3xl md:text-4xl lumine-accent">03</p>
+                        <h3 class="font-display text-2xl lumine-brand">Transparence financière</h3>
+                    </div>
+                    <p class="editorial-text text-base md:text-lg lumine-brand opacity-80 leading-relaxed">
+                        Coûts mensuels de financement, frais de notaire, taxes annuelles, budget de rénovation. Simulez différents scénarios pour décider en confiance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="comment" class="w-full max-w-none lumine-bg px-4 md:px-8 lg:px-12 py-20 md:py-28 lg:py-36">
+        <div class="max-w-5xl mx-auto space-y-16">
+            <div class="text-center space-y-4">
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl lumine-brand">
+                    Quatre étapes simples
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-4">
+                <div class="space-y-6">
+                    <div class="flex flex-col md:flex-col items-start md:items-center text-left md:text-center gap-4">
+                        <div class="w-14 h-14 rounded-full lumine-bg-dark text-white flex items-center justify-center font-display text-2xl font-bold">
+                            1
+                        </div>
+                        <div>
+                            <h3 class="font-display text-xl md:text-lg lumine-brand">Vos critères</h3>
+                            <p class="text-sm md:text-sm lumine-brand opacity-70 mt-2">Localisation, budget, type et taille</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block md:flex md:flex-col md:items-center md:justify-start pt-8">
+                    <div class="w-0.5 h-12 bg-gray-300"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex flex-col md:flex-col items-start md:items-center text-left md:text-center gap-4">
+                        <div class="w-14 h-14 rounded-full lumine-bg-dark text-white flex items-center justify-center font-display text-2xl font-bold">
+                            2
+                        </div>
+                        <div>
+                            <h3 class="font-display text-xl md:text-lg lumine-brand">Accès instantané</h3>
+                            <p class="text-sm md:text-sm lumine-brand opacity-70 mt-2">Flux intelligent et classement personnalisé</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block md:flex md:flex-col md:items-center md:justify-start pt-8">
+                    <div class="w-0.5 h-12 bg-gray-300"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex flex-col md:flex-col items-start md:items-center text-left md:text-center gap-4">
+                        <div class="w-14 h-14 rounded-full lumine-bg-dark text-white flex items-center justify-center font-display text-2xl font-bold">
+                            3
+                        </div>
+                        <div>
+                            <h3 class="font-display text-xl md:text-lg lumine-brand">Profil intelligent</h3>
+                            <p class="text-sm md:text-sm lumine-brand opacity-70 mt-2">Conversez pour affiner vos préférences</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block md:flex md:flex-col md:items-center md:justify-start pt-8">
+                    <div class="w-0.5 h-12 bg-gray-300"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex flex-col md:flex-col items-start md:items-center text-left md:text-center gap-4">
+                        <div class="w-14 h-14 rounded-full lumine-bg-dark text-white flex items-center justify-center font-display text-2xl font-bold">
+                            4
+                        </div>
+                        <div>
+                            <h3 class="font-display text-xl md:text-lg lumine-brand">Votre bien parfait</h3>
+                            <p class="text-sm md:text-sm lumine-brand opacity-70 mt-2">Intelligence complète et insights profonds</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section class="w-full max-w-none bg-white px-4 md:px-8 lg:px-12 py-20 md:py-28 lg:py-36">
+        <div class="max-w-5xl mx-auto space-y-12">
+            <div class="text-center space-y-4">
+                <h2 class="font-display text-4xl md:text-5xl lumine-brand">
+                    Reconnu par ceux qui recherchent
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="space-y-6 p-8 border border-gray-200 rounded-lg">
+                    <div class="flex gap-1">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                    <p class="editorial-text text-base lumine-brand leading-relaxed">
+                        « LUMINᵉ m'a fait gagner des mois de recherche. Les insights IA ont identifié des problèmes de rénovation que j'aurais manqués, et la transparence financière m'a donné confiance. »
+                    </p>
+                    <div class="space-y-1">
+                        <p class="font-semibold lumine-brand">Sophie M.</p>
+                        <p class="text-sm lumine-brand opacity-70">Paris</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 p-8 border border-gray-200 rounded-lg">
+                    <div class="flex gap-1">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                    <p class="editorial-text text-base lumine-brand leading-relaxed">
+                        « Plus de doublons sur les annonces. Et le classement personnalisé met vraiment en avant les propriétés qui me correspondent. C'est révolutionnaire. »
+                    </p>
+                    <div class="space-y-1">
+                        <p class="font-semibold lumine-brand">Marc D.</p>
+                        <p class="text-sm lumine-brand opacity-70">Lyon</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 p-8 border border-gray-200 rounded-lg">
+                    <div class="flex gap-1">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                    <p class="editorial-text text-base lumine-brand leading-relaxed">
+                        « Comme avoir un conseiller immobilier dans ma poche. L'IA se souvient de mes préférences et m'envoie exactement ce que je cherche. Indispensable. »
+                    </p>
+                    <div class="space-y-1">
+                        <p class="font-semibold lumine-brand">Isabelle R.</p>
+                        <p class="text-sm lumine-brand opacity-70">Toulouse</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators Section -->
+    <section class="w-full max-w-none lumine-bg px-4 md:px-8 lg:px-12 py-16 md:py-20">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                <div class="space-y-2">
+                    <p class="font-display text-4xl md:text-5xl lumine-accent">800+</p>
+                    <p class="editorial-text text-lg lumine-brand opacity-80">Plateformes immobilières agrégées</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="font-display text-4xl md:text-5xl lumine-accent">50K+</p>
+                    <p class="editorial-text text-lg lumine-brand opacity-80">Propriétés vérifiées</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="font-display text-4xl md:text-5xl lumine-accent">2 min</p>
+                    <p class="editorial-text text-lg lumine-brand opacity-80">Temps de configuration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="w-full max-w-none bg-white px-4 md:px-8 lg:px-12 py-20 md:py-28 lg:py-32">
+        <div class="max-w-3xl mx-auto text-center space-y-8">
+            <div class="space-y-4">
+                <h2 class="font-display text-5xl md:text-6xl lg:text-7xl lumine-brand">
+                    Prêt à trouver?
+                </h2>
+                <p class="editorial-text text-xl md:text-2xl lumine-brand opacity-80">
+                    Découvrez votre propriété parfaite en quelques minutes
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                <button class="button-accent px-10 py-5 rounded text-lg font-semibold flex items-center justify-center gap-2 w-full sm:w-auto">
+                    Commencer maintenant
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="border-2 border-gray-400 lumine-brand px-10 py-5 rounded text-lg font-semibold hover:border-gray-600 transition w-full sm:w-auto">
+                    Prendre un rendez-vous
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-6 pt-8 text-sm lumine-brand opacity-70">
+                <div class="flex gap-2 items-center justify-center">
+                    <i class="fas fa-check text-base lumine-accent"></i>
+                    <span>Sans carte de crédit requise</span>
+                </div>
+                <div class="flex gap-2 items-center justify-center">
+                    <i class="fas fa-check text-base lumine-accent"></i>
+                    <span>Accès instantané aux propriétés</span>
+                </div>
+                <div class="flex gap-2 items-center justify-center">
+                    <i class="fas fa-check text-base lumine-accent"></i>
+                    <span>Profiling gratuit</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-none lumine-bg-dark px-4 md:px-8 lg:px-12 py-12">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                            <span class="text-sm font-display font-bold lumine-brand">L</span>
+                        </div>
+                        <span class="font-display text-lg text-white">
+                            LUMIN<span class="text-xs align-super">ᵉ</span>
+                        </span>
+                    </div>
+                    <p class="editorial-text text-sm text-white opacity-70">
+                        L'immobilier en pleine lumière
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Produit</h4>
+                    <ul class="space-y-2 text-sm text-white opacity-70">
+                        <li><a href="#" class="hover:opacity-100 transition">Fonctionnalités</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Tarifs</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Sécurité</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Feuille de route</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Entreprise</h4>
+                    <ul class="space-y-2 text-sm text-white opacity-70">
+                        <li><a href="#" class="hover:opacity-100 transition">À propos</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Blog</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Carrières</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Légal</h4>
+                    <ul class="space-y-2 text-sm text-white opacity-70">
+                        <li><a href="#" class="hover:opacity-100 transition">Confidentialité</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Conditions</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Cookies</a></li>
+                        <li><a href="#" class="hover:opacity-100 transition">Mentions légales</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white border-opacity-20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-white opacity-70">
+                <p>&copy; 2024 LUMINᵉ. Tous droits réservés.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:opacity-100 transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:opacity-100 transition"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="hover:opacity-100 transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:opacity-100 transition"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

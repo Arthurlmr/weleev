@@ -48,34 +48,43 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Charte "Cocon Immobilier"
-        cream: {
-          50: '#FFFCF7',
-          100: '#FAF8F3',
-          200: '#F5F1E8',
-          300: '#EFE9DC',
-          400: '#E8DFC9',
+        // Charte LUMINᵉ - Palette Terre chaude
+        lumine: {
+          // Primaire - Noir chaud
+          primary: {
+            DEFAULT: '#2B2621',
+            light: '#3a322b',
+            dark: '#1a1614',
+          },
+          // Accent - Or rose
+          accent: {
+            DEFAULT: '#D4A574',
+            light: '#e0b88a',
+            dark: '#c79563',
+          },
+          // Neutre - Blanc cassé
+          neutral: {
+            DEFAULT: '#F5F1ED',
+            50: '#FEFDFB',
+            100: '#F5F1ED',
+            200: '#EBE6E0',
+            300: '#E0D9D1',
+            400: '#D1C7BC',
+            500: '#B8ACA0',
+            600: '#9C8F83',
+            700: '#6B6562', // Gris chaud
+            800: '#4A4542',
+            900: '#2B2621',
+          },
         },
-        warm: {
-          beige: '#F5F1E8',
-          taupe: '#9C8B7A',
-          terracotta: '#D4A59A',
-          sand: '#C9B8A6',
-        },
-        nature: {
-          sage: '#A8B69C',
-          olive: '#8A9580',
-          moss: '#6B7562',
-        },
-        elegant: {
-          charcoal: '#3A3A3A',
-          stone: '#6B6458',
-          pearl: '#FFFCF7',
-        },
+        // Couleurs sémantiques
+        success: '#A8B69C',
+        warning: '#D4A574',
+        error: '#C85A54',
       },
       fontFamily: {
-        serif: ['Cormorant Garamond', 'serif'],
-        sans: ['Inter', 'sans-serif'],
+        display: ['GT America', 'Suisse Intl', 'Circular', 'Söhne', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
