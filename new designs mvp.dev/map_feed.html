@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { width: 100%; margin: 0; padding: 0; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+  </style>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINᵉ - Carte des Propriétés</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        
+        .lumine-bg { background-color: #F5F1ED; }
+        .lumine-primary { background-color: #2B2621; }
+        .lumine-accent { background-color: #D4A574; }
+        .lumine-text-primary { color: #2B2621; }
+        .lumine-text-accent { color: #D4A574; }
+        
+        .map-container { 
+            background: linear-gradient(135deg, #E8E3DB 0%, #F5F1ED 100%);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(212, 165, 116, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(212, 165, 116, 0.03) 0%, transparent 50%);
+        }
+        
+        .marker-badge {
+            background-color: #F5F1ED;
+            border: 2px solid #D4A574;
+            box-shadow: 0 4px 12px rgba(43, 38, 33, 0.15);
+            backdrop-filter: blur(4px);
+        }
+        
+        .marker-dot {
+            background-color: #D4A574;
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+            animation: pulseMarker 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulseMarker {
+            0%, 100% { 
+                box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+                opacity: 1;
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(212, 165, 116, 0.1);
+                opacity: 0.8;
+            }
+        }
+        
+        .marker-selected {
+            background-color: #D4A574;
+            box-shadow: 0 0 20px rgba(212, 165, 116, 0.6), 0 0 0 8px rgba(212, 165, 116, 0.1);
+        }
+        
+        .preview-panel {
+            animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chip-active {
+            background-color: #D4A574;
+            color: #F5F1ED;
+            border-color: #D4A574;
+        }
+        
+        .swipe-hint {
+            animation: slideLeftRight 1s ease-in-out infinite;
+        }
+        
+        @keyframes slideLeftRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(4px); }
+        }
+        
+        .glass-effect {
+            background: rgba(245, 241, 237, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+        
+        .gradient-warm {
+            background: linear-gradient(135deg, #D4A574 0%, #B8915B 100%);
+        }
+        
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+    </style>
+</head>
+<body class="lumine-bg text-lumine-text-primary antialiased">
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+        <div class="w-full px-4 md:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo & Branding -->
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 lumine-primary rounded-lg flex items-center justify-center shadow-md">
+                        <i class="fas fa-lightbulb text-amber-400"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-lg md:text-xl font-bold lumine-text-primary">
+                            LUMIN<span class="text-sm align-super">ᵉ</span>
+                        </h1>
+                        <p class="text-xs text-gray-500">L'immobilier en pleine lumière</p>
+                    </div>
+                </div>
+
+                <!-- Location Context & View Toggle -->
+                <div class="flex items-center gap-2 md:gap-4">
+                    <!-- Location Display -->
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50">
+                        <i class="fas fa-map-marker-alt lumine-text-accent text-sm"></i>
+                        <span class="text-sm font-medium text-gray-700">Paris 11<span class="text-xs">ᵉ</span></span>
+                    </div>
+
+                    <!-- View Toggle -->
+                    <div class="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                        <button class="px-3 py-2 text-xs md:text-sm font-medium rounded text-gray-600 hover:text-gray-900 transition-all duration-200">Liste</button>
+                        <button class="px-3 py-2 text-xs md:text-sm font-medium rounded lumine-accent text-white transition-all duration-200">Carte</button>
+                        <button class="px-3 py-2 text-xs md:text-sm font-medium rounded text-gray-600 hover:text-gray-900 transition-all duration-200">Hybride</button>
+                    </div>
+
+                    <!-- Search Refinement -->
+                    <button class="touch-target hidden md:flex items-center justify-center w-10 h-10 hover:bg-gray-100 rounded-lg transition-all duration-200" title="Affiner la recherche">
+                        <i class="fas fa-sliders-h lumine-text-primary"></i>
+                    </button>
+
+                    <!-- Mobile Menu -->
+                    <button class="md:hidden touch-target flex items-center justify-center w-10 h-10 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                        <i class="fas fa-bars lumine-text-primary"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Chips (Desktop) -->
+            <div class="hidden md:flex gap-2 mt-3 overflow-x-auto pb-2">
+                <div class="flex gap-2 whitespace-nowrap">
+                    <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-all duration-200 flex items-center gap-1">
+                        <span>Budget: 200k-500k€</span>
+                        <i class="fas fa-times cursor-pointer"></i>
+                    </button>
+                    <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-all duration-200 flex items-center gap-1">
+                        <span>2-3 pièces</span>
+                        <i class="fas fa-times cursor-pointer"></i>
+                    </button>
+                    <button class="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-all duration-200 flex items-center gap-1">
+                        <span>60+ m²</span>
+                        <i class="fas fa-times cursor-pointer"></i>
+                    </button>
+                    <button class="px-3 py-1.5 text-xs border border-dashed border-gray-300 text-gray-600 rounded-full hover:border-gray-400 transition-all duration-200">
+                        <i class="fas fa-plus mr-1"></i>Ajouter filtre
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Map Container -->
+    <main class="w-full max-w-none pt-20 lg:pt-20">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-0 h-auto">
+            <!-- Left Sidebar - Filters (Hidden on mobile, visible on lg+) -->
+            <aside class="hidden lg:block col-span-1 bg-white border-r border-gray-200 overflow-y-auto" style="max-height: calc(100vh - 140px);">
+                <div class="p-6 space-y-6">
+                    <!-- Search by Location -->
+                    <div>
+                        <label class="block text-sm font-semibold lumine-text-primary mb-3">Localisation</label>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-3 top-3 lumine-text-accent text-sm"></i>
+                            <input type="text" placeholder="Entrez un arrondissement..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div>
+                        <label class="block text-sm font-semibold lumine-text-primary mb-3">Budget</label>
+                        <div class="space-y-3">
+                            <div class="flex gap-2">
+                                <input type="number" placeholder="Min" value="200000" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 transition-all duration-200">
+                                <input type="number" placeholder="Max" value="500000" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 transition-all duration-200">
+                            </div>
+                            <div class="text-xs text-gray-600">€200,000 - €500,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Property Type -->
+                    <div>
+                        <label class="block text-sm font-semibold lumine-text-primary mb-3">Type de bien</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded transition-all duration-200">
+                                <input type="checkbox" checked class="w-4 h-4 rounded border-gray-300 accent-blue-600">
+                                <span class="text-sm text-gray-700">Appartement</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded transition-all duration-200">
+                                <input type="checkbox" checked class="w-4 h-4 rounded border-gray-300 accent-blue-600">
+                                <span class="text-sm text-gray-700">Maison</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded transition-all duration-200">
+                                <input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-blue-600">
+                                <span class="text-sm text-gray-700">Studio</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded transition-all duration-200">
+                                <input type="checkbox" class="w-4 h-4 rounded border-gray-300 accent-blue-600">
+                                <span class="text-sm text-gray-700">Loft</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Rooms -->
+                    <div>
+                        <label class="block text-sm font-semibold lumine-text-primary mb-3">Pièces</label>
+                        <div class="flex gap-2 flex-wrap">
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-blue-50 hover:border-blue-600 transition-all duration-200">1</button>
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-blue-50 hover:border-blue-600 transition-all duration-200">2</button>
+                            <button class="px-3 py-2 border border-blue-600 bg-blue-50 rounded-lg text-sm font-medium text-blue-600">3+</button>
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-blue-50 hover:border-blue-600 transition-all duration-200">Tout</button>
+                        </div>
+                    </div>
+
+                    <!-- Surface Area -->
+                    <div>
+                        <label class="block text-sm font-semibold lumine-text-primary mb-3">Surface minimale</label>
+                        <div class="flex gap-3 items-center">
+                            <input type="range" min="0" max="300" value="60" class="flex-1 accent-blue-600">
+                            <span class="text-sm font-medium text-gray-700 min-w-fit">60 m²</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-2 pt-4 border-t border-gray-200">
+                        <button class="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-search mr-2"></i>Rechercher
+                        </button>
+                        <button class="w-full px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all duration-200">
+                            Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center - Interactive Map -->
+            <div class="col-span-1 lg:col-span-2 map-container relative" style="min-height: 500px; height: calc(100vh - 140px);">
+                <!-- Map Canvas -->
+                <div class="w-full h-full relative flex items-center justify-center overflow-hidden">
+                    <!-- Stylized Map Background -->
+                    <div class="absolute inset-0 overflow-hidden">
+                        <svg class="w-full h-full" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+                            <!-- Grid -->
+                            <defs>
+                                <pattern id="grid" width="80" height="60" patternUnits="userSpaceOnUse">
+                                    <path d="M 80 0 L 0 0 0 60" fill="none" stroke="#D4C4B8" stroke-width="1" opacity="0.3"/>
+                                </pattern>
+                            </defs>
+                            <rect width="800" height="600" fill="#F5F1ED"/>
+                            <rect width="800" height="600" fill="url(#grid)"/>
+                            
+                            <!-- Subtle terrain features -->
+                            <circle cx="200" cy="150" r="120" fill="#E8E3DB" opacity="0.5"/>
+                            <circle cx="600" cy="400" r="100" fill="#E8E3DB" opacity="0.4"/>
+                            <path d="M 0 300 Q 200 250 400 300 T 800 300" stroke="#D4C4B8" stroke-width="2" fill="none" opacity="0.2"/>
+                        </svg>
+                    </div>
+
+                    <!-- Property Markers -->
+                    <div class="absolute inset-0 pointer-events-none">
+                        <!-- Marker 1 - Selected -->
+                        <div class="absolute pointer-events-auto" style="left: 25%; top: 30%; transform: translate(-50%, -50%);">
+                            <div class="flex flex-col items-center">
+                                <div class="marker-selected w-8 h-8 rounded-full flex items-center justify-center cursor-pointer relative">
+                                    <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold lumine-text-primary">📍</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 marker-badge rounded-lg px-3 py-2 whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200">
+                                    <p class="text-sm font-bold lumine-text-primary">€325,000</p>
+                                    <p class="text-xs text-gray-600">2 pièces • 65m²</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marker 2 -->
+                        <div class="absolute pointer-events-auto" style="left: 60%; top: 45%; transform: translate(-50%, -50%);">
+                            <div class="flex flex-col items-center">
+                                <div class="marker-dot w-6 h-6 rounded-full cursor-pointer relative hover:scale-125 transition-all duration-200 group">
+                                    <div class="w-6 h-6 bg-white rounded-full absolute inset-0"></div>
+                                </div>
+                                <div class="mt-2 marker-badge rounded-lg px-3 py-2 whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200 opacity-0 group-hover:opacity-100">
+                                    <p class="text-sm font-bold lumine-text-primary">€425,000</p>
+                                    <p class="text-xs text-gray-600">3 pièces • 85m²</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marker 3 -->
+                        <div class="absolute pointer-events-auto" style="left: 45%; top: 70%; transform: translate(-50%, -50%);">
+                            <div class="flex flex-col items-center">
+                                <div class="marker-dot w-6 h-6 rounded-full cursor-pointer relative hover:scale-125 transition-all duration-200 group">
+                                    <div class="w-6 h-6 bg-white rounded-full absolute inset-0"></div>
+                                </div>
+                                <div class="mt-2 marker-badge rounded-lg px-3 py-2 whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200 opacity-0 group-hover:opacity-100">
+                                    <p class="text-sm font-bold lumine-text-primary">€550,000</p>
+                                    <p class="text-xs text-gray-600">2 pièces • 72m²</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marker 4 -->
+                        <div class="absolute pointer-events-auto" style="left: 75%; top: 60%; transform: translate(-50%, -50%);">
+                            <div class="flex flex-col items-center">
+                                <div class="marker-dot w-6 h-6 rounded-full cursor-pointer relative hover:scale-125 transition-all duration-200 group">
+                                    <div class="w-6 h-6 bg-white rounded-full absolute inset-0"></div>
+                                </div>
+                                <div class="mt-2 marker-badge rounded-lg px-3 py-2 whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200 opacity-0 group-hover:opacity-100">
+                                    <p class="text-sm font-bold lumine-text-primary">€285,000</p>
+                                    <p class="text-xs text-gray-600">1 pièce • 45m²</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marker 5 -->
+                        <div class="absolute pointer-events-auto" style="left: 35%; top: 55%; transform: translate(-50%, -50%);">
+                            <div class="flex flex-col items-center">
+                                <div class="marker-dot w-6 h-6 rounded-full cursor-pointer relative hover:scale-125 transition-all duration-200 group">
+                                    <div class="w-6 h-6 bg-white rounded-full absolute inset-0"></div>
+                                </div>
+                                <div class="mt-2 marker-badge rounded-lg px-3 py-2 whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200 opacity-0 group-hover:opacity-100">
+                                    <p class="text-sm font-bold lumine-text-primary">€395,000</p>
+                                    <p class="text-xs text-gray-600">2 pièces • 58m²</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Controls - Bottom Right -->
+                    <div class="absolute bottom-6 right-6 flex flex-col gap-2 z-20 pointer-events-auto">
+                        <button class="touch-target w-12 h-12 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 lumine-text-primary hover:lumine-accent" title="Zoom avant">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="touch-target w-12 h-12 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 lumine-text-primary" title="Zoom arrière">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="touch-target w-12 h-12 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 lumine-text-primary" title="Ma localisation">
+                            <i class="fas fa-location-crosshairs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Map Info Badge - Top Left -->
+                    <div class="absolute top-6 left-6 glass-effect rounded-lg px-4 py-3 flex items-center gap-3 z-20 pointer-events-auto shadow-md">
+                        <div class="w-3 h-3 lumine-accent rounded-full"></div>
+                        <div>
+                            <p class="text-sm font-semibold lumine-text-primary">47 propriétés trouvées</p>
+                            <p class="text-xs text-gray-600">Paris 11<span class="text-xs">ᵉ</span> • Marais</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Property Preview (Hidden on mobile, visible on lg+) -->
+            <aside class="hidden lg:block col-span-1 bg-white border-l border-gray-200 overflow-y-auto" style="max-height: calc(100vh - 140px);">
+                <div class="p-6">
+                    <!-- Property Preview Card -->
+                    <div class="preview-panel rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 bg-white">
+                        <!-- Property Image -->
+                        <div class="relative bg-gradient-to-br from-gray-300 to-gray-400 h-56 flex items-center justify-center overflow-hidden">
+                            <!-- Placeholder with pattern -->
+                            <div class="absolute inset-0 opacity-10">
+                                <svg class="w-full h-full" viewBox="0 0 400 300">
+                                    <defs>
+                                        <pattern id="hatch" patternUnits="userSpaceOnUse" width="8" height="8">
+                                            <path d="M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4" stroke="#fff" stroke-width="1"/>
+                                        </pattern>
+                                    </defs>
+                                    <rect width="400" height="300" fill="url(#hatch)"/>
+                                </svg>
+                            </div>
+                            <div class="relative z-10 text-center">
+                                <i class="fas fa-image text-white text-6xl opacity-30"></i>
+                                <p class="text-white text-sm mt-2 opacity-70">Image HD</p>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="absolute top-4 right-4 flex gap-2 z-20">
+                                <button class="touch-target w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 text-red-500 hover:bg-red-50" title="Enregistrer">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="touch-target w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 lumine-text-accent hover:bg-amber-50" title="Partager">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+
+                            <!-- Image Badge -->
+                            <div class="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-1.5 text-xs font-semibold lumine-text-primary flex items-center gap-2 shadow-md z-20">
+                                <i class="fas fa-images lumine-text-accent"></i>
+                                12 images
+                            </div>
+                        </div>
+
+                        <!-- Property Details -->
+                        <div class="p-5 space-y-4">
+                            <!-- Price & Status -->
+                            <div class="flex items-baseline justify-between">
+                                <div>
+                                    <h3 class="text-3xl font-bold lumine-text-primary">€325,000</h3>
+                                    <p class="text-sm text-gray-600 mt-1">€5,000/m² • Excellent rapport</p>
+                                </div>
+                                <span class="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">Actif</span>
+                            </div>
+
+                            <!-- Quick Specs -->
+                            <div class="grid grid-cols-2 gap-3 pt-2 pb-4 border-b border-gray-200">
+                                <div class="text-center p-3 bg-gray-50 rounded-lg hover:bg-amber-50 transition-all duration-200">
+                                    <i class="fas fa-door-open lumine-text-accent mb-2 block text-lg"></i>
+                                    <p class="text-xs text-gray-600">Pièces</p>
+                                    <p class="font-bold text-sm lumine-text-primary">2</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg hover:bg-amber-50 transition-all duration-200">
+                                    <i class="fas fa-ruler-combined lumine-text-accent mb-2 block text-lg"></i>
+                                    <p class="text-xs text-gray-600">Surface</p>
+                                    <p class="font-bold text-sm lumine-text-primary">65 m²</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg hover:bg-amber-50 transition-all duration-200">
+                                    <i class="fas fa-bath lumine-text-accent mb-2 block text-lg"></i>
+                                    <p class="text-xs text-gray-600">Salle d'eau</p>
+                                    <p class="font-bold text-sm lumine-text-primary">1</p>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg hover:bg-amber-50 transition-all duration-200">
+                                    <i class="fas fa-calendar lumine-text-accent mb-2 block text-lg"></i>
+                                    <p class="text-xs text-gray-600">Année</p>
+                                    <p class="font-bold text-sm lumine-text-primary">1925</p>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="flex gap-3 pt-2">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt lumine-text-accent text-lg mt-0.5"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-sm lumine-text-primary">Marais, Paris 4<span class="text-xs">ᵉ</span></p>
+                                    <p class="text-xs text-gray-600 mt-1">Quartier historique, bars et restaurants, vie nocturne vibrante</p>
+                                </div>
+                            </div>
+
+                            <!-- AI Insights -->
+                            <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                <div class="flex gap-2">
+                                    <i class="fas fa-lightbulb lumine-text-accent flex-shrink-0 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-xs font-semibold lumine-text-primary">Découverte LUMIN<span class="text-xs">ᵉ</span></p>
+                                        <p class="text-xs text-gray-700 mt-1">Bien situé dans le Marais, quartier très demandé. Toiture récemment rénovée. Potentiel de revente excellent.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CTA Buttons -->
+                            <div class="space-y-2 pt-4">
+                                <button class="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                                    Voir plus
+                                </button>
+                                <button class="w-full px-4 py-2.5 border border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200">
+                                    <i class="fas fa-envelope mr-2"></i>Contacter l'agent
+                                </button>
+                            </div>
+
+                            <!-- Navigation -->
+                            <div class="flex gap-2 pt-3 border-t border-gray-200">
+                                <button class="flex-1 px-3 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2">
+                                    <i class="fas fa-arrow-left text-sm"></i>
+                                    <span class="hidden sm:inline">Précédent</span>
+                                </button>
+                                <button class="flex-1 px-3 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center gap-2">
+                                    <span class="hidden sm:inline">Suivant</span>
+                                    <i class="fas fa-arrow-right text-sm"></i>
+                                </button>
+                            </div>
+
+                            <!-- Counter -->
+                            <div class="text-center pt-2">
+                                <p class="text-xs text-gray-600">
+                                    Propriété <span class="font-bold lumine-text-primary">1</span> sur <span class="font-bold lumine-text-primary">47</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Sheet - Property Preview -->
+    <div class="fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none">
+        <div class="preview-panel pointer-events-auto rounded-t-3xl bg-white border-t border-gray-200 shadow-2xl" style="max-height: 85vh; overflow-y-auto;">
+            <!-- Handle -->
+            <div class="flex justify-center pt-3 pb-2">
+                <div class="w-12 h-1 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <div class="px-4 pb-6 space-y-4">
+                <!-- Property Quick View -->
+                <div class="space-y-3">
+                    <!-- Price & Location -->
+                    <div>
+                        <div class="flex items-baseline justify-between mb-2">
+                            <h3 class="text-3xl font-bold lumine-text-primary">€325,000</h3>
+                            <span class="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">Actif</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <i class="fas fa-map-marker-alt lumine-text-accent"></i>
+                            <span>Marais, Paris 4<span class="text-xs">ᵉ</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Specs -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="p-3 bg-gray-50 rounded-lg text-center">
+                            <p class="text-xs text-gray-600">Pièces</p>
+                            <p class="font-bold text-lg lumine-text-primary">2</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg text-center">
+                            <p class="text-xs text-gray-600">Surface</p>
+                            <p class="font-bold text-lg lumine-text-primary">65m²</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg text-center">
+                            <p class="text-xs text-gray-600">Année</p>
+                            <p class="font-bold text-lg lumine-text-primary">1925</p>
+                        </div>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="space-y-2 pt-2">
+                        <button class="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200">
+                            Voir plus
+                        </button>
+                        <button class="w-full px-4 py-2.5 border border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-200">
+                            Contacter l'agent
+                        </button>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex gap-2 pt-2">
+                        <button class="flex-1 px-3 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fas fa-arrow-left text-sm"></i>Précédent
+                        </button>
+                        <button class="flex-1 px-3 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center gap-2">
+                            Suivant<i class="fas fa-arrow-right text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- Counter -->
+                    <p class="text-center text-xs text-gray-600">
+                        Propriété <span class="font-bold lumine-text-primary">1</span> / <span class="font-bold lumine-text-primary">47</span>
+                    </p>
+
+                    <!-- Swipe Hint -->
+                    <p class="text-center text-xs text-gray-500 pt-2">
+                        <i class="fas fa-hand-pointer lumine-text-accent"></i> Glissez pour parcourir
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Filter Sheet -->
+    <div class="hidden fixed bottom-0 left-0 right-0 md:hidden z-40 rounded-t-3xl bg-white shadow-2xl" style="max-height: 90vh; overflow-y-auto;" id="mobileFilterSheet">
+        <!-- Handle -->
+        <div class="flex justify-center pt-3 pb-4 border-b border-gray-200">
+            <div class="w-12 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+
+        <div class="p-4 space-y-4">
+            <h2 class="text-lg font-bold lumine-text-primary">Filtrer les résultats</h2>
+
+            <!-- Budget -->
+            <div>
+                <label class="block text-sm font-semibold lumine-text-primary mb-2">Budget</label>
+                <div class="flex gap-2">
+                    <input type="number" placeholder="Min" value="200000" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <input type="number" placeholder="Max" value="500000" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                </div>
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label class="block text-sm font-semibold lumine-text-primary mb-2">Type de bien</label>
+                <div class="flex gap-2 flex-wrap">
+                    <button class="px-4 py-2 border border-blue-600 bg-blue-50 text-blue-600 text-sm rounded-lg font-medium">Appartement</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg font-medium">Maison</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg font-medium">Studio</button>
+                </div>
+            </div>
+
+            <!-- Rooms -->
+            <div>
+                <label class="block text-sm font-semibold lumine-text-primary mb-2">Pièces</label>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg">1</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg">2</button>
+                    <button class="px-4 py-2 border border-blue-600 bg-blue-50 text-blue-600 text-sm rounded-lg font-medium">3+</button>
+                </div>
+            </div>
+
+            <!-- Action -->
+            <div class="flex gap-2 pt-4 border-t border-gray-200">
+                <button class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50">
+                    Annuler
+                </button>
+                <button class="flex-1 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+                    Appliquer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts for interactions -->
+    <script>
+        // Mobile filter sheet toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('[data-toggle-filter]');
+            const filterSheet = document.getElementById('mobileFilterSheet');
+            
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterSheet?.classList.toggle('hidden');
+                });
+            });
+
+            // Close filter sheet when clicking outside
+            document.addEventListener('click', function(e) {
+                if (filterSheet && !filterSheet.contains(e.target) && !e.target.closest('[data-toggle-filter]')) {
+                    filterSheet.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+  </body>
+  </html>

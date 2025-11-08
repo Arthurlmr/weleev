@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Value Realization - Saved Searches & Recommendations Experience</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { width: 100%; margin: 0; padding: 0; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+  </style>
+  </head>
+  <body>
+    <div class="w-full max-w-none bg-gray-50">
+  <!-- Header Section -->
+  <div class="w-full bg-white border-b border-gray-200 shadow-sm">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+            <i class="fas fa-home text-white text-lg"></i>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Property Aficionado</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+            <i class="fas fa-bell text-gray-600 text-lg"></i>
+          </button>
+          <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+            <i class="fas fa-cog text-gray-600 text-lg"></i>
+          </button>
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-all duration-200">
+            <span class="text-white font-semibold text-sm">JD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="w-full px-4 md:px-6 lg:px-8 py-8">
+    <!-- Personalized Greeting Section -->
+    <div class="mb-10">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2" style="font-family: Poppins, sans-serif;">Bonjour, Julien</h2>
+      <p class="text-xl text-gray-600 mb-1">Voici vos recherches enregistrées</p>
+      <p class="text-lg text-amber-500 font-semibold">Curated pour vous</p>
+    </div>
+
+    <!-- Quick Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-600 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Recherches Actives</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1">7</p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+            <i class="fas fa-search text-blue-600 text-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-amber-500 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Nouvelles Annonces</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1">34</p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
+            <i class="fas fa-star text-amber-500 text-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Recommandations</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1">18</p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center">
+            <i class="fas fa-heart text-red-500 text-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-gray-400 hover:shadow-md transition-all duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Favoris Sauvegardés</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1">52</p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+            <i class="fas fa-bookmark text-gray-600 text-lg"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column - Saved Searches -->
+      <div class="lg:col-span-2">
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Mes Recherches Enregistrées</h3>
+            <button class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium">
+              <i class="fas fa-plus"></i>
+              Nouvelle Recherche
+            </button>
+          </div>
+
+          <!-- Search Cards -->
+          <div class="space-y-4">
+            <!-- Search Card 1 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer group">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h4 class="text-lg font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Paris 11<sup style="font-size: 0.7em;">e</sup></h4>
+                    <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Actif</span>
+                  </div>
+                  <p class="text-gray-600 text-sm mb-3">400 000 € - 600 000 € • 3-4 pièces</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-map-marker-alt text-gray-500"></i>
+                      Paris 11<sup style="font-size: 0.7em;">e</sup>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-door-open text-gray-500"></i>
+                      Appartement
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-euro-sign text-gray-500"></i>
+                      400 - 600 k€
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <span><strong class="text-amber-500">12 nouvelles annonces</strong></span>
+                    <span>Mis à jour aujourd'hui</span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-pen-to-square"></i>
+                  </button>
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-red-600">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="text-sm text-gray-700 font-medium">Préférences de notification</div>
+                  <div class="flex gap-3">
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-envelope text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">Email</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-comment text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">WhatsApp</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Fréquence: <strong>Quotidien</strong></span>
+                  <button class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1">
+                    Voir Résultats <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search Card 2 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer group">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h4 class="text-lg font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Lyon - Presqu'île</h4>
+                    <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Actif</span>
+                  </div>
+                  <p class="text-gray-600 text-sm mb-3">200 000 € - 400 000 € • 3-4 pièces</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-map-marker-alt text-gray-500"></i>
+                      Lyon, Presqu'île
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-door-open text-gray-500"></i>
+                      Maison de Ville
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-euro-sign text-gray-500"></i>
+                      200 - 400 k€
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <span><strong class="text-amber-500">8 nouvelles annonces</strong></span>
+                    <span>Mis à jour il y a 2 heures</span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-pen-to-square"></i>
+                  </button>
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-red-600">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="text-sm text-gray-700 font-medium">Préférences de notification</div>
+                  <div class="flex gap-3">
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-envelope text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">Email</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-comment text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">WhatsApp</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Fréquence: <strong>Hebdomadaire</strong></span>
+                  <button class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1">
+                    Voir Résultats <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search Card 3 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer group">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h4 class="text-lg font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Côte d'Azur - Villas</h4>
+                    <span class="inline-block bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">Pausé</span>
+                  </div>
+                  <p class="text-gray-600 text-sm mb-3">500 000 € + • 4+ pièces</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-map-marker-alt text-gray-500"></i>
+                      Nice, Cannes
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-door-open text-gray-500"></i>
+                      Villa
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-euro-sign text-gray-500"></i>
+                      500 k€+
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <span><strong class="text-amber-500">5 nouvelles annonces</strong></span>
+                    <span>Mis à jour il y a 3 jours</span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-pen-to-square"></i>
+                  </button>
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-red-600">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="text-sm text-gray-700 font-medium">Préférences de notification</div>
+                  <div class="flex gap-3">
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-envelope text-gray-400 text-sm"></i>
+                      <span class="text-xs text-gray-600">Email</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Fréquence: <strong>À la demande</strong></span>
+                  <button class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1">
+                    Réactiver <i class="fas fa-play"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search Card 4 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer group">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h4 class="text-lg font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Bordeaux - Investissement</h4>
+                    <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Actif</span>
+                  </div>
+                  <p class="text-gray-600 text-sm mb-3">150 000 € - 300 000 € • Potentiel locatif</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-map-marker-alt text-gray-500"></i>
+                      Bordeaux Centre
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-door-open text-gray-500"></i>
+                      Studio/Apt
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full">
+                      <i class="fas fa-chart-line text-gray-500"></i>
+                      Investissement
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <span><strong class="text-amber-500">9 nouvelles annonces</strong></span>
+                    <span>Mis à jour il y a 1 heure</span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-pen-to-square"></i>
+                  </button>
+                  <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200 text-gray-600 hover:text-red-600">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="text-sm text-gray-700 font-medium">Préférences de notification</div>
+                  <div class="flex gap-3">
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-envelope text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">Email</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-comment text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">WhatsApp</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <i class="fas fa-mobile text-blue-600 text-sm"></i>
+                      <span class="text-xs text-gray-600">SMS</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Fréquence: <strong>Quotidien</strong></span>
+                  <button class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1">
+                    Voir Résultats <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - AI Recommendations & Personalization -->
+      <div class="lg:col-span-1">
+        <!-- Personalization Confidence Score -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+          <div class="text-center mb-4">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-amber-100 mb-4">
+              <span class="text-3xl font-bold text-blue-600">85%</span>
+            </div>
+            <p class="text-gray-900 font-semibold text-sm mb-2">Property Aficionado vous connaît</p>
+            <p class="text-xs text-gray-600">Plus vous interagissez, plus Property Aficionado s'affine</p>
+          </div>
+          <button class="w-full py-2 text-blue-600 hover:text-blue-700 font-medium text-sm hover:bg-blue-50 rounded-lg transition-all duration-200">
+            Mettre à jour le profil
+          </button>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Property Aficionado recommande</h3>
+            <span class="text-2xl font-bold text-amber-500">18</span>
+          </div>
+
+          <div class="space-y-3 mb-6">
+            <!-- Recommendation 1 -->
+            <div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-star text-white text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-900 text-sm group-hover:text-blue-700 transition-all">Correspondance Parfaite</p>
+                  <p class="text-xs text-gray-700 mt-1">Apt. 3 pièces, Paris 11<sup style="font-size: 0.7em;">e</sup></p>
+                  <p class="text-xs text-blue-600 font-medium mt-2">485 000 € • Correspond à vos priorités</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recommendation 2 -->
+            <div class="p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg border border-amber-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-bolt text-white text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-900 text-sm group-hover:text-amber-700 transition-all">Excellente Valeur</p>
+                  <p class="text-xs text-gray-700 mt-1">Maison 4 pièces, Lyon Presqu'île</p>
+                  <p class="text-xs text-amber-600 font-medium mt-2">275 000 € • Potentiel immobilier</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recommendation 3 -->
+            <div class="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-lg border border-red-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-fire text-white text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-900 text-sm group-hover:text-red-700 transition-all">Propriété en Demande</p>
+                  <p class="text-xs text-gray-700 mt-1">Villa rénovée, Côte d'Azur</p>
+                  <p class="text-xs text-red-600 font-medium mt-2">575 000 € • Vue mer, terrasse</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recommendation 4 -->
+            <div class="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-check text-white text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-900 text-sm group-hover:text-green-700 transition-all">Budget Avantageux</p>
+                  <p class="text-xs text-gray-700 mt-1">Studio + T2, Bordeaux Centre</p>
+                  <p class="text-xs text-green-600 font-medium mt-2">195 000 € • Locatif attractif</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="w-full py-2 text-blue-600 hover:text-blue-700 font-medium text-sm hover:bg-blue-50 rounded-lg transition-all duration-200">
+            Voir Toutes les Recommandations
+          </button>
+        </div>
+
+        <!-- Smart Insights -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h4 class="text-lg font-bold text-gray-900 mb-4" style="font-family: Poppins, sans-serif;">Ce que Property Aficionado a appris</h4>
+          
+          <div class="space-y-4">
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fas fa-check text-blue-600 text-xs"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">Proximité transports</p>
+                <p class="text-xs text-gray-600 mt-1">Vous préférez les quartiers bien desservis</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fas fa-leaf text-blue-600 text-xs"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">Espaces extérieurs</p>
+                <p class="text-xs text-gray-600 mt-1">Terrasse ou balcon très importants</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fas fa-hammer text-blue-600 text-xs"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">Potentiel travaux</p>
+                <p class="text-xs text-gray-600 mt-1">Vous considérez les rénovations</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fas fa-chart-line text-blue-600 text-xs"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">Intérêt investissement</p>
+                <p class="text-xs text-gray-600 mt-1">Potentiel locatif vous intéresse</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Interactions Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+      <!-- Recently Viewed -->
+      <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Récemment Consultés</h3>
+          <span class="text-sm text-gray-600">7 propriétés</span>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex gap-4 pb-4 border-b border-gray-100 hover:bg-gray-50 p-3 rounded-lg transition-all cursor-pointer">
+            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm text-gray-900">Appartement 3 pièces</p>
+              <p class="text-xs text-gray-600 mt-1">Paris 11<sup style="font-size: 0.7em;">e</sup> • 485 000 €</p>
+              <p class="text-xs text-blue-600 mt-2">Consulté il y a 2 heures</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 pb-4 border-b border-gray-100 hover:bg-gray-50 p-3 rounded-lg transition-all cursor-pointer">
+            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm text-gray-900">Maison 4 pièces avec jardin</p>
+              <p class="text-xs text-gray-600 mt-1">Lyon Presqu'île • 275 000 €</p>
+              <p class="text-xs text-blue-600 mt-2">Consulté hier</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 hover:bg-gray-50 p-3 rounded-lg transition-all cursor-pointer">
+            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm text-gray-900">Studio rénové investissement</p>
+              <p class="text-xs text-gray-600 mt-1">Bordeaux Centre • 185 000 €</p>
+              <p class="text-xs text-blue-600 mt-2">Consulté il y a 3 jours</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved Favorites -->
+      <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-900" style="font-family: Poppins, sans-serif;">Favoris Sauvegardés</h3>
+          <span class="text-sm text-gray-600">52 propriétés</span>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex gap-4 pb-4 border-b border-gray-100 hover:bg-gray-50 p-3 rounded-lg transition-all cursor-pointer">
+            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-200 to-amber-300 flex-shrink-0 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm text-gray-900">Villa avec vue mer</p>
+              <p class="text-xs text-gray-600 mt-1">Cannes • 650 000 €</p>
+              <p class="text-xs text-amber-600 font-medium mt-2">★ Sauvegardé il y a 1 semaine</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 pb-4 border-b border-gray-100 hover:bg-gray-50 p-3 rounded-lg transition-all cursor-pointer">
+            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-200 to-amber-300 flex-shrink-0 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm text-gray-900">Penthouse avec terrasse</p>
+              <p class="text-xs text-gray-600 mt-1">Paris 6<sup style="font-size: 0.7em;">e</sup> • 595 000 €</p>
+              <p class="text-xs text-amber-600 font-medium mt-2">★ Sauvegardé il y a 3 jours</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 hover:bg-gray-50 p-3 rounded-lg transition-all cursor-pointer">
+            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-200 to-amber-300 flex-shrink-0 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm text-gray-900">Loft rénové artiste</p>
+              <p class="text-xs text-gray-600 mt-1">Paris 12<sup style="font-size: 0.7em;">e</sup> • 425 000 €</p>
+              <p class="text-xs text-amber-600 font-medium mt-2">★ Sauvegardé il y a 2 semaines</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full mt-6 py-2 text-blue-600 hover:text-blue-700 font-medium text-sm hover:bg-blue-50 rounded-lg transition-all duration-200">
+          Voir tous les favoris (52)
+        </button>
+      </div>
+    </div>
+
+    <!-- Call-to-Action Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-lg p-8 mt-10 text-white text-center">
+      <h3 class="text-2xl md:text-3xl font-bold mb-3" style="font-family: Poppins, sans-serif;">Prêt à trouver votre propriété idéale ?</h3>
+      <p class="text-blue-100 text-lg mb-6 max-w-2xl mx-auto">Property Aficionado a analysé vos préférences et trouvé 18 propriétés hautement compatibles. Commencez à explorer maintenant et soyez notifié instantanément quand de nouvelles correspondances apparaissent.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button class="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-200 flex items-center justify-center gap-2">
+          <i class="fas fa-arrow-right"></i>
+          Voir Toutes les Recommandations
+        </button>
+        <button class="px-8 py-3 bg-blue-800 text-white rounded-lg font-semibold hover:bg-blue-900 transition-all duration-200 border border-blue-500 flex items-center justify-center gap-2">
+          <i class="fas fa-pen-to-square"></i>
+          Affiner mes Préférences
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <div class="w-full bg-gray-900 text-gray-300 mt-16">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+              <i class="fas fa-home text-white text-sm"></i>
+            </div>
+            <span class="font-bold text-white text-lg" style="font-family: Poppins, sans-serif;">Property Aficionado</span>
+          </div>
+          <p class="text-sm text-gray-400">Découvrez votre propriété idéale avec intelligence artificielle alimentée.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-white mb-4" style="font-family: Poppins, sans-serif;">Produit</p>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Rechercher des Propriétés</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Recherches Enregistrées</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Recommandations</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Tarification</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold text-white mb-4" style="font-family: Poppins, sans-serif;">Entreprise</p>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">À propos</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Blog</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Contact</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold text-white mb-4" style="font-family: Poppins, sans-serif;">Légal</p>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Politique de Confidentialité</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Conditions d'Utilisation</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+        <p class="text-sm text-gray-400">© 2024 Property Aficionado. Tous droits réservés.</p>
+        <div class="flex gap-4 mt-4 md:mt-0">
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-facebook text-lg"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-twitter text-lg"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-linkedin text-lg"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-instagram text-lg"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  </body>
+  </html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Property Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { width: 100%; margin: 0; padding: 0; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+  </style>
+  </head>
+  <body>
+    <div class="w-full max-w-none bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <i class="fas fa-home text-white text-lg"></i>
+          </div>
+          <span class="text-2xl font-bold text-gray-900">LUMINᵉ</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+            <i class="fas fa-bell text-gray-600 text-lg"></i>
+          </button>
+          <button class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+            <i class="fas fa-user text-gray-600 text-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="w-full max-w-none">
+    <!-- Search and Filter Section -->
+    <div class="bg-white border-b border-gray-200">
+      <div class="w-full px-4 md:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- Search Input -->
+          <div class="lg:col-span-2">
+            <div class="relative">
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+              <input type="text" placeholder="Cherchez un quartier, une rue..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200">
+            </div>
+          </div>
+
+          <!-- Location Filter -->
+          <div>
+            <select class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 bg-white text-gray-900">
+              <option value="">Localisation</option>
+              <option value="paris">Paris</option>
+              <option value="lyon">Lyon</option>
+              <option value="marseille">Marseille</option>
+              <option value="toulouse">Toulouse</option>
+              <option value="bordeaux">Bordeaux</option>
+            </select>
+          </div>
+
+          <!-- Sort Filter -->
+          <div>
+            <select class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 bg-white text-gray-900">
+              <option value="relevance">Pertinence</option>
+              <option value="price-low">Prix: Bas à Haut</option>
+              <option value="price-high">Prix: Haut à Bas</option>
+              <option value="newest">Plus Récent</option>
+              <option value="size">Plus Grand</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-all duration-200 flex items-center gap-2">
+            <i class="fas fa-sliders-h"></i>
+            Filtres Avancés
+          </button>
+          <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-all duration-200 flex items-center gap-2">
+            <i class="fas fa-times"></i>
+            Budget: 300k - 600k €
+          </button>
+          <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-all duration-200 flex items-center gap-2">
+            <i class="fas fa-times"></i>
+            Type: Appartement
+          </button>
+          <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-all duration-200 flex items-center gap-2">
+            <i class="fas fa-times"></i>
+            Pièces: 2-4
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Overview -->
+    <div class="bg-white border-b border-gray-200">
+      <div class="w-full px-4 md:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-gray-600">Affichage de</span>
+            <span class="font-semibold text-gray-900">1 247</span>
+            <span class="text-gray-600">propriétés triées par pertinence</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Feed -->
+    <div class="w-full px-4 md:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Property Card 1 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group">
+          <div class="relative overflow-hidden bg-gray-200 h-80">
+            <div class="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+              <i class="fas fa-image text-white text-5xl opacity-20"></i>
+            </div>
+            <div class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 cursor-pointer transition-all duration-200 shadow-md">
+              <i class="fas fa-heart text-gray-300 hover:text-red-500 transition-colors duration-200 text-lg"></i>
+            </div>
+            <div class="absolute top-4 left-4 bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+              <i class="fas fa-star"></i>
+              Recommandé
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-2">
+              <p class="text-sm text-amber-500 font-semibold uppercase tracking-wide">Cœur du Marais</p>
+              <p class="text-base text-gray-600 mt-1">Paris 4ᵉ • 75004</p>
+            </div>
+            <div class="mb-6">
+              <div class="text-4xl font-bold text-gray-900">450 000 €</div>
+              <div class="w-16 h-1 bg-amber-500 mt-2"></div>
+            </div>
+            <div class="flex items-center gap-6 mb-6 text-sm text-gray-700">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-ruler-combined text-amber-500 text-lg"></i>
+                <span class="font-semibold">75 m²</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-door-open text-amber-500 text-lg"></i>
+                <span class="font-semibold">3 pièces</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-bathtub text-amber-500 text-lg"></i>
+                <span class="font-semibold">2 sde</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-star text-amber-500"></i>
+                <span class="text-base font-semibold text-gray-900">4.8</span>
+              </div>
+              <span class="text-sm text-gray-500">(247 avis)</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">Rénové</span>
+              <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">Énergie A</span>
+            </div>
+            <button class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+
+        <!-- Property Card 2 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group">
+          <div class="relative overflow-hidden bg-gray-200 h-80">
+            <div class="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+              <i class="fas fa-image text-white text-5xl opacity-20"></i>
+            </div>
+            <div class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 cursor-pointer transition-all duration-200 shadow-md">
+              <i class="fas fa-heart text-gray-300 hover:text-red-500 transition-colors duration-200 text-lg"></i>
+            </div>
+            <div class="absolute top-4 left-4 bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+              <i class="fas fa-star"></i>
+              Recommandé
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-2">
+              <p class="text-sm text-amber-500 font-semibold uppercase tracking-wide">Presqu'île</p>
+              <p class="text-base text-gray-600 mt-1">Lyon • 69000</p>
+            </div>
+            <div class="mb-6">
+              <div class="text-4xl font-bold text-gray-900">425 000 €</div>
+              <div class="w-16 h-1 bg-amber-500 mt-2"></div>
+            </div>
+            <div class="flex items-center gap-6 mb-6 text-sm text-gray-700">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-ruler-combined text-amber-500 text-lg"></i>
+                <span class="font-semibold">82 m²</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-door-open text-amber-500 text-lg"></i>
+                <span class="font-semibold">2 pièces</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-bathtub text-amber-500 text-lg"></i>
+                <span class="font-semibold">1 sde</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-star text-amber-500"></i>
+                <span class="text-base font-semibold text-gray-900">4.5</span>
+              </div>
+              <span class="text-sm text-gray-500">(183 avis)</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">Neuf</span>
+              <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">Énergie B</span>
+            </div>
+            <button class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+
+        <!-- Property Card 3 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group">
+          <div class="relative overflow-hidden bg-gray-200 h-80">
+            <div class="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+              <i class="fas fa-image text-white text-5xl opacity-20"></i>
+            </div>
+            <div class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 cursor-pointer transition-all duration-200 shadow-md">
+              <i class="fas fa-heart text-gray-300 hover:text-red-500 transition-colors duration-200 text-lg"></i>
+            </div>
+            <div class="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+              <i class="fas fa-trending-up"></i>
+              À considérer
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-2">
+              <p class="text-sm text-amber-500 font-semibold uppercase tracking-wide">Vieux Lille</p>
+              <p class="text-base text-gray-600 mt-1">Lille • 59000</p>
+            </div>
+            <div class="mb-6">
+              <div class="text-4xl font-bold text-gray-900">565 000 €</div>
+              <div class="w-16 h-1 bg-amber-500 mt-2"></div>
+            </div>
+            <div class="flex items-center gap-6 mb-6 text-sm text-gray-700">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-ruler-combined text-amber-500 text-lg"></i>
+                <span class="font-semibold">128 m²</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-door-open text-amber-500 text-lg"></i>
+                <span class="font-semibold">4 pièces</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-bathtub text-amber-500 text-lg"></i>
+                <span class="font-semibold">2 sde</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-star text-amber-500"></i>
+                <span class="text-base font-semibold text-gray-900">4.2</span>
+              </div>
+              <span class="text-sm text-gray-500">(156 avis)</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full font-semibold">À restaurer</span>
+              <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-semibold">Énergie D</span>
+            </div>
+            <button class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+
+        <!-- Property Card 4 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group">
+          <div class="relative overflow-hidden bg-gray-200 h-80">
+            <div class="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+              <i class="fas fa-image text-white text-5xl opacity-20"></i>
+            </div>
+            <div class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 cursor-pointer transition-all duration-200 shadow-md">
+              <i class="fas fa-heart text-gray-300 hover:text-red-500 transition-colors duration-200 text-lg"></i>
+            </div>
+            <div class="absolute top-4 left-4 bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+              <i class="fas fa-star"></i>
+              Recommandé
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-2">
+              <p class="text-sm text-amber-500 font-semibold uppercase tracking-wide">Le Vieux Toulouse</p>
+              <p class="text-base text-gray-600 mt-1">Toulouse • 31000</p>
+            </div>
+            <div class="mb-6">
+              <div class="text-4xl font-bold text-gray-900">380 000 €</div>
+              <div class="w-16 h-1 bg-amber-500 mt-2"></div>
+            </div>
+            <div class="flex items-center gap-6 mb-6 text-sm text-gray-700">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-ruler-combined text-amber-500 text-lg"></i>
+                <span class="font-semibold">110 m²</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-door-open text-amber-500 text-lg"></i>
+                <span class="font-semibold">3 pièces</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-bathtub text-amber-500 text-lg"></i>
+                <span class="font-semibold">2 sde</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-star text-amber-500"></i>
+                <span class="text-base font-semibold text-gray-900">4.7</span>
+              </div>
+              <span class="text-sm text-gray-500">(219 avis)</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">Partiellement rénové</span>
+              <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">Énergie C</span>
+            </div>
+            <button class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+
+        <!-- Property Card 5 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group">
+          <div class="relative overflow-hidden bg-gray-200 h-80">
+            <div class="w-full h-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center">
+              <i class="fas fa-image text-white text-5xl opacity-20"></i>
+            </div>
+            <div class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 cursor-pointer transition-all duration-200 shadow-md">
+              <i class="fas fa-heart text-gray-300 hover:text-red-500 transition-colors duration-200 text-lg"></i>
+            </div>
+            <div class="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+              <i class="fas fa-chart-line"></i>
+              À évaluer
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-2">
+              <p class="text-sm text-amber-500 font-semibold uppercase tracking-wide">Quai Saint-Michel</p>
+              <p class="text-base text-gray-600 mt-1">Bordeaux • 33000</p>
+            </div>
+            <div class="mb-6">
+              <div class="text-4xl font-bold text-gray-900">510 000 €</div>
+              <div class="w-16 h-1 bg-amber-500 mt-2"></div>
+            </div>
+            <div class="flex items-center gap-6 mb-6 text-sm text-gray-700">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-ruler-combined text-amber-500 text-lg"></i>
+                <span class="font-semibold">105 m²</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-door-open text-amber-500 text-lg"></i>
+                <span class="font-semibold">3 pièces</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-bathtub text-amber-500 text-lg"></i>
+                <span class="font-semibold">2 sde</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-star text-amber-500"></i>
+                <span class="text-base font-semibold text-gray-900">4.6</span>
+              </div>
+              <span class="text-sm text-gray-500">(201 avis)</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">Moderne</span>
+              <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">Énergie B</span>
+            </div>
+            <button class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+
+        <!-- Property Card 6 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group">
+          <div class="relative overflow-hidden bg-gray-200 h-80">
+            <div class="w-full h-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
+              <i class="fas fa-image text-white text-5xl opacity-20"></i>
+            </div>
+            <div class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 cursor-pointer transition-all duration-200 shadow-md">
+              <i class="fas fa-heart text-gray-300 hover:text-red-500 transition-colors duration-200 text-lg"></i>
+            </div>
+            <div class="absolute top-4 left-4 bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+              <i class="fas fa-star"></i>
+              Recommandé
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-2">
+              <p class="text-sm text-amber-500 font-semibold uppercase tracking-wide">Côte d'Azur</p>
+              <p class="text-base text-gray-600 mt-1">Nice • 06000</p>
+            </div>
+            <div class="mb-6">
+              <div class="text-4xl font-bold text-gray-900">650 000 €</div>
+              <div class="w-16 h-1 bg-amber-500 mt-2"></div>
+            </div>
+            <div class="flex items-center gap-6 mb-6 text-sm text-gray-700">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-ruler-combined text-amber-500 text-lg"></i>
+                <span class="font-semibold">155 m²</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-door-open text-amber-500 text-lg"></i>
+                <span class="font-semibold">4 pièces</span>
+              </span>
+              <span class="flex items-center gap-2">
+                <i class="fas fa-bathtub text-amber-500 text-lg"></i>
+                <span class="font-semibold">3 sde</span>
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-star text-amber-500"></i>
+                <span class="text-base font-semibold text-gray-900">4.9</span>
+              </div>
+              <span class="text-sm text-gray-500">(312 avis)</span>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">Prestige</span>
+              <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">Énergie A</span>
+            </div>
+            <button class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Load More Section -->
+      <div class="flex justify-center mt-16">
+        <button class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold flex items-center gap-3 shadow-md hover:shadow-lg text-lg">
+          <i class="fas fa-refresh"></i>
+          Charger plus de propriétés
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saved Searches Section -->
+  <div class="w-full bg-white border-t border-gray-200">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-12">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Vos recherches sauvegardées</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Saved Search 1 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Paris 3 Pièces</h3>
+                <p class="text-sm text-gray-600 mt-2">3 pièces • 300k - 600k €</p>
+              </div>
+              <i class="fas fa-bookmark text-amber-500 text-xl"></i>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+              <span class="text-sm text-gray-600 font-semibold">47 nouveaux résultats</span>
+              <button class="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors duration-200">Voir</button>
+            </div>
+          </div>
+
+          <!-- Saved Search 2 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Lyon Budget</h3>
+                <p class="text-sm text-gray-600 mt-2">2-3 pièces • 250k - 400k €</p>
+              </div>
+              <i class="fas fa-bookmark text-amber-500 text-xl"></i>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+              <span class="text-sm text-gray-600 font-semibold">23 nouveaux résultats</span>
+              <button class="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors duration-200">Voir</button>
+            </div>
+          </div>
+
+          <!-- Saved Search 3 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Côte d'Azur Prestige</h3>
+                <p class="text-sm text-gray-600 mt-2">4+ pièces • 600k+ €</p>
+              </div>
+              <i class="fas fa-bookmark text-amber-500 text-xl"></i>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+              <span class="text-sm text-gray-600 font-semibold">12 nouveaux résultats</span>
+              <button class="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors duration-200">Voir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white">
+    <div class="w-full px-4 md:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <i class="fas fa-home text-white"></i>
+            </div>
+            <span class="text-lg font-bold">LUMINᵉ</span>
+          </div>
+          <p class="text-gray-400 text-sm">L'immobilier en pleine lumière. Découvrez vos propriétés idéales avec l'intelligence artificielle.</p>
+        </div>
+        <div>
+          <h4 class="font-bold mb-4">Plateforme</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Parcourir les propriétés</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Recherches sauvegardées</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Outils financiers</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Tendances marché</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold mb-4">Ressources</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Guide d'achat</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Calculatrice hypothécaire</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Rapports marché</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Support</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold mb-4">Légal</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Politique de confidentialité</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Conditions d'utilisation</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Politique cookies</a></li>
+            <li><a href="#" class="hover:text-white transition-colors duration-200">Accessibilité</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+        <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2024 LUMINᵉ. Tous droits réservés.</p>
+        <div class="flex gap-4">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200"><i class="fab fa-facebook text-lg"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200"><i class="fab fa-twitter text-lg"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200"><i class="fab fa-instagram text-lg"></i></a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200"><i class="fab fa-linkedin text-lg"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Chat Button -->
+  <div class="fixed bottom-6 right-6 hidden xl:flex flex-col gap-3 z-40">
+    <button class="w-16 h-16 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110">
+      <i class="fas fa-comment text-2xl"></i>
+    </button>
+    <div class="text-xs text-gray-500 font-semibold text-center">Discutez</div>
+  </div>
+</div>
+  </body>
+  </html>

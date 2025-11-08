@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onboarding Flow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { width: 100%; margin: 0; padding: 0; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+  </style>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINᵉ - Onboarding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    display: ['Poppins', 'sans-serif'],
+                },
+                colors: {
+                    'lumine-dark': '#2B2621',
+                    'lumine-accent': '#D4A574',
+                    'lumine-bg': '#F5F1ED',
+                    'lumine-light': '#F9F7F4',
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display {
+            font-family: 'Poppins', sans-serif;
+        }
+        .lumine-header {
+            letter-spacing: 0.15em;
+            font-weight: 700;
+        }
+        .lumine-input {
+            background-color: #F5F1ED;
+            border: 1px solid #E8E0D6;
+            color: #2B2621;
+            transition: all 0.3s ease;
+        }
+        .lumine-input:focus {
+            outline: none;
+            border-color: #D4A574;
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+            background-color: #FFFBF7;
+        }
+        .lumine-input::placeholder {
+            color: #9E8B7E;
+        }
+        .lumine-btn {
+            background-color: #D4A574;
+            color: #FFFFFF;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .lumine-btn:hover {
+            background-color: #C39464;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.25);
+        }
+        .lumine-btn:active {
+            transform: translateY(0);
+        }
+        .lumine-chip {
+            background-color: #F5F1ED;
+            border: 1.5px solid #E8E0D6;
+            color: #2B2621;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .lumine-chip:hover {
+            border-color: #D4A574;
+            background-color: #FFFBF7;
+        }
+        .lumine-chip.active {
+            background-color: #D4A574;
+            border-color: #D4A574;
+            color: #FFFFFF;
+        }
+        .lumine-progress-bar {
+            height: 3px;
+            background-color: #E8E0D6;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .lumine-progress-fill {
+            height: 100%;
+            background-color: #D4A574;
+            transition: width 0.4s ease;
+        }
+        .lumine-step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #F5F1ED;
+            color: #9E8B7E;
+            border: 1.5px solid #E8E0D6;
+        }
+        .lumine-step-indicator.active {
+            background-color: #D4A574;
+            color: #FFFFFF;
+            border-color: #D4A574;
+        }
+        .lumine-step-indicator.completed {
+            background-color: #2B2621;
+            color: #FFFFFF;
+            border-color: #2B2621;
+        }
+        input[type="range"] {
+            accent-color: #D4A574;
+        }
+        .slider-track {
+            background: linear-gradient(to right, #D4A574 0%, #D4A574 var(--value), #E8E0D6 var(--value), #E8E0D6 100%);
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F5F1ED;">
+    <div class="w-full max-w-none bg-lumine-bg flex flex-col">
+        <!-- Header -->
+        <header class="w-full max-w-none bg-white border-b border-gray-200">
+            <div class="px-4 md:px-6 lg:px-8 py-5 md:py-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-lumine-dark rounded-lg flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-lumine-accent text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-display font-bold text-lumine-dark lumine-header">LUMIN<sup class="text-sm">ᵉ</sup></h1>
+                        <p class="text-xs md:text-sm text-lumine-dark/60">L'immobilier en pleine lumière</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="w-full max-w-none flex-1 px-4 md:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
+            <div class="max-w-2xl mx-auto">
+                <!-- Progress Indicator -->
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-medium text-lumine-dark/70">Étape <span class="font-semibold" id="currentStep">1</span> sur 7</span>
+                        <span class="text-sm font-medium text-lumine-dark/70"><span id="progressPercent">14</span>%</span>
+                    </div>
+                    <div class="lumine-progress-bar">
+                        <div class="lumine-progress-fill" id="progressFill" style="width: 14%;"></div>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <div class="bg-white rounded-2xl shadow-md p-8 md:p-10 border border-gray-200">
+                    <!-- Step 1: Welcome -->
+                    <div class="step-content" id="step-1">
+                        <div class="text-center mb-10">
+                            <h2 class="text-4xl md:text-5xl font-display font-bold text-lumine-dark mb-4">Bienvenue</h2>
+                            <p class="text-lg text-lumine-dark/70 mb-2">Trouvez votre propriété idéale</p>
+                            <p class="text-base text-lumine-dark/60">En quelques secondes, accédez à des milliers de biens sélectionnés avec l'intelligence artificielle</p>
+                        </div>
+                        <div class="bg-lumine-light rounded-xl p-8 md:p-10 mb-8 text-center border border-gray-200">
+                            <i class="fas fa-home text-5xl text-lumine-accent mb-4"></i>
+                            <p class="text-lumine-dark/70">Découvrez des propriétés enrichies avec une analyse complète du marché, des coûts détaillés, et des recommandations basées sur votre profil.</p>
+                        </div>
+                        <button onclick="nextStep()" class="w-full lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg">
+                            Commencer <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Location Selection -->
+                    <div class="step-content hidden" id="step-2">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-display font-bold text-lumine-dark mb-2">Où recherchez-vous ?</h2>
+                            <p class="text-lumine-dark/60">Sélectionnez une ville, un quartier, ou une région</p>
+                        </div>
+                        <div class="space-y-4 mb-8">
+                            <label class="block">
+                                <input type="text" placeholder="Paris, Lyon, Bordeaux..." class="lumine-input w-full px-4 py-3 md:py-4 rounded-lg text-base md:text-lg" id="locationInput" value="Paris">
+                            </label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <button onclick="setLocation('Paris')" class="lumine-chip py-2 px-3 rounded-lg text-sm md:text-base">Paris</button>
+                                <button onclick="setLocation('Lyon')" class="lumine-chip py-2 px-3 rounded-lg text-sm md:text-base">Lyon</button>
+                                <button onclick="setLocation('Bordeaux')" class="lumine-chip py-2 px-3 rounded-lg text-sm md:text-base">Bordeaux</button>
+                                <button onclick="setLocation('Marseille')" class="lumine-chip py-2 px-3 rounded-lg text-sm md:text-base">Marseille</button>
+                                <button onclick="setLocation('Toulouse')" class="lumine-chip py-2 px-3 rounded-lg text-sm md:text-base">Toulouse</button>
+                                <button onclick="setLocation('Nice')" class="lumine-chip py-2 px-3 rounded-lg text-sm md:text-base">Nice</button>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="prevStep()" class="flex-1 border-2 border-lumine-accent text-lumine-accent py-3 px-6 rounded-lg font-medium text-base md:text-lg hover:bg-lumine-accent hover:text-white transition-all duration-200">
+                                Retour
+                            </button>
+                            <button onclick="nextStep()" class="flex-1 lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg">
+                                Suivant
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Budget Range -->
+                    <div class="step-content hidden" id="step-3">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-display font-bold text-lumine-dark mb-2">Quel est votre budget ?</h2>
+                            <p class="text-lumine-dark/60">Indiquez votre gamme de prix</p>
+                        </div>
+                        <div class="space-y-8 mb-8">
+                            <div>
+                                <label class="block text-sm font-medium text-lumine-dark mb-3">Budget minimum : <span class="font-semibold text-lumine-accent" id="minBudgetDisplay">€150,000</span></label>
+                                <input type="range" id="minBudget" min="50000" max="1000000" step="10000" value="150000" class="w-full h-2 rounded-lg appearance-none cursor-pointer" oninput="updateBudget()">
+                                <div class="flex justify-between text-xs text-lumine-dark/50 mt-2">
+                                    <span>€50K</span>
+                                    <span>€1M</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-lumine-dark mb-3">Budget maximum : <span class="font-semibold text-lumine-accent" id="maxBudgetDisplay">€600,000</span></label>
+                                <input type="range" id="maxBudget" min="50000" max="1000000" step="10000" value="600000" class="w-full h-2 rounded-lg appearance-none cursor-pointer" oninput="updateBudget()">
+                                <div class="flex justify-between text-xs text-lumine-dark/50 mt-2">
+                                    <span>€50K</span>
+                                    <span>€1M</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-lumine-light rounded-lg p-4 md:p-5 mb-8 border border-gray-200">
+                            <p class="text-sm text-lumine-dark/70"><span class="font-semibold text-lumine-dark">Votre gamme :</span> €<span id="budgetRange">150,000</span> à €<span id="budgetRangeMax">600,000</span></p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="prevStep()" class="flex-1 border-2 border-lumine-accent text-lumine-accent py-3 px-6 rounded-lg font-medium text-base md:text-lg hover:bg-lumine-accent hover:text-white transition-all duration-200">
+                                Retour
+                            </button>
+                            <button onclick="nextStep()" class="flex-1 lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg">
+                                Suivant
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Property Type -->
+                    <div class="step-content hidden" id="step-4">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-display font-bold text-lumine-dark mb-2">Type de propriété</h2>
+                            <p class="text-lumine-dark/60">Sélectionnez un ou plusieurs types</p>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+                            <button onclick="togglePropertyType(this)" class="lumine-chip py-4 px-4 rounded-lg text-base font-medium active">
+                                <i class="fas fa-building block mb-2 text-xl"></i>
+                                <div>Appartement</div>
+                            </button>
+                            <button onclick="togglePropertyType(this)" class="lumine-chip py-4 px-4 rounded-lg text-base font-medium">
+                                <i class="fas fa-house block mb-2 text-xl"></i>
+                                <div>Maison</div>
+                            </button>
+                            <button onclick="togglePropertyType(this)" class="lumine-chip py-4 px-4 rounded-lg text-base font-medium">
+                                <i class="fas fa-door-open block mb-2 text-xl"></i>
+                                <div>Studio</div>
+                            </button>
+                            <button onclick="togglePropertyType(this)" class="lumine-chip py-4 px-4 rounded-lg text-base font-medium">
+                                <i class="fas fa-warehouse block mb-2 text-xl"></i>
+                                <div>Loft</div>
+                            </button>
+                            <button onclick="togglePropertyType(this)" class="lumine-chip py-4 px-4 rounded-lg text-base font-medium">
+                                <i class="fas fa-tree block mb-2 text-xl"></i>
+                                <div>Maison de Campagne</div>
+                            </button>
+                            <button onclick="togglePropertyType(this)" class="lumine-chip py-4 px-4 rounded-lg text-base font-medium">
+                                <i class="fas fa-circle-question block mb-2 text-xl"></i>
+                                <div>Autres</div>
+                            </button>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="prevStep()" class="flex-1 border-2 border-lumine-accent text-lumine-accent py-3 px-6 rounded-lg font-medium text-base md:text-lg hover:bg-lumine-accent hover:text-white transition-all duration-200">
+                                Retour
+                            </button>
+                            <button onclick="nextStep()" class="flex-1 lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg">
+                                Suivant
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Size Requirements -->
+                    <div class="step-content hidden" id="step-5">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-display font-bold text-lumine-dark mb-2">Taille de la propriété</h2>
+                            <p class="text-lumine-dark/60">Indiquez vos préférences en mètres carrés</p>
+                        </div>
+                        <div class="space-y-6 mb-8">
+                            <div>
+                                <label class="block text-sm font-medium text-lumine-dark mb-3">Surface minimum : <span class="font-semibold text-lumine-accent" id="minSizeDisplay">40 m²</span></label>
+                                <input type="range" id="minSize" min="20" max="300" step="5" value="40" class="w-full h-2 rounded-lg appearance-none cursor-pointer" oninput="updateSize()">
+                                <div class="flex justify-between text-xs text-lumine-dark/50 mt-2">
+                                    <span>20 m²</span>
+                                    <span>300 m²</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-lumine-dark mb-3">Nombre de pièces : <span class="font-semibold text-lumine-accent" id="roomsDisplay">2</span></label>
+                                <div class="flex gap-2 flex-wrap">
+                                    <button onclick="setRooms(1)" class="lumine-chip py-2 px-4 rounded-lg text-sm font-medium">1 pièce</button>
+                                    <button onclick="setRooms(2)" class="lumine-chip py-2 px-4 rounded-lg text-sm font-medium active">2 pièces</button>
+                                    <button onclick="setRooms(3)" class="lumine-chip py-2 px-4 rounded-lg text-sm font-medium">3 pièces</button>
+                                    <button onclick="setRooms(4)" class="lumine-chip py-2 px-4 rounded-lg text-sm font-medium">4 pièces</button>
+                                    <button onclick="setRooms(5)" class="lumine-chip py-2 px-4 rounded-lg text-sm font-medium">5+ pièces</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="prevStep()" class="flex-1 border-2 border-lumine-accent text-lumine-accent py-3 px-6 rounded-lg font-medium text-base md:text-lg hover:bg-lumine-accent hover:text-white transition-all duration-200">
+                                Retour
+                            </button>
+                            <button onclick="nextStep()" class="flex-1 lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg">
+                                Suivant
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Email Entry -->
+                    <div class="step-content hidden" id="step-6">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-display font-bold text-lumine-dark mb-2">Votre adresse e-mail</h2>
+                            <p class="text-lumine-dark/60">Nous vous enverrons un lien magique pour accéder instantanément</p>
+                        </div>
+                        <div class="space-y-4 mb-8">
+                            <label class="block">
+                                <input type="email" placeholder="vous@exemple.fr" class="lumine-input w-full px-4 py-3 md:py-4 rounded-lg text-base md:text-lg" id="emailInput" value="marie.dubois@email.fr">
+                            </label>
+                            <div class="bg-lumine-light rounded-lg p-4 md:p-5 border border-gray-200 flex gap-3">
+                                <i class="fas fa-shield-halved text-lumine-accent flex-shrink-0 mt-1"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-lumine-dark mb-1">Connexion sécurisée</p>
+                                    <p class="text-xs text-lumine-dark/60">Pas de mot de passe à mémoriser. Un lien magique vous sera envoyé par e-mail.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 mb-8">
+                            <input type="checkbox" id="newsConsent" checked class="w-5 h-5 rounded border-2 border-lumine-accent accent-lumine-accent mt-1 cursor-pointer">
+                            <label for="newsConsent" class="text-sm text-lumine-dark/70">
+                                J'accepte de recevoir des notifications sur les propriétés qui correspondent à mes critères
+                            </label>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="prevStep()" class="flex-1 border-2 border-lumine-accent text-lumine-accent py-3 px-6 rounded-lg font-medium text-base md:text-lg hover:bg-lumine-accent hover:text-white transition-all duration-200">
+                                Retour
+                            </button>
+                            <button onclick="nextStep()" class="flex-1 lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg">
+                                Envoyer le lien magique
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: Confirmation -->
+                    <div class="step-content hidden" id="step-7">
+                        <div class="text-center">
+                            <div class="mb-8 flex justify-center">
+                                <div class="w-20 h-20 bg-lumine-accent rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-4xl"></i>
+                                </div>
+                            </div>
+                            <h2 class="text-4xl font-display font-bold text-lumine-dark mb-4">Vous êtes prêt !</h2>
+                            <p class="text-lg text-lumine-dark/70 mb-8">Un lien d'accès vous a été envoyé à :</p>
+                            <p class="text-xl font-semibold text-lumine-dark mb-10 break-all" id="confirmEmail">marie.dubois@email.fr</p>
+                            <div class="bg-lumine-light rounded-xl p-8 border border-gray-200 mb-10 text-center">
+                                <p class="text-sm text-lumine-dark/70 mb-3">Vous allez être redirigé automatiquement dans</p>
+                                <p class="text-4xl font-display font-bold text-lumine-accent mb-3"><span id="countdown">5</span>s</p>
+                                <p class="text-sm text-lumine-dark/60">ou</p>
+                            </div>
+                            <button onclick="completeOnboarding()" class="w-full lumine-btn py-3 px-6 rounded-lg font-medium text-base md:text-lg mb-4">
+                                Accès à LUMINᵉ <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                            <p class="text-sm text-lumine-dark/60">Vous n'avez pas reçu le lien ? <button onclick="resendEmail()" class="text-lumine-accent font-medium hover:underline">Renvoyer</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="mt-10 text-center">
+                    <p class="text-sm text-lumine-dark/60">
+                        En continuant, vous acceptez nos <button class="text-lumine-accent font-medium hover:underline">conditions d'utilisation</button> et <button class="text-lumine-accent font-medium hover:underline">politique de confidentialité</button>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 7;
+
+        function updateProgress() {
+            document.getElementById('currentStep').textContent = currentStep;
+            const percentage = Math.round((currentStep / totalSteps) * 100);
+            document.getElementById('progressPercent').textContent = percentage;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep();
+            }
+        }
+
+        function showStep() {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Show current step
+            document.getElementById('step-' + currentStep).classList.remove('hidden');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setLocation(location) {
+            document.getElementById('locationInput').value = location;
+            document.querySelectorAll('#step-2 .lumine-chip').forEach((btn, idx) => {
+                const cities = ['Paris', 'Lyon', 'Bordeaux', 'Marseille', 'Toulouse', 'Nice'];
+                if (cities[idx] === location) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function updateBudget() {
+            const minBudget = parseInt(document.getElementById('minBudget').value);
+            const maxBudget = parseInt(document.getElementById('maxBudget').value);
+            
+            document.getElementById('minBudgetDisplay').textContent = '€' + minBudget.toLocaleString('fr-FR');
+            document.getElementById('maxBudgetDisplay').textContent = '€' + maxBudget.toLocaleString('fr-FR');
+            document.getElementById('budgetRange').textContent = minBudget.toLocaleString('fr-FR');
+            document.getElementById('budgetRangeMax').textContent = maxBudget.toLocaleString('fr-FR');
+        }
+
+        function togglePropertyType(button) {
+            button.classList.toggle('active');
+        }
+
+        function updateSize() {
+            const minSize = parseInt(document.getElementById('minSize').value);
+            document.getElementById('minSizeDisplay').textContent = minSize + ' m²';
+        }
+
+        function setRooms(rooms) {
+            document.getElementById('roomsDisplay').textContent = rooms === 5 ? '5+' : rooms;
+            document.querySelectorAll('#step-5 .lumine-chip').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function completeOnboarding() {
+            document.getElementById('confirmEmail').textContent = document.getElementById('emailInput').value;
+            window.location.href = '/app/properties';
+        }
+
+        function resendEmail() {
+            alert('Lien magique renvoyé à ' + document.getElementById('emailInput').value);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+            
+            // Start countdown on final step
+            document.getElementById('confirmEmail').textContent = document.getElementById('emailInput').value;
+        });
+
+        // Auto-increment countdown
+        setInterval(() => {
+            if (currentStep === 7) {
+                const countdownEl = document.getElementById('countdown');
+                let count = parseInt(countdownEl.textContent);
+                if (count > 0) {
+                    countdownEl.textContent = count - 1;
+                }
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
+  </body>
+  </html>
