@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enhanced Property Detail Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    html, body { width: 100%; margin: 0; padding: 0; min-height: 0; overflow-x: hidden; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+  </style>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail Propriété - LUMINᵉ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: #f5f1ed;
+        }
+        .lumine-primary {
+            color: #2B2621;
+        }
+        .lumine-accent {
+            color: #D4A574;
+        }
+        .lumine-bg {
+            background-color: #f5f1ed;
+        }
+        .lumine-card {
+            background-color: #ffffff;
+            border: 1px solid #e8e4df;
+        }
+        .lumine-text {
+            color: #2B2621;
+        }
+        .lumine-accent-underline {
+            border-bottom: 3px solid #D4A574;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+        .lumine-badge {
+            background-color: #F5F1ED;
+            color: #2B2621;
+            border: 1px solid #D4A574;
+        }
+        .lumine-section {
+            background-color: #ffffff;
+            border-left: 4px solid #D4A574;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+        }
+        .lumine-header {
+            background-color: #2B2621;
+            color: #f5f1ed;
+        }
+        .lumine-accent-button {
+            background-color: #D4A574;
+            color: #2B2621;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .lumine-accent-button:hover {
+            background-color: #c79563;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+        }
+        .lumine-icon-accent {
+            color: #D4A574;
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        .image-gallery-container {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(135deg, #e8e4df 0%, #f5f1ed 100%);
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        .image-gallery-main {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e8e4df 0%, #f5f1ed 100%);
+        }
+        .gallery-nav-button {
+            background-color: rgba(43, 38, 33, 0.7);
+            color: #f5f1ed;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .gallery-nav-button:hover {
+            background-color: #D4A574;
+            color: #2B2621;
+        }
+        .renovation-item {
+            padding: 1rem;
+            background-color: #f9f7f4;
+            border-left: 3px solid #D4A574;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .financial-calculator {
+            background-color: #f9f7f4;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e8e4df;
+        }
+        .financial-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e8e4df;
+        }
+        .financial-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            color: #2B2621;
+            padding-top: 1rem;
+            border-top: 2px solid #D4A574;
+            margin-top: 1rem;
+        }
+        .amenity-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #F5F1ED;
+            border: 1px solid #D4A574;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            color: #2B2621;
+            margin: 0.25rem;
+        }
+        .spec-grid-item {
+            padding: 1rem;
+            text-align: center;
+            border-right: 1px solid #e8e4df;
+        }
+        .spec-grid-item:last-child {
+            border-right: none;
+        }
+        .metric-large {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #D4A574;
+        }
+        .metric-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        .cta-primary {
+            background-color: #2B2621;
+            color: #f5f1ed;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            text-decoration: none;
+            border: none;
+        }
+        .cta-primary:hover {
+            background-color: #3a322b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(43, 38, 33, 0.25);
+        }
+        .cta-secondary {
+            background-color: #D4A574;
+            color: #2B2621;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            text-decoration: none;
+            border: none;
+        }
+        .cta-secondary:hover {
+            background-color: #c79563;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(212, 165, 116, 0.3);
+        }
+        .highlight-box {
+            background-color: #f9f7f4;
+            padding: 1.5rem;
+            border-left: 4px solid #D4A574;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .footer-section {
+            background-color: #2B2621;
+            color: #f5f1ed;
+        }
+    </style>
+</head>
+<body class="lumine-bg smooth-scroll">
+
+<!-- Header Navigation -->
+<header class="lumine-header shadow-md w-full">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-lightbulb text-2xl" style="color: #D4A574;"></i>
+                <span class="text-2xl font-bold tracking-tight">LUMIN<span class="text-xs align-super">ᵉ</span></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 hover:bg-gray-800 rounded transition-all" aria-label="Ajouter aux favoris">
+                    <i class="fas fa-heart text-xl" style="color: #D4A574;"></i>
+                </button>
+                <button class="p-2 hover:bg-gray-800 rounded transition-all" aria-label="Partager">
+                    <i class="fas fa-share text-xl" style="color: #D4A574;"></i>
+                </button>
+                <button class="p-2 hover:bg-gray-800 rounded transition-all" aria-label="Retour">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="w-full max-w-none">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
+
+        <!-- Hero Gallery Section -->
+        <section class="mb-8">
+            <div class="image-gallery-container relative">
+                <div class="image-gallery-main">
+                    <i class="fas fa-image text-6xl text-gray-300"></i>
+                </div>
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <button class="gallery-nav-button" aria-label="Image précédente">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="gallery-nav-button" aria-label="Image suivante">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-4 left-4 right-4">
+                    <div class="grid grid-cols-6 gap-2">
+                        <div class="bg-gray-300 rounded aspect-square cursor-pointer hover:opacity-70 transition"></div>
+                        <div class="bg-gray-300 rounded aspect-square cursor-pointer hover:opacity-70 transition"></div>
+                        <div class="bg-gray-300 rounded aspect-square cursor-pointer hover:opacity-70 transition"></div>
+                        <div class="bg-gray-300 rounded aspect-square cursor-pointer hover:opacity-70 transition"></div>
+                        <div class="bg-gray-300 rounded aspect-square cursor-pointer hover:opacity-70 transition"></div>
+                        <div class="bg-gray-400 text-white rounded aspect-square flex items-center justify-center cursor-pointer text-sm font-bold">+8</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid Layout: Main Content + Sidebar -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Main Content Column -->
+            <div class="lg:col-span-2">
+
+                <!-- Quick Price & Specs -->
+                <section class="lumine-card shadow-sm mb-8 p-6">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <h1 class="text-4xl font-bold lumine-text mb-2">
+                                Haussmannien Rénové
+                            </h1>
+                            <p class="text-lg" style="color: #666;">
+                                <i class="fas fa-map-marker-alt lumine-icon-accent"></i>
+                                <span class="ml-2">Paris 11<span class="text-xs align-super">ᵉ</span> - Marais</span>
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm" style="color: #666;">Prix au m²</div>
+                            <div class="metric-large">€3,850</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-0 border-t border-b border-gray-200 py-4">
+                        <div class="spec-grid-item">
+                            <div class="metric-large">180</div>
+                            <div class="metric-label">m² Surface</div>
+                        </div>
+                        <div class="spec-grid-item">
+                            <div class="metric-large">4</div>
+                            <div class="metric-label">Chambres</div>
+                        </div>
+                        <div class="spec-grid-item">
+                            <div class="metric-large">2</div>
+                            <div class="metric-label">Salles de Bain</div>
+                        </div>
+                        <div class="spec-grid-item">
+                            <div class="metric-large">A</div>
+                            <div class="metric-label">Classe Énergie</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-3">
+                        <i class="fas fa-check-circle" style="color: #D4A574;"></i>
+                        <span class="text-sm" style="color: #D4A574;">Recommandé pour vous</span>
+                    </div>
+                </section>
+
+                <!-- Property Information Block -->
+                <section class="lumine-section">
+                    <h2 class="text-2xl font-bold lumine-text mb-4 flex items-center gap-2">
+                        <i class="fas fa-home lumine-icon-accent"></i>
+                        La Propriété
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-semibold lumine-text mb-1">Adresse Complète</h3>
+                            <p style="color: #666;">142 Boulevard Beaumarchais, 75011 Paris, France</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold lumine-text mb-1">Construction & Rénovation</h3>
+                            <p style="color: #666;">Construit en 1890 · Rénové en 2019 · Accès direct surcôté</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold lumine-text mb-1">Caractéristiques Principales</h3>
+                            <p style="color: #666;">Luminosité exceptionnelle, parquet d'époque, moulures originales, boiseries restaurées, plafonds hauts (3,5m), cheminée fonctionnelle</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold lumine-text mb-1">Extérieur</h3>
+                            <p style="color: #666;">Balcon filant, exposition sud-est, vue sur boulevard</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Analysis Section -->
+                <section class="lumine-section">
+                    <h2 class="text-2xl font-bold lumine-text mb-4 flex items-center gap-2">
+                        <i class="fas fa-sparkles lumine-icon-accent"></i>
+                        Analyse LUMIN<span class="text-xs align-super">ᵉ</span>
+                    </h2>
+                    <p class="text-sm" style="color: #666; margin-bottom: 1.5rem;">Ce que LUMIN<span class="text-xs align-super">ᵉ</span> a détecté</p>
+
+                    <div class="space-y-3">
+                        <div class="highlight-box">
+                            <h4 class="font-semibold lumine-text mb-2 flex items-center gap-2">
+                                <i class="fas fa-check-circle" style="color: #2B2621;"></i>
+                                État Général Excellent
+                            </h4>
+                            <p class="text-sm" style="color: #666;">Toiture rénovée, isolation thermique moderne, système électrique aux normes, plomberie actualisée</p>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4 class="font-semibold lumine-text mb-2 flex items-center gap-2">
+                                <i class="fas fa-image" style="color: #2B2621;"></i>
+                                Détails Remarqués
+                            </h4>
+                            <p class="text-sm" style="color: #666;">Parquet chêne d'époque, moulures en stuc, plafonds ornementés, boiseries d'origine, cheminée marbre</p>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4 class="font-semibold lumine-text mb-2 flex items-center gap-2">
+                                <i class="fas fa-wrench" style="color: #2B2621;"></i>
+                                Travaux Mineurs Recommandés
+                            </h4>
+                            <p class="text-sm" style="color: #666;">Peinture intérieure (~€3,500), remplacement joints salle de bain (~€1,200), remplacement certains joints mastics (~€800)</p>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4 class="font-semibold lumine-text mb-2 flex items-center gap-2">
+                                <i class="fas fa-lightbulb" style="color: #2B2621;"></i>
+                                Données Structurées Détectées
+                            </h4>
+                            <ul class="text-sm space-y-1" style="color: #666;">
+                                <li>• Cuisine : Équipée, moderne, 10m²</li>
+                                <li>• Salle de bain : 1 principale + 1 secondaire</li>
+                                <li>• Chauffage : Radiateurs fonte + clim réversible</li>
+                                <li>• Stationnement : Garage souterrain inclus</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Location Intelligence -->
+                <section class="lumine-section">
+                    <h2 class="text-2xl font-bold lumine-text mb-4 flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt lumine-icon-accent"></i>
+                        Quartier & Accessibilité
+                    </h2>
+
+                    <div class="mb-6">
+                        <h3 class="font-semibold lumine-text mb-3">Commodités à Proximité</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="amenity-tag">
+                                <i class="fas fa-graduation-cap lumine-icon-accent"></i>
+                                École primaire à 180m
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="fas fa-heart lumine-icon-accent"></i>
+                                Hôpital à 420m
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="fas fa-shopping-cart lumine-icon-accent"></i>
+                                Supermarché à 250m
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="fas fa-dumbbell lumine-icon-accent"></i>
+                                Gym à 350m
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="fas fa-utensils lumine-icon-accent"></i>
+                                Restaurants à 100m
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="fas fa-tree lumine-icon-accent"></i>
+                                Parc à 280m
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="font-semibold lumine-text mb-3">Transports & Trajet</h3>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gray-50 rounded flex items-center justify-between">
+                                <span class="flex items-center gap-2" style="color: #2B2621;">
+                                    <i class="fas fa-train lumine-icon-accent"></i>
+                                    <span>Métro Bastille (Ligne 1, 5, 8)</span>
+                                </span>
+                                <span class="font-semibold" style="color: #D4A574;">4 min à pied</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded flex items-center justify-between">
+                                <span class="flex items-center gap-2" style="color: #2B2621;">
+                                    <i class="fas fa-car lumine-icon-accent"></i>
+                                    <span>La Défense (Bureau)</span>
+                                </span>
+                                <span class="font-semibold" style="color: #D4A574;">22 min - 12km</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded flex items-center justify-between">
+                                <span class="flex items-center gap-2" style="color: #2B2621;">
+                                    <i class="fas fa-bicycle lumine-icon-accent"></i>
+                                    <span>Vélo à demande</span>
+                                </span>
+                                <span class="font-semibold" style="color: #D4A574;">28 min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold lumine-text mb-2">Caractère du Quartier</h3>
+                        <p class="text-sm" style="color: #666;">Le Marais, quartier vivant et cosmopolite, associe calme résidentiel et activité dynamique. Galeries d'art, restaurants, boutiques indépendantes. Patrimoine historique préservé. Atmosphère bohème chic très recherchée.</p>
+                    </div>
+                </section>
+
+                <!-- Legal & Risk Data -->
+                <section class="lumine-section">
+                    <h2 class="text-2xl font-bold lumine-text mb-4 flex items-center gap-2">
+                        <i class="fas fa-shield lumine-icon-accent"></i>
+                        Données Légales & Risques
+                    </h2>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="p-3 bg-blue-50 rounded border-l-4" style="border-color: #D4A574;">
+                            <h4 class="font-semibold lumine-text text-sm mb-1">Historique DVF (Demandes de Valeurs Foncières)</h4>
+                            <p class="text-sm" style="color: #666;">Dernier achat en 2016 à €520,000 · Appréciation: +€169,000 (+32%) en 8 ans</p>
+                        </div>
+
+                        <div class="p-3 bg-blue-50 rounded border-l-4" style="border-color: #D4A574;">
+                            <h4 class="font-semibold lumine-text text-sm mb-1">Performance Prix/m²</h4>
+                            <p class="text-sm" style="color: #666;">Marché 2016: €2,889/m² → Aujourd'hui €3,850/m² (+33% croissance)</p>
+                        </div>
+
+                        <div class="p-3 bg-green-50 rounded border-l-4" style="border-color: #D4A574;">
+                            <h4 class="font-semibold lumine-text text-sm mb-1">Diagnostic Énergétique (DPE)</h4>
+                            <p class="text-sm" style="color: #666;">Classe A · Consommation: 85 kWh/m²/an · Émissions CO₂: 12 kg/m²/an</p>
+                        </div>
+
+                        <div class="p-3 bg-green-50 rounded border-l-4" style="border-color: #D4A574;">
+                            <h4 class="font-semibold lumine-text text-sm mb-1">Risques Naturels</h4>
+                            <p class="text-sm" style="color: #666;">
+                                <i class="fas fa-check-circle" style="color: #2B2621;"></i>
+                                Inondation: Très faible · Géologique: Nul · Pollution: Faible
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold lumine-text mb-2">Déclarations Requises</h3>
+                        <p class="text-sm" style="color: #666;">État parasitaire certifié · Amiante: Diagnostic complet · Termites: Nul · Radon: Niveau normal</p>
+                    </div>
+                </section>
+
+                <!-- Renovation Insights -->
+                <section class="lumine-section">
+                    <h2 class="text-2xl font-bold lumine-text mb-4 flex items-center gap-2">
+                        <i class="fas fa-tools lumine-icon-accent"></i>
+                        Travaux & Rénovation
+                    </h2>
+
+                    <div class="mb-6">
+                        <h3 class="font-semibold lumine-text mb-3 text-sm">Travaux Mineurs (À Prévoir)</h3>
+                        <div class="space-y-2">
+                            <div class="renovation-item">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="font-semibold lumine-text">Peinture intérieure</span>
+                                    <span style="color: #D4A574; font-weight: 600;">€3,500</span>
+                                </div>
+                                <p class="text-xs" style="color: #666;">DIY possible: €1,200 | Professionnel: €3,500</p>
+                            </div>
+
+                            <div class="renovation-item">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="font-semibold lumine-text">Joints salle de bain</span>
+                                    <span style="color: #D4A574; font-weight: 600;">€1,200</span>
+                                </div>
+                                <p class="text-xs" style="color: #666;">DIY possible: €400 | Professionnel: €1,200</p>
+                            </div>
+
+                            <div class="renovation-item">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="font-semibold lumine-text">Mastics & calfeutrages</span>
+                                    <span style="color: #D4A574; font-weight: 600;">€800</span>
+                                </div>
+                                <p class="text-xs" style="color: #666;">Professionnel: €800 | Délai: 3-4 jours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box" style="margin-bottom: 0;">
+                        <h4 class="font-semibold lumine-text mb-2">Budget Total Recommandé</h4>
+                        <div class="text-2xl font-bold lumine-text">€5,500</div>
+                        <p class="text-xs mt-1" style="color: #666;">Travaux mineurs pour maintien optimal · Délai: 5-7 jours</p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Sidebar: Financial & Action -->
+            <div class="lg:col-span-1">
+
+                <!-- Sticky Price Card -->
+                <div class="lumine-card shadow-sm p-6 sticky top-8 mb-8">
+                    <div class="mb-6">
+                        <p class="text-xs uppercase tracking-wider lumine-icon-accent font-semibold">Prix Total</p>
+                        <h3 class="text-5xl font-bold lumine-text mt-2 mb-1">
+                            <span class="lumine-accent-underline">€689,000</span>
+                        </h3>
+                        <p class="text-sm" style="color: #666;">€3,850 par m²</p>
+                    </div>
+
+                    <div class="space-y-2 mb-6 pb-6 border-b border-gray-200">
+                        <div class="flex justify-between text-sm">
+                            <span style="color: #666;">Frais d'agence</span>
+                            <span class="font-semibold lumine-text">~€20,670</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span style="color: #666;">Frais de notaire</span>
+                            <span class="font-semibold lumine-text">~€51,675</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span style="color: #666;">Taxe foncière (annuelle)</span>
+                            <span class="font-semibold lumine-text">~€2,100</span>
+                        </div>
+                    </div>
+
+                    <!-- Financial Calculator -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold lumine-text mb-3 text-sm">Simulateur Financier</h4>
+
+                        <div class="financial-calculator">
+                            <div class="mb-4">
+                                <label class="text-xs uppercase tracking-wider lumine-icon-accent font-semibold block mb-2">Apport Initial</label>
+                                <input type="range" min="0" max="689000" value="137800" class="w-full accent-blue-600" style="accent-color: #D4A574;">
+                                <div class="flex justify-between mt-2 text-sm">
+                                    <span style="color: #666;">20%</span>
+                                    <span class="font-semibold lumine-text">€137,800</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="text-xs uppercase tracking-wider lumine-icon-accent font-semibold block mb-2">Durée du Prêt</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button class="py-2 px-2 text-xs font-semibold rounded bg-gray-100 hover:bg-gray-200 transition">15 ans</button>
+                                    <button class="py-2 px-2 text-xs font-semibold rounded" style="background-color: #D4A574; color: #2B2621;">20 ans</button>
+                                    <button class="py-2 px-2 text-xs font-semibold rounded bg-gray-100 hover:bg-gray-200 transition">25 ans</button>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="text-xs uppercase tracking-wider lumine-icon-accent font-semibold block mb-2">Taux d'Intérêt</label>
+                                <div class="p-3 bg-blue-50 rounded border border-blue-200">
+                                    <p class="text-sm font-semibold lumine-text">3.85% TMA</p>
+                                    <p class="text-xs" style="color: #666; margin-top: 0.25rem;">Marché actuel</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Costs -->
+                    <div class="mb-6 p-4 rounded" style="background-color: #f9f7f4; border: 1px solid #e8e4df;">
+                        <p class="text-xs uppercase tracking-wider lumine-icon-accent font-semibold mb-3">Coût Mensuel Estimé</p>
+                        <div class="space-y-2 text-sm mb-3">
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Remboursement prêt</span>
+                                <span class="font-semibold lumine-text">€2,450</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Assurance prêt</span>
+                                <span class="font-semibold lumine-text">€165</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Taxe foncière</span>
+                                <span class="font-semibold lumine-text">€175</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Énergie estimée</span>
+                                <span class="font-semibold lumine-text">€90</span>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t" style="border-color: #D4A574;">
+                            <div class="flex justify-between">
+                                <span class="font-semibold lumine-text">Total Mensuel</span>
+                                <span class="text-2xl font-bold lumine-accent-underline">€2,880</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Annual Projection -->
+                    <div class="mb-6 p-4 rounded" style="background-color: #f9f7f4; border: 1px solid #e8e4df;">
+                        <p class="text-xs uppercase tracking-wider lumine-icon-accent font-semibold mb-3">Projection Annuelle</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Charges mensuelles</span>
+                                <span class="font-semibold lumine-text">€34,560</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Maintenance estimée</span>
+                                <span class="font-semibold lumine-text">€2,000</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: #666;">Travaux (5 ans moyenne)</span>
+                                <span class="font-semibold luMine-text">€1,100/an</span>
+                            </div>
+                            <div class="pt-2 border-t mt-2" style="border-color: #D4A574;">
+                                <div class="flex justify-between font-semibold">
+                                    <span class="lumine-text">Total Annuel</span>
+                                    <span class="text-lg lumine-accent">€37,660</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button class="cta-primary w-full">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Contacter l'Agence
+                        </button>
+                        <button class="cta-secondary w-full">
+                            <i class="fas fa-heart mr-2"></i>
+                            Ajouter aux Favoris
+                        </button>
+                        <button class="w-full py-3 px-4 rounded font-semibold border-2" style="border-color: #D4A574; color: #D4A574; background-color: transparent; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f9f7f4'" onmouseout="this.style.backgroundColor='transparent'">
+                            <i class="fas fa-bell mr-2"></i>
+                            Me Notifier
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Recommendation -->
+                <div class="lumine-card shadow-sm p-6" style="background: linear-gradient(135deg, #f9f7f4 0%, #f5f1ed 100%); border: 2px solid #D4A574;">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-lightbulb text-2xl lumine-icon-accent"></i>
+                        <h3 class="font-bold lumine-text">Verdict LUMIN<span class="text-xs align-super">ᵉ</span></h3>
+                    </div>
+
+                    <p class="text-sm" style="color: #666; margin-bottom: 1rem;">Basé sur votre profil & critères</p>
+
+                    <div class="flex gap-2 mb-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background-color: #D4A574; color: #2B2621;">Très Pertinent</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100" style="color: #2563eb;">Bon Rapport</span>
+                    </div>
+
+                    <p class="text-sm lumine-text leading-relaxed">
+                        Cette propriété correspond parfaitement à votre profil. L'excellent emplacement, l'état impeccable et le fort potentiel d'appréciation en font un investissement de référence. À prix comparable, top 7% des annonces qualifiantes.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer-section w-full mt-16 py-12">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <h4 class="text-lg font-bold mb-3">LUMIN<span class="text-xs align-super">ᵉ</span></h4>
+                <p class="text-sm" style="color: #d4a574;">L'immobilier en pleine lumière. Découvrez plus de 50,000 propriétés avec intelligence artificielle.</p>
+            </div>
+            <div>
+                <h5 class="font-semibold mb-3">Plateforme</h5>
+                <ul class="text-sm space-y-2" style="color: #a8a49f;">
+                    <li><a href="#" class="hover:text-white transition">Annonces</a></li>
+                    <li><a href="#" class="hover:text-white transition">Guides Immobiliers</a></li>
+                    <li><a href="#" class="hover:text-white transition">Comparateur</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-semibold mb-3">Support</h5>
+                <ul class="text-sm space-y-2" style="color: #a8a49f;">
+                    <li><a href="#" class="hover:text-white transition">Contact</a></li>
+                    <li><a href="#" class="hover:text-white transition">FAQ</a></li>
+                    <li><a href="#" class="hover:text-white transition">Aide</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-semibold mb-3">Légal</h5>
+                <ul class="text-sm space-y-2" style="color: #a8a49f;">
+                    <li><a href="#" class="hover:text-white transition">Conditions d'Utilisation</a></li>
+                    <li><a href="#" class="hover:text-white transition">Politique de Confidentialité</a></li>
+                    <li><a href="#" class="hover:text-white transition">Gestion des Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t" style="border-color: #3a322b; padding-top: 2rem; text-align: center;">
+            <p class="text-sm" style="color: #a8a49f;">&copy; 2024 LUMIN<span class="text-xs align-super">ᵉ</span>. Tous droits réservés. | 800+ sources, 1 seule plateforme d'exception</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
+  </body>
+  </html>
