@@ -43,14 +43,14 @@ export function PropertyDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream-100 flex items-center justify-center">
+      <div className="min-h-screen bg-lumine-neutral-100 flex items-center justify-center">
         <div className="text-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="w-12 h-12 border-4 border-warm-terracotta border-t-transparent rounded-full mx-auto"
+            className="w-12 h-12 border-4 border-lumine-accent border-t-transparent rounded-full mx-auto"
           />
-          <p className="mt-4 text-elegant-stone">Chargement de l'annonce...</p>
+          <p className="mt-4 text-lumine-neutral-700">Chargement de l'annonce...</p>
         </div>
       </div>
     );
@@ -58,9 +58,9 @@ export function PropertyDetailPage() {
 
   if (!property) {
     return (
-      <div className="min-h-screen bg-cream-100 flex items-center justify-center">
+      <div className="min-h-screen bg-lumine-neutral-100 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-elegant-stone">Annonce non trouvée</p>
+          <p className="text-lumine-neutral-700">Annonce non trouvée</p>
           <Button onClick={() => navigate('/feed')} className="mt-4">
             Retour au feed
           </Button>
@@ -101,12 +101,12 @@ export function PropertyDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream-100">
+    <div className="min-h-screen bg-lumine-neutral-100">
       {/* Header with back button */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-50 bg-cream-50/90 backdrop-blur-lg border-b border-warm-taupe/20"
+        className="sticky top-0 z-50 bg-lumine-neutral-100/90 backdrop-blur-lg border-b border-lumine-neutral-400/20"
       >
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button
@@ -195,24 +195,24 @@ export function PropertyDetailPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+              <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                 <CardContent className="p-6">
-                  <h1 className="text-3xl font-serif font-bold text-elegant-charcoal mb-2">
+                  <h1 className="text-3xl font-display font-bold text-lumine-primary mb-2">
                     {property.title}
                   </h1>
-                  <div className="flex items-center gap-2 text-elegant-stone">
-                    <MapPin size={20} className="text-warm-terracotta" />
+                  <div className="flex items-center gap-2 text-lumine-neutral-700">
+                    <MapPin size={20} className="text-lumine-accent" />
                     <span className="text-lg">
                       {property.city} ({property.zipcode})
                     </span>
                   </div>
 
                   <div className="mt-6 flex items-baseline gap-2">
-                    <span className="text-4xl font-serif font-bold text-warm-terracotta">
+                    <span className="text-4xl font-display font-bold text-lumine-accent">
                       {property.price.toLocaleString('fr-FR')} €
                     </span>
                     {property.price_per_meter && (
-                      <span className="text-elegant-stone">
+                      <span className="text-lumine-neutral-700">
                         ({parseFloat(property.price_per_meter).toLocaleString('fr-FR')} €/m²)
                       </span>
                     )}
@@ -227,54 +227,54 @@ export function PropertyDetailPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+              <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {property.surface && (
                       <div className="flex flex-col items-center text-center">
-                        <div className="w-12 h-12 bg-warm-terracotta/10 rounded-full flex items-center justify-center mb-2">
-                          <Ruler className="text-warm-terracotta600" size={24} />
+                        <div className="w-12 h-12 bg-lumine-accent/10 rounded-full flex items-center justify-center mb-2">
+                          <Ruler className="text-lumine-accent600" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-elegant-charcoal">
+                        <span className="text-2xl font-bold text-lumine-primary">
                           {property.surface} m²
                         </span>
-                        <span className="text-sm text-elegant-stone">Surface</span>
+                        <span className="text-sm text-lumine-neutral-700">Surface</span>
                       </div>
                     )}
 
                     {property.rooms && (
                       <div className="flex flex-col items-center text-center">
-                        <div className="w-12 h-12 bg-nature-sage/10 rounded-full flex items-center justify-center mb-2">
-                          <Home className="text-nature-olive" size={24} />
+                        <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mb-2">
+                          <Home className="text-success" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-elegant-charcoal">
+                        <span className="text-2xl font-bold text-lumine-primary">
                           {property.rooms}
                         </span>
-                        <span className="text-sm text-elegant-stone">Pièces</span>
+                        <span className="text-sm text-lumine-neutral-700">Pièces</span>
                       </div>
                     )}
 
                     {property.bedrooms && (
                       <div className="flex flex-col items-center text-center">
-                        <div className="w-12 h-12 bg-warm-beige rounded-full flex items-center justify-center mb-2">
-                          <Bed className="text-warm-terracotta" size={24} />
+                        <div className="w-12 h-12 bg-lumine-neutral-200 rounded-full flex items-center justify-center mb-2">
+                          <Bed className="text-lumine-accent" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-elegant-charcoal">
+                        <span className="text-2xl font-bold text-lumine-primary">
                           {property.bedrooms}
                         </span>
-                        <span className="text-sm text-elegant-stone">Chambres</span>
+                        <span className="text-sm text-lumine-neutral-700">Chambres</span>
                       </div>
                     )}
 
                     {property.construction_year && (
                       <div className="flex flex-col items-center text-center">
-                        <div className="w-12 h-12 bg-warm-sand rounded-full flex items-center justify-center mb-2">
-                          <Calendar className="text-warm-taupe" size={24} />
+                        <div className="w-12 h-12 bg-lumine-neutral-200 rounded-full flex items-center justify-center mb-2">
+                          <Calendar className="text-lumine-neutral-400" size={24} />
                         </div>
-                        <span className="text-2xl font-bold text-elegant-charcoal">
+                        <span className="text-2xl font-bold text-lumine-primary">
                           {property.construction_year}
                         </span>
-                        <span className="text-sm text-elegant-stone">Construction</span>
+                        <span className="text-sm text-lumine-neutral-700">Construction</span>
                       </div>
                     )}
                   </div>
@@ -289,12 +289,12 @@ export function PropertyDetailPage() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+                <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                   <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold text-elegant-charcoal mb-4">
+                    <h2 className="text-2xl font-bold text-lumine-primary mb-4">
                       Description
                     </h2>
-                    <p className="text-elegant-charcoal whitespace-pre-line leading-relaxed">
+                    <p className="text-lumine-primary whitespace-pre-line leading-relaxed">
                       {property.description}
                     </p>
                   </CardContent>
@@ -309,10 +309,10 @@ export function PropertyDetailPage() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+                <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                   <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold text-elegant-charcoal mb-4 flex items-center gap-2">
-                      <BadgeCheck className="text-warm-terracotta600" />
+                    <h2 className="text-2xl font-bold text-lumine-primary mb-4 flex items-center gap-2">
+                      <BadgeCheck className="text-lumine-accent600" />
                       Caractéristiques
                     </h2>
                     <div className="flex flex-wrap gap-2">
@@ -337,16 +337,16 @@ export function PropertyDetailPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+              <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                 <CardContent className="p-6">
-                  <h2 className="text-2xl font-bold text-elegant-charcoal mb-4">
+                  <h2 className="text-2xl font-bold text-lumine-primary mb-4">
                     Informations complémentaires
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {property.floor !== null && (
                       <div className="flex items-center gap-3">
-                        <Building2 className="text-elegant-stone/70" size={20} />
-                        <span className="text-elegant-stone/70700">
+                        <Building2 className="text-lumine-neutral-700/70" size={20} />
+                        <span className="text-lumine-neutral-700/70700">
                           Étage: {property.floor}
                         </span>
                       </div>
@@ -354,8 +354,8 @@ export function PropertyDetailPage() {
 
                     {property.land_surface && (
                       <div className="flex items-center gap-3">
-                        <Ruler className="text-elegant-stone/70" size={20} />
-                        <span className="text-elegant-stone/70700">
+                        <Ruler className="text-lumine-neutral-700/70" size={20} />
+                        <span className="text-lumine-neutral-700/70700">
                           Terrain: {property.land_surface} m²
                         </span>
                       </div>
@@ -363,8 +363,8 @@ export function PropertyDetailPage() {
 
                     {property.property_type && (
                       <div className="flex items-center gap-3">
-                        <Home className="text-elegant-stone/70" size={20} />
-                        <span className="text-elegant-stone/70700">
+                        <Home className="text-lumine-neutral-700/70" size={20} />
+                        <span className="text-lumine-neutral-700/70700">
                           Type: {property.property_type === 'house' ? 'Maison' : 'Appartement'}
                         </span>
                       </div>
@@ -372,8 +372,8 @@ export function PropertyDetailPage() {
 
                     {property.transaction_type !== null && (
                       <div className="flex items-center gap-3">
-                        <Euro className="text-elegant-stone/70" size={20} />
-                        <span className="text-elegant-stone/70700">
+                        <Euro className="text-lumine-neutral-700/70" size={20} />
+                        <span className="text-lumine-neutral-700/70700">
                           {property.transaction_type === 0 ? 'Vente' : 'Location'}
                         </span>
                       </div>
@@ -393,9 +393,9 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+                <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-elegant-charcoal mb-4">
+                    <h3 className="text-xl font-bold text-lumine-primary mb-4">
                       Performance énergétique
                     </h3>
 
@@ -403,19 +403,19 @@ export function PropertyDetailPage() {
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <Zap className="text-warm-terracotta" size={20} />
+                            <Zap className="text-lumine-accent" size={20} />
                             <span className="font-semibold">DPE</span>
                           </div>
                           <Badge
                             className={`${
-                              dpeColors[property.dpe_category] || 'bg-elegant-stone'
+                              dpeColors[property.dpe_category] || 'bg-lumine-neutral-700'
                             } text-white text-lg px-4 py-1`}
                           >
                             {property.dpe_category}
                           </Badge>
                         </div>
                         {property.dpe_value && (
-                          <p className="text-sm text-elegant-stone">
+                          <p className="text-sm text-lumine-neutral-700">
                             {property.dpe_value} kWh/m²/an
                           </p>
                         )}
@@ -426,19 +426,19 @@ export function PropertyDetailPage() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <Leaf className="text-nature-sage" size={20} />
+                            <Leaf className="text-success" size={20} />
                             <span className="font-semibold">GES</span>
                           </div>
                           <Badge
                             className={`${
-                              dpeColors[property.ges_category] || 'bg-elegant-stone'
+                              dpeColors[property.ges_category] || 'bg-lumine-neutral-700'
                             } text-white text-lg px-4 py-1`}
                           >
                             {property.ges_category}
                           </Badge>
                         </div>
                         {property.ges_value && (
-                          <p className="text-sm text-elegant-stone">
+                          <p className="text-sm text-lumine-neutral-700">
                             {property.ges_value} kg CO₂/m²/an
                           </p>
                         )}
@@ -456,16 +456,16 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+                <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-elegant-charcoal mb-4">
+                    <h3 className="text-xl font-bold text-lumine-primary mb-4">
                       Contact
                     </h3>
 
                     {property.agency_name && (
                       <div className="mb-3">
-                        <p className="text-sm text-elegant-stone mb-1">Agence</p>
-                        <p className="font-semibold text-elegant-charcoal">
+                        <p className="text-sm text-lumine-neutral-700 mb-1">Agence</p>
+                        <p className="font-semibold text-lumine-primary">
                           {property.agency_name}
                         </p>
                       </div>
@@ -473,10 +473,10 @@ export function PropertyDetailPage() {
 
                     {property.agency_phone && (
                       <div className="mb-4">
-                        <p className="text-sm text-elegant-stone mb-1">Téléphone</p>
+                        <p className="text-sm text-lumine-neutral-700 mb-1">Téléphone</p>
                         <a
                           href={`tel:${property.agency_phone}`}
-                          className="flex items-center gap-2 text-warm-terracotta600 font-semibold hover:underline"
+                          className="flex items-center gap-2 text-lumine-accent600 font-semibold hover:underline"
                         >
                           <Phone size={16} />
                           {property.agency_phone}
@@ -499,10 +499,10 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+                <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-elegant-charcoal mb-4 flex items-center gap-2">
-                      <MapIcon className="text-warm-terracotta" />
+                    <h3 className="text-xl font-bold text-lumine-primary mb-4 flex items-center gap-2">
+                      <MapIcon className="text-lumine-accent" />
                       Localisation
                     </h3>
                     <div className="aspect-video bg-cream-200 rounded-lg overflow-hidden">
@@ -522,7 +522,7 @@ export function PropertyDetailPage() {
                         }`}
                       />
                     </div>
-                    <p className="text-sm text-elegant-stone mt-2">
+                    <p className="text-sm text-lumine-neutral-700 mt-2">
                       Coordonnées: {parseFloat(property.latitude).toFixed(6)},{' '}
                       {parseFloat(property.longitude).toFixed(6)}
                     </p>
@@ -538,7 +538,7 @@ export function PropertyDetailPage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+                <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                   <CardContent className="p-6">
                     <Button
                       variant="outline"
@@ -559,12 +559,12 @@ export function PropertyDetailPage() {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <Card className="border border-warm-taupe/10 shadow-xl bg-cream-50 rounded-3xl">
+              <Card className="border border-lumine-neutral-400/10 shadow-xl bg-lumine-neutral-100 rounded-3xl">
                 <CardContent className="p-6">
-                  <h3 className="text-sm font-semibold text-elegant-stone mb-3">
+                  <h3 className="text-sm font-semibold text-lumine-neutral-700 mb-3">
                     Informations
                   </h3>
-                  <div className="space-y-2 text-sm text-elegant-stone">
+                  <div className="space-y-2 text-sm text-lumine-neutral-700">
                     <p>
                       Créée le:{' '}
                       {new Date(property.melo_created_at).toLocaleDateString('fr-FR')}
@@ -575,7 +575,7 @@ export function PropertyDetailPage() {
                         {new Date(property.melo_updated_at).toLocaleDateString('fr-FR')}
                       </p>
                     )}
-                    <p className="text-xs text-elegant-stone/70 mt-4">
+                    <p className="text-xs text-lumine-neutral-700/70 mt-4">
                       ID: {property.melo_uuid}
                     </p>
                   </div>
