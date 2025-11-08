@@ -6,7 +6,6 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { LumineLogoWithTagline } from '../components/LumineLogo';
-import { BRAND_TAGLINE } from '../lib/theme-lumine';
 
 export function AuthPage() {
   const [email, setEmail] = useState('');
