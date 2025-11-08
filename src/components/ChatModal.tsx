@@ -51,10 +51,10 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
         .eq('user_id', user.id)
         .single();
 
-      if (profile?.conversation_history && profile.conversation_history.length > 0) {
+      if (profile && (profile as any).conversation_history && (profile as any).conversation_history.length > 0) {
         // Convert history to messages
         const historyMessages: Message[] = [];
-        profile.conversation_history.forEach((item: any) => {
+        (profile as any).conversation_history.forEach((item: any) => {
           historyMessages.push({
             role: 'assistant',
             content: item.question,
@@ -67,7 +67,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
           });
         });
         setMessages(historyMessages);
-        setProfileCompleteness(profile.profile_completeness || 0);
+        setProfileCompleteness((profile as any).profile_completeness || 0);
       } else {
         // Start with welcome message
         setMessages([
@@ -142,7 +142,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
         extracted_preferences: response.extractedPreferences,
         profile_completeness: response.profileCompleteness,
         updated_at: new Date().toISOString(),
-      });
+      } as any);
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages((prev) => [

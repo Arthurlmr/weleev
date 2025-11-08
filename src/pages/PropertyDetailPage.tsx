@@ -7,7 +7,7 @@ import { getPropertyEnrichment } from '../lib/gemini-client';
 import {
   ArrowLeft, MapPin, Home, Phone, Zap, BadgeCheck,
   Share2, Heart, ChevronLeft, ChevronRight,
-  Sparkles, Shield, Wrench, CheckCircle, AlertTriangle,
+  Sparkles, Shield, Wrench, CheckCircle,
   X, MessageCircle, TrendingUp, TrendingDown, Navigation
 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
@@ -100,26 +100,29 @@ export function PropertyDetailPage() {
           .eq('user_id', user.id)
           .single();
 
+        const analysisData = existingAnalysis as any;
+        const scoreRecord = scoreData as any;
+
         setEnrichmentData({
           vision: {
             generalCondition: {
-              status: existingAnalysis.general_condition,
-              details: existingAnalysis.general_condition_details,
+              status: analysisData.general_condition,
+              details: analysisData.general_condition_details,
             },
-            remarkedFeatures: existingAnalysis.remarked_features || [],
-            recommendedWorks: existingAnalysis.recommended_works || [],
-            confidence: existingAnalysis.vision_confidence_score || 0,
+            remarkedFeatures: analysisData.remarked_features || [],
+            recommendedWorks: analysisData.recommended_works || [],
+            confidence: analysisData.vision_confidence_score || 0,
           },
           extraction: {
-            structuredData: existingAnalysis.structured_data || {},
-            tags: existingAnalysis.tags || [],
-            missingInfo: existingAnalysis.missing_info || [],
+            structuredData: analysisData.structured_data || {},
+            tags: analysisData.tags || [],
+            missingInfo: analysisData.missing_info || [],
           },
-          score: scoreData ? {
-            score: scoreData.personalized_score,
-            breakdown: scoreData.score_breakdown,
-            recommendation: scoreData.recommendation_badge,
-            reason: scoreData.recommendation_reason,
+          score: scoreRecord ? {
+            score: scoreRecord.personalized_score,
+            breakdown: scoreRecord.score_breakdown,
+            recommendation: scoreRecord.recommendation_badge,
+            reason: scoreRecord.recommendation_reason,
           } : null,
         });
       }
