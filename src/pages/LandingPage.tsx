@@ -62,7 +62,7 @@ export function LandingPage() {
             className="space-y-8 md:space-y-10"
           >
             <div className="space-y-4">
-              <LumineLogoWithTagline showTagline variant="dark" size="xl" />
+              <LumineLogoWithTagline showTagline size="xl" />
             </div>
 
             <p className="text-lg md:text-xl text-lumine-primary leading-relaxed max-w-md">

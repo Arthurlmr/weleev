@@ -4,9 +4,8 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { getPropertyEnrichment } from '../lib/gemini-client';
 import {
-  ArrowLeft, MapPin, Ruler, Bed, Home, Euro, Calendar,
-  Building2, Phone, ExternalLink, Leaf, Zap, BadgeCheck,
-  Map as MapIcon, Share2, Heart, ChevronLeft, ChevronRight,
+  ArrowLeft, MapPin, Home, Phone, Zap, BadgeCheck,
+  Share2, Heart, ChevronLeft, ChevronRight,
   Sparkles, Shield, Wrench, CheckCircle, AlertTriangle
 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
@@ -137,17 +136,6 @@ export function PropertyDetailPage() {
 
   const goToNext = () => {
     setCurrentImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
-  };
-
-  // DPE color mapping
-  const dpeColors: Record<string, string> = {
-    A: 'bg-green-500',
-    B: 'bg-lime-500',
-    C: 'bg-yellow-500',
-    D: 'bg-orange-400',
-    E: 'bg-orange-500',
-    F: 'bg-red-500',
-    G: 'bg-red-700',
   };
 
   // Financial calculations

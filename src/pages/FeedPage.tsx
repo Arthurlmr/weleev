@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { calculatePropertyScore } from '@/lib/gemini-client';
 import { Listing } from '@/types';
-import { Search, SlidersHorizontal, MapPin, Heart, Map, List, X, Home, User, Grid3x3, ArrowRight } from 'lucide-react';
+import { SlidersHorizontal, MapPin, Heart, List, X, Home, User, Grid3x3, ArrowRight } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -28,7 +28,7 @@ export function FeedPage() {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'apartment' | 'house'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'map' | 'hybrid'>('hybrid');
   const [surfaceMin, setSurfaceMin] = useState<number>(0);
