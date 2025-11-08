@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { useProfile } from './hooks/useProfile';
+import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { FeedPage } from './pages/FeedPage';
@@ -64,8 +65,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
 
+        {/* Onboarding route */}
         <Route
           path="/onboarding"
           element={
@@ -75,6 +79,7 @@ function App() {
           }
         />
 
+        {/* Property detail route */}
         <Route
           path="/property/:id"
           element={
@@ -84,8 +89,9 @@ function App() {
           }
         />
 
+        {/* Protected app routes */}
         <Route
-          path="/"
+          path="/app"
           element={
             <ProtectedRoute>
               <MainLayout />
@@ -98,7 +104,13 @@ function App() {
           <Route path="account" element={<AccountPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/feed" replace />} />
+        {/* Legacy /feed redirect */}
+        <Route path="/feed" element={<Navigate to="/app/feed" replace />} />
+        <Route path="/favorites" element={<Navigate to="/app/favorites" replace />} />
+        <Route path="/account" element={<Navigate to="/app/account" replace />} />
+
+        {/* 404 fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
