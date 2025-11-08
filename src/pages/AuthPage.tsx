@@ -5,6 +5,8 @@ import { Mail, AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { LumineLogoWithTagline } from '../components/LumineLogo';
+import { BRAND_TAGLINE } from '../lib/theme-lumine';
 
 export function AuthPage() {
   const [email, setEmail] = useState('');
@@ -43,11 +45,11 @@ export function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-cream-100 via-warm-beige to-cream-200 px-4 relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-lumine-neutral-100 via-lumine-neutral-200 to-lumine-neutral-300 px-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-20 left-20 w-72 h-72 bg-warm-terracotta/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          className="absolute top-20 left-20 w-72 h-72 bg-lumine-accent/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
           animate={{
             x: [0, 100, 0],
             y: [0, -100, 0],
@@ -59,7 +61,7 @@ export function AuthPage() {
           }}
         />
         <motion.div
-          className="absolute bottom-20 right-20 w-72 h-72 bg-nature-sage/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          className="absolute bottom-20 right-20 w-72 h-72 bg-success/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
           animate={{
             x: [0, -100, 0],
             y: [0, 100, 0],
@@ -72,7 +74,7 @@ export function AuthPage() {
           }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/2 w-72 h-72 bg-warm-sand/30 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          className="absolute top-1/2 left-1/2 w-72 h-72 bg-lumine-neutral-400/30 rounded-full mix-blend-multiply filter blur-xl opacity-70"
           animate={{
             x: [-100, 100, -100],
             y: [100, -100, 100],
@@ -101,14 +103,19 @@ export function AuthPage() {
           className="text-center mb-8"
         >
           <motion.div
-            className="inline-flex items-center justify-center w-16 h-16 bg-warm-terracotta rounded-2xl mb-4 shadow-lg"
+            className="inline-flex items-center justify-center w-16 h-16 bg-lumine-accent rounded-2xl mb-4 shadow-lg"
             whileHover={{ scale: 1.05, rotate: 5 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Sparkles className="w-8 h-8 text-cream-50" />
+            <Sparkles className="w-8 h-8 text-white" />
           </motion.div>
-          <h1 className="text-4xl font-serif font-bold text-elegant-charcoal mb-2">Weleev</h1>
-          <p className="text-elegant-stone">Trouvez votre bien idéal en quelques clics</p>
+          <LumineLogoWithTagline
+            size="xl"
+            color="primary"
+            showTagline={true}
+            taglineSize="md"
+            className="inline-block"
+          />
         </motion.div>
 
         {/* Auth card */}
@@ -117,21 +124,21 @@ export function AuthPage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Card className="border-0 shadow-2xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+          <Card className="border-0 shadow-2xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-serif font-bold text-center text-elegant-charcoal">Connexion</CardTitle>
-              <CardDescription className="text-center text-elegant-stone">
+              <CardTitle className="text-2xl font-display font-medium text-center text-lumine-primary">Connexion</CardTitle>
+              <CardDescription className="text-center text-lumine-neutral-700">
                 Entrez votre email pour recevoir un lien de connexion sécurisé
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-elegant-charcoal">
+                  <label htmlFor="email" className="text-sm font-medium text-lumine-primary">
                     Adresse email
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-elegant-stone w-5 h-5" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lumine-neutral-700 w-5 h-5" />
                     <Input
                       id="email"
                       type="email"
@@ -160,7 +167,7 @@ export function AuthPage() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 p-3 bg-nature-sage/10 border border-nature-sage/30 rounded-lg text-nature-olive text-sm"
+                    className="flex items-center gap-2 p-3 bg-success/10 border border-success/30 rounded-lg text-lumine-primary text-sm"
                   >
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                     <span>{message}</span>
