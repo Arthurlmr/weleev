@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
 import { getPropertyEnrichment } from '../lib/gemini-client';
 import {
   ArrowLeft, MapPin, Home, Phone, Zap, BadgeCheck,
   Share2, Heart, ChevronLeft, ChevronRight,
-  Sparkles, Shield, Wrench, CheckCircle, AlertTriangle
+  Sparkles, Shield, Wrench, CheckCircle,
+  X, MessageCircle, TrendingUp, TrendingDown, Navigation
 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
+import { ChatModal } from '../components/ChatModal';
 
 // Calculate monthly payment
 function calculateMonthlyPayment(
@@ -35,11 +38,14 @@ function calculateMonthlyPayment(
 export function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enrichmentData, setEnrichmentData] = useState<any>(null);
   const [loadingEnrichment, setLoadingEnrichment] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
 
   // Financial simulator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
@@ -60,8 +66,8 @@ export function PropertyDetailPage() {
         if (error) throw error;
         setProperty(data);
 
-        // Load AI enrichment data
-        loadEnrichment(data);
+        // Load existing AI analysis from DB (NO automatic analysis)
+        await loadExistingAnalysis(Number(id));
       } catch (error) {
         console.error('Error loading property:', error);
       } finally {
@@ -72,23 +78,78 @@ export function PropertyDetailPage() {
     loadProperty();
   }, [id]);
 
-  const loadEnrichment = async (prop: any) => {
-    if (!prop) return;
+  // Load existing analysis from database (cached)
+  const loadExistingAnalysis = async (propertyId: number) => {
+    if (!user) return;
+
+    try {
+      // Check if analysis exists
+      const { data: existingAnalysis } = await supabase
+        .from('ai_property_analysis')
+        .select('*')
+        .eq('property_id', propertyId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingAnalysis) {
+        // Check if score exists
+        const { data: scoreData } = await supabase
+          .from('user_property_scores')
+          .select('*')
+          .eq('property_id', propertyId)
+          .eq('user_id', user.id)
+          .single();
+
+        const analysisData = existingAnalysis as any;
+        const scoreRecord = scoreData as any;
+
+        setEnrichmentData({
+          vision: {
+            generalCondition: {
+              status: analysisData.general_condition,
+              details: analysisData.general_condition_details,
+            },
+            remarkedFeatures: analysisData.remarked_features || [],
+            recommendedWorks: analysisData.recommended_works || [],
+            confidence: analysisData.vision_confidence_score || 0,
+          },
+          extraction: {
+            structuredData: analysisData.structured_data || {},
+            tags: analysisData.tags || [],
+            missingInfo: analysisData.missing_info || [],
+          },
+          score: scoreRecord ? {
+            score: scoreRecord.personalized_score,
+            breakdown: scoreRecord.score_breakdown,
+            recommendation: scoreRecord.recommendation_badge,
+            reason: scoreRecord.recommendation_reason,
+          } : null,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading existing analysis:', error);
+    }
+  };
+
+  // Manual AI analysis (triggered by user button click)
+  const triggerAIAnalysis = async () => {
+    if (!property || !user) return;
 
     setLoadingEnrichment(true);
     try {
       const allImages = [
-        ...(prop.pictures_remote || []),
-        ...(prop.images || []),
+        ...(property.pictures_remote || []),
+        ...(property.images || []),
       ].filter(Boolean);
 
-      const imageUrls = allImages.slice(0, 5); // Analyze first 5 images
-      const description = prop.description || prop.title || '';
+      const imageUrls = allImages.slice(0, 5);
+      const description = property.description || property.title || '';
 
-      const data = await getPropertyEnrichment(prop.id, imageUrls, description);
+      const data = await getPropertyEnrichment(property.id, imageUrls, description);
       setEnrichmentData(data);
     } catch (error) {
-      console.error('Error loading enrichment:', error);
+      console.error('Error triggering AI analysis:', error);
+      alert('Erreur lors de l\'analyse IA. Veuillez réessayer.');
     } finally {
       setLoadingEnrichment(false);
     }
@@ -194,62 +255,204 @@ export function PropertyDetailPage() {
       {/* Main Content */}
       <main className="w-full max-w-none">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
-          {/* Hero Gallery */}
-          <section className="mb-8">
-            <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-lumine-neutral-200 to-lumine-neutral-300">
-              {currentImage ? (
-                <img
-                  src={currentImage}
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Home className="text-lumine-neutral-500" size={64} />
+          {/* Hero Section: Image + AVIS LUMINᵉ */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {/* Image Gallery - 2/3 width */}
+            <div className="lg:col-span-2">
+              {/* Main Image */}
+              <div
+                className="relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-lumine-neutral-200 to-lumine-neutral-300 cursor-pointer group"
+                onClick={() => setShowImageModal(true)}
+              >
+                {currentImage ? (
+                  <img
+                    src={currentImage}
+                    alt={property.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Home className="text-lumine-neutral-500" size={64} />
+                  </div>
+                )}
+
+                {/* Navigation arrows */}
+                {allImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToPrevious();
+                      }}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-lumine-primary/70 text-lumine-neutral-100 rounded-full flex items-center justify-center hover:bg-lumine-accent hover:text-lumine-primary transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToNext();
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-lumine-primary/70 text-lumine-neutral-100 rounded-full flex items-center justify-center hover:bg-lumine-accent hover:text-lumine-primary transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+                  </>
+                )}
+
+                {/* Image counter */}
+                <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {allImages.length || 1}
                 </div>
-              )}
+              </div>
 
-              {/* Navigation buttons */}
+              {/* Thumbnails - 8 max */}
               {allImages.length > 1 && (
-                <>
-                  <button
-                    onClick={goToPrevious}
-                    className="absolute top-4 right-16 bg-lumine-primary/70 text-lumine-neutral-100 px-3 py-2 rounded hover:bg-lumine-accent hover:text-lumine-primary transition-all"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    onClick={goToNext}
-                    className="absolute top-4 right-4 bg-lumine-primary/70 text-lumine-neutral-100 px-3 py-2 rounded hover:bg-lumine-accent hover:text-lumine-primary transition-all"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </>
-              )}
-
-              {/* Thumbnails */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="grid grid-cols-6 gap-2">
-                  {allImages.slice(0, 5).map((img, index) => (
+                <div className="grid grid-cols-8 gap-2 mt-3">
+                  {allImages.slice(0, 8).map((img, index) => (
                     <div
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`bg-lumine-neutral-300 rounded aspect-square cursor-pointer hover:opacity-70 transition overflow-hidden ${
-                        index === currentImageIndex ? 'ring-2 ring-lumine-accent' : ''
+                      className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        index === currentImageIndex
+                          ? 'ring-2 ring-lumine-accent scale-105'
+                          : 'opacity-70 hover:opacity-100'
                       }`}
                     >
                       <img src={img} alt="" className="w-full h-full object-cover" />
                     </div>
                   ))}
-                  {allImages.length > 5 && (
-                    <div className="bg-lumine-neutral-700 text-white rounded aspect-square flex items-center justify-center cursor-pointer text-sm font-bold">
-                      +{allImages.length - 5}
-                    </div>
-                  )}
                 </div>
+              )}
+            </div>
+
+            {/* AVIS LUMINᵉ - 1/3 width sticky */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                <Card className="border-2 border-lumine-accent shadow-lg bg-gradient-to-br from-lumine-neutral-100 to-lumine-neutral-200 rounded-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="text-lumine-accent" size={24} />
+                      <h3 className="font-bold text-lumine-primary text-lg">
+                        AVIS LUMIN<span className="text-xs align-super">ᵉ</span>
+                      </h3>
+                    </div>
+
+                    {!enrichmentData ? (
+                      <div className="space-y-4">
+                        <p className="text-sm text-lumine-neutral-700">
+                          Découvrez l'analyse IA complète de cette propriété adaptée à votre profil.
+                        </p>
+                        <Button
+                          onClick={triggerAIAnalysis}
+                          disabled={loadingEnrichment}
+                          className="w-full bg-lumine-accent hover:bg-lumine-accent-dark text-lumine-primary"
+                        >
+                          {loadingEnrichment ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-lumine-primary/30 border-t-lumine-primary rounded-full animate-spin mr-2" />
+                              Analyse en cours...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="mr-2" size={16} />
+                              Analyser avec IA
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Score */}
+                        {enrichmentData.score && (
+                          <div className="text-center p-4 bg-white rounded-lg">
+                            <div className="text-4xl font-bold text-lumine-accent mb-1">
+                              {enrichmentData.score.score}/10
+                            </div>
+                            <div className="text-xs text-lumine-neutral-700">Score personnalisé</div>
+                            {enrichmentData.score.recommendation && (
+                              <Badge className="mt-2 bg-amber-100 text-amber-700">
+                                {enrichmentData.score.recommendation === 'favorite' ? '⭐ Coup de cœur' :
+                                 enrichmentData.score.recommendation === 'recommended' ? '✓ Recommandé' :
+                                 '⚡ Tendance'}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Location enrichie */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-lumine-primary">
+                            <Navigation size={14} className="text-lumine-accent" />
+                            Localisation
+                          </div>
+                          <p className="text-sm text-lumine-neutral-700">
+                            {property.city} {property.zipcode && `- ${property.zipcode}`}
+                          </p>
+                        </div>
+
+                        {/* Points forts */}
+                        {enrichmentData.vision?.remarkedFeatures && enrichmentData.vision.remarkedFeatures.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-lumine-primary">
+                              <TrendingUp size={14} className="text-green-600" />
+                              Points forts
+                            </div>
+                            <ul className="space-y-1">
+                              {enrichmentData.vision.remarkedFeatures.slice(0, 3).map((feature: string, i: number) => (
+                                <li key={i} className="text-sm text-lumine-neutral-700 flex items-start gap-2">
+                                  <CheckCircle size={14} className="text-green-600 mt-0.5 flex-shrink-0" />
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Points à améliorer */}
+                        {enrichmentData.vision?.recommendedWorks && enrichmentData.vision.recommendedWorks.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-lumine-primary">
+                              <TrendingDown size={14} className="text-orange-600" />
+                              À prévoir
+                            </div>
+                            <ul className="space-y-1">
+                              {enrichmentData.vision.recommendedWorks.slice(0, 2).map((work: any, i: number) => (
+                                <li key={i} className="text-sm text-lumine-neutral-700 flex items-start gap-2">
+                                  <Wrench size={14} className="text-orange-600 mt-0.5 flex-shrink-0" />
+                                  <span>{work.description}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Caractéristiques clés */}
+                        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-lumine-neutral-400/20">
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-lumine-primary">{property.surface || '-'}</div>
+                            <div className="text-xs text-lumine-neutral-700">m²</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-lumine-primary">{property.rooms || '-'}</div>
+                            <div className="text-xs text-lumine-neutral-700">pièces</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-lumine-primary">{property.dpe_category || '-'}</div>
+                            <div className="text-xs text-lumine-neutral-700">DPE</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-lumine-primary">{property.construction_year || '-'}</div>
+                            <div className="text-xs text-lumine-neutral-700">Année</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
             </div>
-          </section>
+          </div>
 
           {/* Grid Layout: Main Content + Sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -305,19 +508,6 @@ export function PropertyDetailPage() {
                       <div className="text-sm text-lumine-neutral-700">Classe Énergie</div>
                     </div>
                   </div>
-
-                  {enrichmentData?.score?.recommendation && (
-                    <div className="mt-6 flex items-center gap-3">
-                      <CheckCircle className="text-lumine-accent" />
-                      <span className="text-sm text-lumine-accent font-medium">
-                        {enrichmentData.score.recommendation === 'favorite'
-                          ? 'Coup de cœur pour vous'
-                          : enrichmentData.score.recommendation === 'recommended'
-                          ? 'Recommandé pour vous'
-                          : 'À considérer'}
-                      </span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
@@ -352,23 +542,16 @@ export function PropertyDetailPage() {
               </section>
 
               {/* AI Analysis Section */}
-              <section className="bg-white border-l-4 border-lumine-accent p-6 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold text-lumine-primary mb-4 flex items-center gap-2">
-                  <Sparkles className="text-lumine-accent" />
-                  Analyse LUMIN<span className="text-xs align-super">ᵉ</span>
-                </h2>
-                <p className="text-sm text-lumine-neutral-700 mb-6">
-                  Ce que LUMIN<span className="text-xs align-super">ᵉ</span> a détecté
-                </p>
+              {enrichmentData && (
+                <section className="bg-white border-l-4 border-lumine-accent p-6 rounded-lg shadow-sm">
+                  <h2 className="text-2xl font-bold text-lumine-primary mb-4 flex items-center gap-2">
+                    <Sparkles className="text-lumine-accent" />
+                    Analyse LUMIN<span className="text-xs align-super">ᵉ</span>
+                  </h2>
+                  <p className="text-sm text-lumine-neutral-700 mb-6">
+                    Ce que LUMIN<span className="text-xs align-super">ᵉ</span> a détecté
+                  </p>
 
-                {loadingEnrichment ? (
-                  <div className="text-center py-8">
-                    <div className="w-8 h-8 border-4 border-lumine-accent/30 border-t-lumine-accent rounded-full animate-spin mx-auto mb-3" />
-                    <p className="text-sm text-lumine-neutral-700">
-                      Analyse IA en cours...
-                    </p>
-                  </div>
-                ) : enrichmentData ? (
                   <div className="space-y-3">
                     {/* General condition */}
                     {enrichmentData.vision?.generalCondition && (
@@ -444,15 +627,8 @@ export function PropertyDetailPage() {
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="text-center py-8 bg-lumine-neutral-100 rounded-lg">
-                    <AlertTriangle className="text-lumine-neutral-500 mx-auto mb-3" size={32} />
-                    <p className="text-sm text-lumine-neutral-700">
-                      Analyse IA non disponible pour cette propriété
-                    </p>
-                  </div>
-                )}
-              </section>
+                </section>
+              )}
 
               {/* Legal & Risk Data */}
               <section className="bg-white border-l-4 border-lumine-accent p-6 rounded-lg shadow-sm">
@@ -669,42 +845,83 @@ export function PropertyDetailPage() {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* AI Recommendation */}
-                {enrichmentData?.score && (
-                  <Card className="border-2 border-lumine-accent shadow-sm bg-gradient-to-br from-lumine-neutral-100 to-lumine-neutral-200 rounded-xl">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Sparkles className="text-lumine-accent" size={24} />
-                        <h3 className="font-bold text-lumine-primary">
-                          Verdict LUMIN<span className="text-xs align-super">ᵉ</span>
-                        </h3>
-                      </div>
-
-                      <p className="text-sm text-lumine-neutral-700 mb-4">
-                        Basé sur votre profil & critères
-                      </p>
-
-                      <div className="flex gap-2 mb-4">
-                        <Badge className="bg-lumine-accent text-lumine-primary">
-                          Score: {enrichmentData.score.score}/10
-                        </Badge>
-                        {enrichmentData.score.recommendation === 'favorite' && (
-                          <Badge className="bg-blue-100 text-blue-700">Coup de cœur</Badge>
-                        )}
-                      </div>
-
-                      <p className="text-sm text-lumine-primary leading-relaxed">
-                        {enrichmentData.score.reason}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Floating Chat Button */}
+      <button
+        onClick={() => setShowChatModal(true)}
+        className="fixed bottom-8 right-8 w-14 h-14 bg-lumine-accent hover:bg-lumine-accent-dark text-lumine-primary rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-40"
+      >
+        <MessageCircle size={24} />
+      </button>
+
+      {/* Image Modal (Fullscreen) */}
+      <AnimatePresence>
+        {showImageModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
+            onClick={() => setShowImageModal(false)}
+          >
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="relative w-full h-full flex items-center justify-center p-4">
+              <img
+                src={currentImage}
+                alt={property.title}
+                className="max-w-full max-h-full object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
+
+              {/* Navigation */}
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPrevious();
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center"
+                  >
+                    <ChevronLeft size={32} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNext();
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center"
+                  >
+                    <ChevronRight size={32} />
+                  </button>
+                </>
+              )}
+
+              {/* Counter */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+                {currentImageIndex + 1} / {allImages.length}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={showChatModal}
+        onClose={() => setShowChatModal(false)}
+      />
     </div>
   );
 }
