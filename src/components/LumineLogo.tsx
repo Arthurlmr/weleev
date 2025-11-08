@@ -167,7 +167,7 @@ export function LumineLogoWithTagline({
     <div className={`flex flex-col gap-2 md:gap-4 ${className}`}>
       <LumineLogo variant={variant} size={size} color={color} />
       {showTagline && (
-        <p className={`text-lumine-accent font-display font-light tracking-wide ${taglineSizeClasses[taglineSize]}`}>
+        <p className={`text-lumine-neutral-700 font-display font-normal tracking-wide ${taglineSizeClasses[taglineSize]}`}>
           L'immobilier en pleine lumière
         </p>
       )}

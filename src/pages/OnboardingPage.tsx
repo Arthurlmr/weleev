@@ -400,20 +400,20 @@ export function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-cream-100 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-lumine-neutral-100 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div className="absolute -top-40 -right-40 w-96 h-96 bg-warm-terracotta/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50" animate={{ x: [0, 50, 0], y: [0, 30, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} />
-        <motion.div className="absolute -bottom-40 -left-40 w-96 h-96 bg-nature-sage/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50" animate={{ x: [0, -50, 0], y: [0, -30, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }} />
+        <motion.div className="absolute -top-40 -right-40 w-96 h-96 bg-lumine-accent/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50" animate={{ x: [0, 50, 0], y: [0, 30, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} />
+        <motion.div className="absolute -bottom-40 -left-40 w-96 h-96 bg-success/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50" animate={{ x: [0, -50, 0], y: [0, -30, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }} />
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        <div className="w-full bg-cream-50/90 backdrop-blur-sm border-b border-warm-taupe/20 sticky top-0 z-20">
+        <div className="w-full bg-lumine-neutral-100/90 backdrop-blur-sm border-b border-lumine-neutral-400/20 sticky top-0 z-20">
           <div className="max-w-2xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-serif font-medium text-elegant-charcoal">Configuration de vos préférences</h2>
-              <span className="text-xs text-elegant-stone">Étape {currentStepIndex + 1} sur {STEPS.length}</span>
+              <h2 className="text-sm font-display font-medium text-lumine-primary">Configuration de vos préférences</h2>
+              <span className="text-xs text-lumine-neutral-700">Étape {currentStepIndex + 1} sur {STEPS.length}</span>
             </div>
-            <Progress value={progress} className="h-1.5 bg-cream-200" />
+            <Progress value={progress} className="h-1.5 bg-lumine-neutral-200" />
           </div>
         </div>
 
@@ -422,29 +422,29 @@ export function OnboardingPage() {
             <AnimatePresence mode="wait">
               {step === 'location' && (
                 <motion.div key="location" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-warm-terracotta/10 flex items-center justify-center">
-                          <MapPin className="w-6 h-6 text-warm-terracotta" />
+                        <div className="w-12 h-12 rounded-2xl bg-lumine-accent/10 flex items-center justify-center">
+                          <MapPin className="w-6 h-6 text-lumine-accent" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-serif font-semibold text-elegant-charcoal">Où cherchez-vous ?</h3>
-                          <p className="text-sm text-elegant-stone">Entrez le nom d'une ville</p>
+                          <h3 className="text-2xl font-display font-semibold text-lumine-primary">Où cherchez-vous ?</h3>
+                          <p className="text-sm text-lumine-neutral-700">Entrez le nom d'une ville</p>
                         </div>
                       </div>
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-elegant-stone" />
-                        <Input placeholder="Paris, Lyon, Marseille..." value={locationQuery} onChange={(e) => setLocationQuery(e.target.value)} className="pl-10 h-12 text-base bg-cream-100 border-warm-taupe/20 focus:ring-warm-terracotta/50" autoFocus />
-                        {searchingLocation && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-elegant-stone" />}
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-lumine-neutral-700" />
+                        <Input placeholder="Paris, Lyon, Marseille..." value={locationQuery} onChange={(e) => setLocationQuery(e.target.value)} className="pl-10 h-12 text-base bg-lumine-neutral-100 border-lumine-neutral-400/20 focus:ring-lumine-accent/50" autoFocus />
+                        {searchingLocation && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-lumine-neutral-700" />}
                       </div>
                       {locationSuggestions.length > 0 && (
                         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-3 space-y-2">
                           {locationSuggestions.map((location, index) => (
-                            <motion.button key={location.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }} onClick={() => handleLocationSelect(location)} className="w-full flex items-center gap-3 p-3 rounded-2xl border border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all text-left group">
-                              <MapPin className="w-4 h-4 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
-                              <span className="flex-1 font-medium text-elegant-charcoal">{location.displayName || location.name}</span>
-                              <ChevronRight className="w-4 h-4 text-elegant-stone group-hover:text-warm-terracotta group-hover:translate-x-1 transition-all" />
+                            <motion.button key={location.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }} onClick={() => handleLocationSelect(location)} className="w-full flex items-center gap-3 p-3 rounded-2xl border border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all text-left group">
+                              <MapPin className="w-4 h-4 text-lumine-neutral-700 group-hover:text-lumine-accent transition-colors" />
+                              <span className="flex-1 font-medium text-lumine-primary">{location.displayName || location.name}</span>
+                              <ChevronRight className="w-4 h-4 text-lumine-neutral-700 group-hover:text-lumine-accent group-hover:translate-x-1 transition-all" />
                             </motion.button>
                           ))}
                         </motion.div>
@@ -457,34 +457,34 @@ export function OnboardingPage() {
 
               {step === 'transaction' && (
                 <motion.div key="transaction" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-warm-terracotta/10 flex items-center justify-center">
-                          <Euro className="w-6 h-6 text-warm-terracotta" />
+                        <div className="w-12 h-12 rounded-2xl bg-lumine-accent/10 flex items-center justify-center">
+                          <Euro className="w-6 h-6 text-lumine-accent" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-serif font-semibold text-elegant-charcoal">Type de transaction</h3>
-                          <p className="text-sm text-elegant-stone">Achat ou location ?</p>
+                          <h3 className="text-2xl font-display font-semibold text-lumine-primary">Type de transaction</h3>
+                          <p className="text-sm text-lumine-neutral-700">Achat ou location ?</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handleTransactionSelect(0)} className="group relative p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handleTransactionSelect(0)} className="group relative p-6 rounded-2xl border-2 border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all">
                           <div className="flex flex-col items-center gap-3">
-                            <div className="w-16 h-16 rounded-full bg-nature-sage/20 group-hover:bg-nature-sage/30 flex items-center justify-center transition-colors">
-                              <Home className="w-8 h-8 text-nature-olive" />
+                            <div className="w-16 h-16 rounded-full bg-success/20 group-hover:bg-success/30 flex items-center justify-center transition-colors">
+                              <Home className="w-8 h-8 text-success" />
                             </div>
-                            <span className="font-serif font-semibold text-lg text-elegant-charcoal">Acheter</span>
-                            <span className="text-sm text-elegant-stone text-center">Trouver votre futur bien</span>
+                            <span className="font-display font-semibold text-lg text-lumine-primary">Acheter</span>
+                            <span className="text-sm text-lumine-neutral-700 text-center">Trouver votre futur bien</span>
                           </div>
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handleTransactionSelect(1)} className="group relative p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handleTransactionSelect(1)} className="group relative p-6 rounded-2xl border-2 border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all">
                           <div className="flex flex-col items-center gap-3">
-                            <div className="w-16 h-16 rounded-full bg-warm-terracotta/20 group-hover:bg-warm-terracotta/30 flex items-center justify-center transition-colors">
-                              <Building2 className="w-8 h-8 text-warm-terracotta" />
+                            <div className="w-16 h-16 rounded-full bg-lumine-accent/20 group-hover:bg-lumine-accent/30 flex items-center justify-center transition-colors">
+                              <Building2 className="w-8 h-8 text-lumine-accent" />
                             </div>
-                            <span className="font-serif font-semibold text-lg text-elegant-charcoal">Louer</span>
-                            <span className="text-sm text-elegant-stone text-center">Trouver votre location</span>
+                            <span className="font-display font-semibold text-lg text-lumine-primary">Louer</span>
+                            <span className="text-sm text-lumine-neutral-700 text-center">Trouver votre location</span>
                           </div>
                         </motion.button>
                       </div>
@@ -495,33 +495,33 @@ export function OnboardingPage() {
 
               {step === 'propertyType' && (
                 <motion.div key="propertyType" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-warm-terracotta/10 flex items-center justify-center">
-                          <Home className="w-6 h-6 text-warm-terracotta" />
+                        <div className="w-12 h-12 rounded-2xl bg-lumine-accent/10 flex items-center justify-center">
+                          <Home className="w-6 h-6 text-lumine-accent" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-serif font-semibold text-elegant-charcoal">Type de bien</h3>
-                          <p className="text-sm text-elegant-stone">Que recherchez-vous ?</p>
+                          <h3 className="text-2xl font-display font-semibold text-lumine-primary">Type de bien</h3>
+                          <p className="text-sm text-lumine-neutral-700">Que recherchez-vous ?</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('apartment')} className="group p-3 sm:p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('apartment')} className="group p-3 sm:p-6 rounded-2xl border-2 border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all">
                           <div className="flex flex-col items-center gap-1 sm:gap-2">
-                            <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
+                            <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-lumine-neutral-700 group-hover:text-lumine-accent transition-colors" />
                             <span className="font-semibold text-xs sm:text-base text-center">Appartement</span>
                           </div>
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('house')} className="group p-3 sm:p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('house')} className="group p-3 sm:p-6 rounded-2xl border-2 border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all">
                           <div className="flex flex-col items-center gap-1 sm:gap-2">
-                            <Home className="w-8 h-8 sm:w-10 sm:h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
+                            <Home className="w-8 h-8 sm:w-10 sm:h-10 text-lumine-neutral-700 group-hover:text-lumine-accent transition-colors" />
                             <span className="font-semibold text-xs sm:text-base text-center">Maison</span>
                           </div>
                         </motion.button>
-                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('any')} className="group p-3 sm:p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all">
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handlePropertyTypeSelect('any')} className="group p-3 sm:p-6 rounded-2xl border-2 border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all">
                           <div className="flex flex-col items-center gap-1 sm:gap-2">
-                            <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-elegant-stone group-hover:text-warm-terracotta transition-colors" />
+                            <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-lumine-neutral-700 group-hover:text-lumine-accent transition-colors" />
                             <span className="font-semibold text-xs sm:text-base text-center">Tous</span>
                           </div>
                         </motion.button>
@@ -533,20 +533,20 @@ export function OnboardingPage() {
 
               {step === 'budget' && (
                 <motion.div key="budget" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-warm-terracotta/10 flex items-center justify-center">
-                          <Euro className="w-6 h-6 text-warm-terracotta" />
+                        <div className="w-12 h-12 rounded-2xl bg-lumine-accent/10 flex items-center justify-center">
+                          <Euro className="w-6 h-6 text-lumine-accent" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-serif font-semibold text-elegant-charcoal">Budget maximum</h3>
-                          <p className="text-sm text-elegant-stone">{fixedPrefs.transactionType === 0 ? 'Prix maximum' : 'Loyer maximum'}</p>
+                          <h3 className="text-2xl font-display font-semibold text-lumine-primary">Budget maximum</h3>
+                          <p className="text-sm text-lumine-neutral-700">{fixedPrefs.transactionType === 0 ? 'Prix maximum' : 'Loyer maximum'}</p>
                         </div>
                       </div>
                       <div className="space-y-6">
                         <div className="text-center">
-                          <div className="text-4xl font-bold text-warm-terracotta mb-2">{formatBudget(fixedPrefs.budgetMax || (fixedPrefs.transactionType === 0 ? budgetRanges.sale.default : budgetRanges.rental.default))}</div>
+                          <div className="text-4xl font-bold text-lumine-accent mb-2">{formatBudget(fixedPrefs.budgetMax || (fixedPrefs.transactionType === 0 ? budgetRanges.sale.default : budgetRanges.rental.default))}</div>
                         </div>
                         <Slider value={fixedPrefs.budgetMax || (fixedPrefs.transactionType === 0 ? budgetRanges.sale.default : budgetRanges.rental.default)} onValueChange={(value) => setFixedPrefs(prev => ({ ...prev, budgetMax: value }))} min={fixedPrefs.transactionType === 0 ? budgetRanges.sale.min : budgetRanges.rental.min} max={fixedPrefs.transactionType === 0 ? budgetRanges.sale.max : budgetRanges.rental.max} step={fixedPrefs.transactionType === 0 ? budgetRanges.sale.step : budgetRanges.rental.step} />
                         <Button onClick={() => handleBudgetSelect(fixedPrefs.budgetMax || (fixedPrefs.transactionType === 0 ? budgetRanges.sale.default : budgetRanges.rental.default))} className="w-full h-12" size="lg">
@@ -560,23 +560,23 @@ export function OnboardingPage() {
 
               {step === 'rooms' && (
                 <motion.div key="rooms" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-warm-terracotta/10 flex items-center justify-center">
-                          <Bed className="w-6 h-6 text-warm-terracotta" />
+                        <div className="w-12 h-12 rounded-2xl bg-lumine-accent/10 flex items-center justify-center">
+                          <Bed className="w-6 h-6 text-lumine-accent" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-serif font-semibold text-elegant-charcoal">Nombre de pièces minimum</h3>
-                          <p className="text-sm text-elegant-stone">Chambres minimum souhaitées</p>
+                          <h3 className="text-2xl font-display font-semibold text-lumine-primary">Nombre de pièces minimum</h3>
+                          <p className="text-sm text-lumine-neutral-700">Chambres minimum souhaitées</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                         {[1, 2, 3, 4, 5, 6].map((rooms) => (
-                          <motion.button key={rooms} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleRoomsSelect(rooms)} className="p-6 rounded-2xl border-2 border-warm-taupe/20 hover:border-warm-terracotta hover:bg-warm-beige transition-all group">
+                          <motion.button key={rooms} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleRoomsSelect(rooms)} className="p-6 rounded-2xl border-2 border-lumine-neutral-400/20 hover:border-lumine-accent hover:bg-lumine-neutral-200 transition-all group">
                             <div className="flex flex-col items-center gap-2">
-                              <span className="text-3xl font-bold text-elegant-stone group-hover:text-warm-terracotta transition-colors">{rooms}</span>
-                              <span className="text-xs text-elegant-stone">{rooms === 1 ? 'pièce' : 'pièces'}</span>
+                              <span className="text-3xl font-bold text-lumine-neutral-700 group-hover:text-lumine-accent transition-colors">{rooms}</span>
+                              <span className="text-xs text-lumine-neutral-700">{rooms === 1 ? 'pièce' : 'pièces'}</span>
                             </div>
                           </motion.button>
                         ))}
@@ -588,15 +588,15 @@ export function OnboardingPage() {
 
               {step === 'refine' && (
                 <motion.div key="refine" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-warm-terracotta/10 flex items-center justify-center">
-                          <Sparkles className="w-6 h-6 text-warm-terracotta" />
+                        <div className="w-12 h-12 rounded-2xl bg-lumine-accent/10 flex items-center justify-center">
+                          <Sparkles className="w-6 h-6 text-lumine-accent" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-serif font-semibold text-elegant-charcoal">Affiner votre recherche</h3>
-                          <p className="text-sm text-elegant-stone">Répondez à quelques questions pour des résultats personnalisés</p>
+                          <h3 className="text-2xl font-display font-semibold text-lumine-primary">Affiner votre recherche</h3>
+                          <p className="text-sm text-lumine-neutral-700">Répondez à quelques questions pour des résultats personnalisés</p>
                         </div>
                       </div>
                       {error && (
@@ -610,7 +610,7 @@ export function OnboardingPage() {
                           Continuer sans affiner<ArrowRight className="w-5 h-5 ml-2" />
                         </Button>
                       </div>
-                      <p className="text-xs text-center text-elegant-stone mt-6">L'affinement IA vous posera 3-5 questions contextuelles pour des résultats plus précis</p>
+                      <p className="text-xs text-center text-lumine-neutral-700 mt-6">L'affinement IA vous posera 3-5 questions contextuelles pour des résultats plus précis</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -618,11 +618,11 @@ export function OnboardingPage() {
 
               {step === 'ai-questions' && aiQuestions.length > 0 && (
                 <motion.div key={`ai-question-${currentAiQuestionIndex}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-8">
                       <div className="flex items-center justify-between mb-6">
-                        <span className="text-sm font-medium text-elegant-stone">Question {currentAiQuestionIndex + 1} sur {aiQuestions.length}</span>
-                        <Button variant="ghost" size="sm" onClick={handleSkipAiQuestion} className="text-elegant-stone">Passer</Button>
+                        <span className="text-sm font-medium text-lumine-neutral-700">Question {currentAiQuestionIndex + 1} sur {aiQuestions.length}</span>
+                        <Button variant="ghost" size="sm" onClick={handleSkipAiQuestion} className="text-lumine-neutral-700">Passer</Button>
                       </div>
                       <h3 className="text-2xl font-bold mb-6">{aiQuestions[currentAiQuestionIndex].question}</h3>
 
@@ -643,7 +643,7 @@ export function OnboardingPage() {
 
                       {aiQuestions[currentAiQuestionIndex].type === 'slider' && (
                         <div className="space-y-6">
-                          <div className="text-center text-2xl font-bold text-warm-terracotta">{aiAnswers[aiQuestions[currentAiQuestionIndex].id] || aiQuestions[currentAiQuestionIndex].min || 0} {aiQuestions[currentAiQuestionIndex].unit || ''}</div>
+                          <div className="text-center text-2xl font-bold text-lumine-accent">{aiAnswers[aiQuestions[currentAiQuestionIndex].id] || aiQuestions[currentAiQuestionIndex].min || 0} {aiQuestions[currentAiQuestionIndex].unit || ''}</div>
                           <Slider value={aiAnswers[aiQuestions[currentAiQuestionIndex].id] || aiQuestions[currentAiQuestionIndex].min || 0} onValueChange={(value) => setAiAnswers(prev => ({ ...prev, [aiQuestions[currentAiQuestionIndex].id]: value }))} min={aiQuestions[currentAiQuestionIndex].min || 0} max={aiQuestions[currentAiQuestionIndex].max || 100} step={aiQuestions[currentAiQuestionIndex].step || 1} />
                           <Button onClick={() => handleAiQuestionAnswer(aiAnswers[aiQuestions[currentAiQuestionIndex].id] || aiQuestions[currentAiQuestionIndex].min || 0)} className="w-full h-12">
                             Valider<Check className="w-5 h-5 ml-2" />
@@ -666,15 +666,15 @@ export function OnboardingPage() {
 
               {step === 'loading' && (
                 <motion.div key="loading" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
-                  <Card className="border border-warm-taupe/10 shadow-xl backdrop-blur-sm bg-cream-50/95 rounded-3xl">
+                  <Card className="border border-lumine-neutral-400/10 shadow-xl backdrop-blur-sm bg-lumine-neutral-100/95 rounded-3xl">
                     <CardContent className="p-12">
                       <div className="flex flex-col items-center gap-6">
                         <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
-                          <Sparkles className="w-16 h-16 text-warm-terracotta" />
+                          <Sparkles className="w-16 h-16 text-lumine-accent" />
                         </motion.div>
                         <h3 className="text-2xl font-bold text-center">Finalisation de votre profil</h3>
-                        <p className="text-elegant-stone text-center">Nous récupérons les meilleures annonces pour vous...</p>
-                        <Loader2 className="w-8 h-8 animate-spin text-warm-terracotta" />
+                        <p className="text-lumine-neutral-700 text-center">Nous récupérons les meilleures annonces pour vous...</p>
+                        <Loader2 className="w-8 h-8 animate-spin text-lumine-accent" />
                       </div>
                     </CardContent>
                   </Card>
