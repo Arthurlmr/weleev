@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { ChatModal } from '@/components/ChatModal';
+import { EnrichedBadge } from '@/components/EnrichedBadge';
 import { MapCenterController } from '@/components/MapCenterController';
 import 'leaflet/dist/leaflet.css';
 
@@ -63,6 +64,7 @@ export function FeedPage() {
   const [profileCompleteness, setProfileCompleteness] = useState(0);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   // Active filter chips
   const [activeFilters, setActiveFilters] = useState<{
@@ -71,7 +73,7 @@ export function FeedPage() {
     rooms?: number;
   }>({});
 
-  // Load user profile completeness
+  // Load user profile completeness and filters
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) return;
@@ -79,12 +81,13 @@ export function FeedPage() {
       try {
         const { data: profile } = await supabase
           .from('conversational_profiles')
-          .select('profile_completeness_score')
+          .select('*')
           .eq('user_id', user.id)
           .single();
 
         if (profile) {
           setProfileCompleteness((profile as any).profile_completeness_score || 0);
+          setUserProfile(profile);
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -233,6 +236,94 @@ export function FeedPage() {
     floor: prop.floor,
   }));
 
+  // Apply strict filters based on user profile v2
+  const applyStrictFilters = (listing: Listing) => {
+    if (!userProfile) return true; // No profile = no strict filters
+
+    const prop = properties.find(p => p.id.toString() === listing.id);
+    if (!prop) return true;
+
+    // 1. Property Type Filter
+    if (userProfile.property_type_filter && userProfile.property_type_filter.length > 0) {
+      if (!userProfile.property_type_filter.includes('both')) {
+        const hasApartment = userProfile.property_type_filter.includes('apartment');
+        const hasHouse = userProfile.property_type_filter.includes('house');
+
+        if (hasApartment && !hasHouse && listing.propertyType !== 'apartment') return false;
+        if (hasHouse && !hasApartment && listing.propertyType !== 'house') return false;
+      }
+    }
+
+    // 2. Budget Max Filter
+    if (userProfile.budget_max && listing.price > userProfile.budget_max) return false;
+
+    // 3. Surface Min Filter
+    if (userProfile.surface_min && listing.surface < userProfile.surface_min) return false;
+
+    // 4. Bedrooms Min Filter
+    if (userProfile.bedrooms_min && listing.bedrooms < userProfile.bedrooms_min) return false;
+
+    // 5. Neighborhoods Filter (ULTRA IMPORTANT)
+    if (userProfile.neighborhoods_filter && userProfile.neighborhoods_filter.length > 0) {
+      const description = listing.description.toLowerCase();
+      const city = listing.city.toLowerCase();
+
+      const matchesNeighborhood = userProfile.neighborhoods_filter.some((neighborhood: string) => {
+        const n = neighborhood.toLowerCase();
+        return description.includes(n) || city.includes(n);
+      });
+
+      if (!matchesNeighborhood) return false;
+    }
+
+    // 6. Must Have Garden Filter
+    if (userProfile.must_have_garden) {
+      const description = listing.description.toLowerCase();
+      const hasGarden = prop.land_surface > 0 || description.includes('jardin');
+      if (!hasGarden) return false;
+    }
+
+    // 7. Must Have Garage Filter
+    if (userProfile.must_have_garage) {
+      const description = listing.description.toLowerCase();
+      const hasGarage = description.includes('garage');
+      if (!hasGarage) return false;
+    }
+
+    // 8. State Filter
+    if (userProfile.state_filter && userProfile.state_filter.length > 0) {
+      const description = listing.description.toLowerCase();
+      const title = listing.title.toLowerCase();
+
+      let matchesState = false;
+      userProfile.state_filter.forEach((state: string) => {
+        if (state === 'new' && (description.includes('neuf') || title.includes('neuf'))) matchesState = true;
+        if (state === 'recent' && prop.construction_year && prop.construction_year >= new Date().getFullYear() - 10) matchesState = true;
+        if (state === 'old' && (!prop.construction_year || prop.construction_year < new Date().getFullYear() - 10)) matchesState = true;
+        if (state === 'construction' && (description.includes('construction') || title.includes('vefa'))) matchesState = true;
+        if (state === 'no_new' && !description.includes('neuf') && !title.includes('neuf')) matchesState = true;
+      });
+
+      if (!matchesState) return false;
+    }
+
+    // 9. No Renovation Needed Filter
+    if (userProfile.no_renovation_needed) {
+      const description = listing.description.toLowerCase();
+      const needsWork = description.includes('travaux') || description.includes('rénover') || description.includes('rafraîchir');
+      if (needsWork) return false;
+    }
+
+    // 10. Detached House Only (if house)
+    if (userProfile.detached_house_only && listing.propertyType === 'house') {
+      const description = listing.description.toLowerCase();
+      const isMitoyen = description.includes('mitoyen');
+      if (isMitoyen) return false;
+    }
+
+    return true;
+  };
+
   const filteredListings = listings.filter(listing => {
     const matchesSearch =
       listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -259,7 +350,10 @@ export function FeedPage() {
 
     const matchesFavorites = !showFavoritesOnly || favorites.has(parseInt(listing.id));
 
-    return matchesSearch && matchesFilter && matchesSurface && matchesPrice && matchesQuartier && matchesActiveFilters && matchesFavorites;
+    // NEW: Apply strict filters from user profile v2
+    const matchesStrictFilters = applyStrictFilters(listing);
+
+    return matchesSearch && matchesFilter && matchesSurface && matchesPrice && matchesQuartier && matchesActiveFilters && matchesFavorites && matchesStrictFilters;
   });
 
   // Sort listings
@@ -748,6 +842,12 @@ export function FeedPage() {
                                 <div className="text-sm text-lumine-neutral-700 line-clamp-1">
                                   {listing.description || listing.title}
                                 </div>
+                                {/* Enriched Badge */}
+                                {prop?.ai_enriched_at && (
+                                  <div className="mt-2">
+                                    <EnrichedBadge variant="sm" />
+                                  </div>
+                                )}
                               </div>
 
                               {/* Quick Stats - Grid 3 columns */}

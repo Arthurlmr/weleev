@@ -146,39 +146,133 @@ serve(async (req) => {
 
     const criteriaMatchScore = criteriaCount > 0 ? (criteriaScore / criteriaCount / 10) * 10 : 5
 
-    // 2. LIFESTYLE MATCH (30% weight)
+    // 2. LIFESTYLE MATCH & PREFERENCES (30% weight)
     let lifestyleScore = 5 // Default neutral score
 
-    if (profile && profile.lifestyle_preferences?.length > 0) {
-      const description = (property.description || '').toLowerCase()
-      let matches = 0
-      let total = 0
+    if (profile) {
+      let preferencePoints = 0
+      let totalPreferences = 0
 
-      profile.lifestyle_preferences.forEach((pref: string) => {
-        total++
-        const prefLower = pref.toLowerCase()
-
-        if (
-          prefLower.includes('calme') && (description.includes('calme') || description.includes('tranquille'))
-        ) {
-          matches++
-        } else if (
-          prefLower.includes('animé') && (description.includes('proche commerces') || description.includes('centre'))
-        ) {
-          matches++
-        } else if (
-          prefLower.includes('transport') && (description.includes('métro') || description.includes('gare'))
-        ) {
-          matches++
-        } else if (
-          prefLower.includes('jardin') && (property.land_surface > 0 || description.includes('jardin'))
-        ) {
-          matches++
+      // Orientation preference
+      if (profile.orientation_importance === 'required' || profile.orientation_importance === 'important') {
+        totalPreferences++
+        const orientation = (property.description || '').toLowerCase()
+        if (orientation.includes('sud') || orientation.includes('sud-ouest')) {
+          preferencePoints += profile.orientation_importance === 'required' ? 2 : 1
         }
-      })
+      }
 
-      if (total > 0) {
-        lifestyleScore = (matches / total) * 10
+      // Vis-à-vis preference
+      if (profile.vis_a_vis_importance === 'clear_required' || profile.vis_a_vis_importance === 'important') {
+        totalPreferences++
+        const description = (property.description || '').toLowerCase()
+        if (description.includes('dégagé') || description.includes('sans vis-à-vis') || description.includes('vue dégagée')) {
+          preferencePoints += profile.vis_a_vis_importance === 'clear_required' ? 2 : 1
+        }
+      }
+
+      // Proximity priorities
+      if (profile.proximity_priorities && profile.proximity_priorities.length > 0) {
+        const description = (property.description || '').toLowerCase()
+        profile.proximity_priorities.forEach((priority: string) => {
+          totalPreferences++
+          if (priority === 'schools' && (description.includes('école') || description.includes('écoles'))) {
+            preferencePoints += 1
+          } else if (priority === 'transport' && (description.includes('transport') || description.includes('métro') || description.includes('gare'))) {
+            preferencePoints += 1
+          } else if (priority === 'shops' && (description.includes('commerce') || description.includes('commerces') || description.includes('centre'))) {
+            preferencePoints += 1
+          }
+        })
+      }
+
+      // Floor preference (for apartments)
+      if (profile.floor_preference && (profile.floor_preference === 'not_ground' || profile.floor_preference === 'top_floor')) {
+        totalPreferences++
+        const floor = (property.description || '').toLowerCase()
+        if (profile.floor_preference === 'not_ground' && !floor.includes('rez-de-chaussée') && !floor.includes('rdc')) {
+          preferencePoints += 1
+        } else if (profile.floor_preference === 'top_floor' && (floor.includes('dernier étage') || floor.includes('dernier'))) {
+          preferencePoints += 1
+        }
+      }
+
+      // Outdoor preference
+      if (profile.outdoor_preference === 'garden_required') {
+        totalPreferences++
+        if (property.land_surface > 0 || (property.description || '').toLowerCase().includes('jardin')) {
+          preferencePoints += 2
+        }
+      } else if (profile.outdoor_preference === 'balcony_ok') {
+        totalPreferences++
+        const description = (property.description || '').toLowerCase()
+        if (description.includes('balcon') || description.includes('terrasse') || property.land_surface > 0) {
+          preferencePoints += 1
+        }
+      }
+
+      // Parking preference
+      if (profile.parking_preference === 'garage_required') {
+        totalPreferences++
+        const description = (property.description || '').toLowerCase()
+        if (description.includes('garage')) {
+          preferencePoints += 2
+        }
+      } else if (profile.parking_preference === 'spot_ok') {
+        totalPreferences++
+        const description = (property.description || '').toLowerCase()
+        if (description.includes('parking') || description.includes('garage') || description.includes('place')) {
+          preferencePoints += 1
+        }
+      }
+
+      // Charges preference (for apartments)
+      if (profile.max_charges && property.charges) {
+        totalPreferences++
+        if (property.charges <= profile.max_charges) {
+          preferencePoints += 2
+        } else if (property.charges <= profile.max_charges * 1.2) {
+          preferencePoints += 0.5
+        }
+      }
+
+      // Legacy lifestyle preferences (backward compatibility)
+      if (profile.lifestyle_preferences?.length > 0) {
+        const description = (property.description || '').toLowerCase()
+        let matches = 0
+        let total = 0
+
+        profile.lifestyle_preferences.forEach((pref: string) => {
+          total++
+          const prefLower = pref.toLowerCase()
+
+          if (
+            prefLower.includes('calme') && (description.includes('calme') || description.includes('tranquille'))
+          ) {
+            matches++
+          } else if (
+            prefLower.includes('animé') && (description.includes('proche commerces') || description.includes('centre'))
+          ) {
+            matches++
+          } else if (
+            prefLower.includes('transport') && (description.includes('métro') || description.includes('gare'))
+          ) {
+            matches++
+          } else if (
+            prefLower.includes('jardin') && (property.land_surface > 0 || description.includes('jardin'))
+          ) {
+            matches++
+          }
+        })
+
+        if (total > 0) {
+          preferencePoints += (matches / total) * 2
+          totalPreferences += total
+        }
+      }
+
+      if (totalPreferences > 0) {
+        lifestyleScore = Math.min(10, (preferencePoints / (totalPreferences * 2)) * 10)
       }
     }
 

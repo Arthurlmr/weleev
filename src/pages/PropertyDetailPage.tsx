@@ -8,13 +8,13 @@ import {
   ArrowLeft, MapPin, Home, Phone, Zap, BadgeCheck,
   Share2, Heart, ChevronLeft, ChevronRight,
   Sparkles, Shield, Wrench, CheckCircle,
-  X, MessageCircle, TrendingUp, TrendingDown, Navigation, FileText
+  X, MessageCircle, TrendingUp, TrendingDown, Navigation
 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChatModal } from '../components/ChatModal';
-import { EnrichmentModal } from '../components/EnrichmentModal';
+import { EnrichedBadge } from '../components/EnrichedBadge';
 
 // Calculate monthly payment
 function calculateMonthlyPayment(
@@ -47,10 +47,6 @@ export function PropertyDetailPage() {
   const [loadingEnrichment, setLoadingEnrichment] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
-  const [showEnrichmentModal, setShowEnrichmentModal] = useState(false);
-  const [enrichmentResult, setEnrichmentResult] = useState<any>(null);
-  const [enrichmentLoading, setEnrichmentLoading] = useState(false);
-  const [enrichmentError, setEnrichmentError] = useState<string | null>(null);
 
   // Financial simulator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
@@ -137,6 +133,7 @@ export function PropertyDetailPage() {
   };
 
   // Manual AI analysis (triggered by user button click)
+  // NOW: Runs vision analysis + enrichment from description in parallel
   const triggerAIAnalysis = async () => {
     if (!property || !user) return;
 
@@ -150,26 +147,7 @@ export function PropertyDetailPage() {
       const imageUrls = allImages.slice(0, 5);
       const description = property.description || property.title || '';
 
-      const data = await getPropertyEnrichment(property.id, imageUrls, description);
-      setEnrichmentData(data);
-    } catch (error) {
-      console.error('Error triggering AI analysis:', error);
-      alert('Erreur lors de l\'analyse IA. Veuillez réessayer.');
-    } finally {
-      setLoadingEnrichment(false);
-    }
-  };
-
-  // Trigger enrichment from description (no images)
-  const triggerEnrichment = async () => {
-    if (!property) return;
-
-    setShowEnrichmentModal(true);
-    setEnrichmentLoading(true);
-    setEnrichmentError(null);
-    setEnrichmentResult(null);
-
-    try {
+      // Prepare enrichment data
       const propertyData = {
         title: property.title,
         price: property.price,
@@ -186,13 +164,34 @@ export function PropertyDetailPage() {
         construction_year: property.construction_year,
       };
 
-      const result = await enrichPropertyFromDescription(propertyData);
-      setEnrichmentResult(result);
-    } catch (error: any) {
-      console.error('Error enriching property:', error);
-      setEnrichmentError(error.message || 'Erreur lors de l\'enrichissement');
+      // Run vision analysis + enrichment in parallel
+      const [visionData, enrichmentResult] = await Promise.all([
+        getPropertyEnrichment(property.id, imageUrls, description),
+        enrichPropertyFromDescription(propertyData),
+      ]);
+
+      // Merge the results
+      const mergedData = {
+        ...visionData,
+        extractedInfo: enrichmentResult.nouvelles_informations || [],
+      };
+
+      setEnrichmentData(mergedData);
+
+      // Save enriched data to database
+      await supabase
+        .from('melo_properties')
+        .update({
+          ai_enriched_data: enrichmentResult.nouvelles_informations,
+          ai_enriched_at: new Date().toISOString(),
+        })
+        .eq('id', property.id);
+
+    } catch (error) {
+      console.error('Error triggering AI analysis:', error);
+      alert('Erreur lors de l\'analyse IA. Veuillez réessayer.');
     } finally {
-      setEnrichmentLoading(false);
+      setLoadingEnrichment(false);
     }
   };
 
@@ -400,13 +399,6 @@ export function PropertyDetailPage() {
                               Analyser avec IA
                             </>
                           )}
-                        </Button>
-                        <Button
-                          onClick={triggerEnrichment}
-                          className="w-full bg-lumine-primary hover:bg-lumine-primary-dark text-white"
-                        >
-                          <FileText className="mr-2" size={16} />
-                          Enrichir depuis la description
                         </Button>
                       </div>
                     ) : (
@@ -674,6 +666,49 @@ export function PropertyDetailPage() {
                         </ul>
                       </div>
                     )}
+                  </div>
+                </section>
+              )}
+
+              {/* Enriched Information Section */}
+              {enrichmentData?.extractedInfo && enrichmentData.extractedInfo.length > 0 && (
+                <section className="bg-gradient-to-br from-lumine-accent/5 to-lumine-neutral-100 border-l-4 border-lumine-accent p-6 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold text-lumine-primary flex items-center gap-2">
+                      <Sparkles className="text-lumine-accent" />
+                      Informations enrichies par LUMINᵉ
+                    </h2>
+                    <EnrichedBadge />
+                  </div>
+                  <p className="text-sm text-lumine-neutral-700 mb-6">
+                    Données extraites et enrichies automatiquement de la description
+                  </p>
+
+                  <div className="space-y-3">
+                    {enrichmentData.extractedInfo.map((info: any, index: number) => (
+                      <div
+                        key={index}
+                        className="bg-white p-4 rounded-lg border border-lumine-accent/20 hover:border-lumine-accent transition-all"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="secondary" className="text-xs">
+                                {info.categorie}
+                              </Badge>
+                              {info.certitude === 'haute' && (
+                                <Badge className="bg-green-100 text-green-700 text-xs">
+                                  Haute certitude
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-lumine-neutral-700">
+                              {info.information}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </section>
               )}
