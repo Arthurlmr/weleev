@@ -44,7 +44,7 @@ export function FeedPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [propertyScores, setPropertyScores] = useState<Record<number, any>>({});
   const [loadingScores, setLoadingScores] = useState<Record<number, boolean>>({});
-  const [sortBy, setSortBy] = useState<'score' | 'price_asc' | 'price_desc' | 'date'>('score');
+  const [sortBy, setSortBy] = useState<'score' | 'price_asc' | 'price_desc' | 'date'>('price_desc');
   const [showChatModal, setShowChatModal] = useState(false);
   const [profileCompleteness, setProfileCompleteness] = useState(0);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
