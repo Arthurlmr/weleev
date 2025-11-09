@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { calculatePropertyScore } from '@/lib/gemini-client';
+import { getCityCoordinates } from '@/lib/geocoding';
 import { Listing } from '@/types';
 import {
   SlidersHorizontal, MapPin, Heart, List, X, Home, User, Grid3x3, ArrowRight,
@@ -761,7 +762,22 @@ export function FeedPage() {
           <div className={`${viewMode === 'hybrid' ? 'lg:col-span-1 hidden lg:flex flex-col bg-lumine-neutral-200 relative' : 'w-full'}`}>
             <div className={`${viewMode === 'hybrid' ? 'flex-1' : 'h-[calc(100vh-200px)]'} relative overflow-hidden`}>
               <MapContainer
-                center={[48.8566, 2.3522]}
+                center={(() => {
+                  // Try to get center from first property
+                  const firstProp = properties[0];
+                  if (firstProp?.latitude && firstProp?.longitude) {
+                    return [firstProp.latitude, firstProp.longitude];
+                  }
+                  // Try to get center from city name
+                  if (firstProp?.city) {
+                    const cityCoords = getCityCoordinates(firstProp.city);
+                    if (cityCoords) {
+                      return [cityCoords.lat, cityCoords.lng];
+                    }
+                  }
+                  // Fallback to Paris
+                  return [48.8566, 2.3522];
+                })()}
                 zoom={12}
                 className="h-full w-full"
                 style={{ zIndex: 0 }}
@@ -775,14 +791,21 @@ export function FeedPage() {
                 {sortedListings.map((listing) => {
                   const prop = properties.find(p => p.id.toString() === listing.id);
 
-                  // Use real coordinates if available, otherwise skip
-                  if (!prop?.latitude || !prop?.longitude) {
-                    console.warn(`Property ${prop?.id} (${prop?.city}) missing coordinates`);
-                    return null;
+                  // Use real coordinates if available, otherwise use city center
+                  let lat = prop?.latitude;
+                  let lng = prop?.longitude;
+
+                  if (!lat || !lng) {
+                    const cityCoords = getCityCoordinates(prop?.city || listing.city);
+                    if (cityCoords) {
+                      lat = cityCoords.lat;
+                      lng = cityCoords.lng;
+                    } else {
+                      // Skip if we can't find any coordinates
+                      return null;
+                    }
                   }
 
-                  const lat = prop.latitude;
-                  const lng = prop.longitude;
                   const score = propertyScores[prop?.id];
 
                   return (
