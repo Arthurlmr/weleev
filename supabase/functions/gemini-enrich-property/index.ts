@@ -122,7 +122,7 @@ ${propertyData.description}
           temperature: 0.2,
           topK: 32,
           topP: 1,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 8192,
         },
       }),
     })

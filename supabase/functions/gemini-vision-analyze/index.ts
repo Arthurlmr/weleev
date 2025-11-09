@@ -171,7 +171,7 @@ Sois précis et factuel. Indique ton niveau de confiance (0-1).`
           temperature: 0.2,
           topK: 32,
           topP: 1,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 8192,
         },
       }),
     })
