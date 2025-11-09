@@ -252,3 +252,44 @@ export async function getPropertyEnrichment(
     extraction: analysis.extraction,
   }
 }
+
+/**
+ * Enrichir une propriété depuis sa description (sans images)
+ */
+export async function enrichPropertyFromDescription(
+  propertyData: any
+): Promise<{
+  success: boolean
+  nouvelles_informations: Array<{
+    categorie: string
+    information: string
+  }>
+  informations_confirmees: string[]
+  informations_manquantes: string[]
+}> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    throw new Error('User not authenticated')
+  }
+
+  const response = await fetch(`${EDGE_FUNCTION_BASE_URL}/gemini-enrich-property`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({
+      propertyData,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Property enrichment failed')
+  }
+
+  return response.json()
+}
