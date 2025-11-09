@@ -142,7 +142,7 @@ Pour les tags, limite à 5-7 tags les plus pertinents.`
           temperature: 0.1,
           topK: 32,
           topP: 1,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 8192,
         },
       }),
     })
