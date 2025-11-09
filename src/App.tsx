@@ -6,6 +6,7 @@ import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { FeedPage } from './pages/FeedPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
+import { ProfileFormPage } from './pages/ProfileFormPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { AccountPage } from './pages/AccountPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -86,6 +87,16 @@ function App() {
           element={
             <ProtectedRoute>
               <PropertyDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Profile form route (standalone, no MainLayout) */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfileFormPage />
             </ProtectedRoute>
           }
         />

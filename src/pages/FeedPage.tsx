@@ -8,10 +8,9 @@ import { getCityCoordinates } from '@/lib/geocoding';
 import { Listing } from '@/types';
 import {
   SlidersHorizontal, MapPin, Heart, List, X, Home, User, Grid3x3, ArrowRight,
-  MessageCircle, Sparkles, TrendingUp, ArrowUpDown, Calendar, DollarSign
+  Sparkles, TrendingUp, ArrowUpDown, Calendar, DollarSign
 } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import { ChatModal } from '@/components/ChatModal';
 import { EnrichedBadge } from '@/components/EnrichedBadge';
 import { MapCenterController } from '@/components/MapCenterController';
 import 'leaflet/dist/leaflet.css';
@@ -60,7 +59,6 @@ export function FeedPage() {
   const [propertyScores, setPropertyScores] = useState<Record<number, any>>({});
   const [loadingScores, setLoadingScores] = useState<Record<number, boolean>>({});
   const [sortBy, setSortBy] = useState<'score' | 'price_asc' | 'price_desc' | 'date'>('price_desc');
-  const [showChatModal, setShowChatModal] = useState(false);
   const [profileCompleteness, setProfileCompleteness] = useState(0);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -467,11 +465,11 @@ export function FeedPage() {
                 </div>
               </div>
               <button
-                onClick={() => setShowChatModal(true)}
+                onClick={() => navigate('/profile')}
                 className="px-4 py-2 bg-white text-lumine-primary rounded-lg hover:bg-lumine-neutral-100 transition-all duration-200 font-medium text-sm whitespace-nowrap flex items-center gap-2"
               >
-                <MessageCircle size={16} />
-                Discuter avec l'IA
+                <SlidersHorizontal size={16} />
+                Affiner mes critères
               </button>
             </div>
           </div>
@@ -1034,15 +1032,13 @@ export function FeedPage() {
         )}
       </div>
 
-      {/* Chat Modal */}
-      <ChatModal isOpen={showChatModal} onClose={() => setShowChatModal(false)} />
-
-      {/* Floating Chat Button (always visible) */}
+      {/* Floating Profile Button (always visible) */}
       <button
-        onClick={() => setShowChatModal(true)}
+        onClick={() => navigate('/profile')}
         className="fixed bottom-8 right-8 w-14 h-14 bg-lumine-accent hover:bg-lumine-accent-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-40"
+        title="Affiner mes critères"
       >
-        <MessageCircle size={24} />
+        <SlidersHorizontal size={24} />
       </button>
     </div>
   );

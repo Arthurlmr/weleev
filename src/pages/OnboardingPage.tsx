@@ -119,19 +119,39 @@ export function OnboardingPage() {
     return () => clearTimeout(timer);
   }, [locationQuery]);
 
-  const handleLocationSelect = (location: any) => {
+  const handleLocationSelect = async (location: any) => {
     console.log('🔍 DEBUG - Location selected:', location);
     console.log('🔍 DEBUG - location.id:', location.id);
     console.log('🔍 DEBUG - location["@id"]:', location['@id']);
+
+    const cityName = location.displayName || location.name;
 
     setFixedPrefs(prev => ({
       ...prev,
       location: location['@id'],
       locationId: location['@id'],
-      locationName: location.displayName || location.name,  // Use displayName with fallback
+      locationName: cityName,
     }));
-    setLocationQuery(location.displayName || location.name);  // Use displayName with fallback
+    setLocationQuery(cityName);
     setLocationSuggestions([]);
+
+    // Trigger neighborhood generation in background for this city
+    try {
+      console.log(`Triggering neighborhood generation for ${cityName}...`);
+      supabase.functions.invoke('generate-neighborhoods', {
+        body: { city: cityName },
+      }).then(({ data, error }) => {
+        if (error) {
+          console.error('Error generating neighborhoods:', error);
+        } else {
+          console.log(`Successfully generated ${data?.neighborhoods?.length || 0} neighborhoods for ${cityName}`);
+        }
+      });
+    } catch (error) {
+      console.error('Error triggering neighborhood generation:', error);
+      // Don't block the user flow, continue anyway
+    }
+
     setStep('transaction');
   };
 
@@ -377,14 +397,45 @@ export function OnboardingPage() {
         await (supabase.from('melo_properties') as any).insert(propertiesToInsert);
       }
 
-      // 7. Mark user as onboarded
+      // 7. Create/update conversational profile with v2 structure
+      const profileV2Data = {
+        user_id: user.id,
+        profile_version: 2,
+        search_type: fixedPrefs.transactionType === 0 ? 'purchase' : 'rental',
+        property_type_filter: fixedPrefs.propertyType === 'any' ? ['both'] : [fixedPrefs.propertyType],
+        city_filter: fixedPrefs.locationName,
+        budget_max: fixedPrefs.budgetMax,
+        bedrooms_min: fixedPrefs.roomMin || null,
+      };
+
+      // Check if profile exists
+      const { data: existingProfile } = await supabase
+        .from('conversational_profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingProfile) {
+        // Update existing
+        await (supabase as any)
+          .from('conversational_profiles')
+          .update(profileV2Data)
+          .eq('user_id', user.id);
+      } else {
+        // Insert new
+        await (supabase as any)
+          .from('conversational_profiles')
+          .insert(profileV2Data);
+      }
+
+      // 8. Mark user as onboarded
       await (supabase
         .from('profiles') as any)
         .update({ onboarded: true })
         .eq('id', user.id);
 
-      // 8. Navigate to feed
-      navigate('/feed');
+      // 9. Navigate to profile form to complete the 19 criteria
+      navigate('/profile');
     } catch (err: any) {
       console.error('Error completing onboarding:', err);
       setError(err.message || 'Une erreur est survenue. Veuillez réessayer.');
