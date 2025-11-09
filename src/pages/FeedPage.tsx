@@ -5,8 +5,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { calculatePropertyScore } from '@/lib/gemini-client';
 import { Listing } from '@/types';
-import { SlidersHorizontal, MapPin, Heart, List, X, Home, User, Grid3x3, ArrowRight } from 'lucide-react';
+import {
+  SlidersHorizontal, MapPin, Heart, List, X, Home, User, Grid3x3, ArrowRight,
+  MessageCircle, Sparkles, TrendingUp, ArrowUpDown, Calendar, DollarSign
+} from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { ChatModal } from '@/components/ChatModal';
 import 'leaflet/dist/leaflet.css';
 
 // Calculate monthly payment estimate
@@ -38,6 +42,11 @@ export function FeedPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [propertyScores, setPropertyScores] = useState<Record<number, any>>({});
   const [loadingScores, setLoadingScores] = useState<Record<number, boolean>>({});
+  const [sortBy, setSortBy] = useState<'score' | 'price_asc' | 'price_desc' | 'date'>('score');
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [profileCompleteness, setProfileCompleteness] = useState(0);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // Active filter chips
   const [activeFilters, setActiveFilters] = useState<{
@@ -45,6 +54,89 @@ export function FeedPage() {
     surface?: number;
     rooms?: number;
   }>({});
+
+  // Load user profile completeness
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+
+      try {
+        const { data: profile } = await supabase
+          .from('conversational_profiles')
+          .select('profile_completeness_score')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profile) {
+          setProfileCompleteness((profile as any).profile_completeness_score || 0);
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    loadProfile();
+  }, [user]);
+
+  // Load favorites
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('user_favorites')
+          .select('property_id')
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        const favoriteIds = new Set(data?.map((f: any) => f.property_id) || []);
+        setFavorites(favoriteIds);
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+      }
+    };
+
+    loadFavorites();
+  }, [user]);
+
+  // Toggle favorite
+  const toggleFavorite = async (propertyId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) return;
+
+    const isFavorited = favorites.has(propertyId);
+
+    try {
+      if (isFavorited) {
+        // Remove favorite
+        await supabase
+          .from('user_favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('property_id', propertyId);
+
+        setFavorites((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(propertyId);
+          return newSet;
+        });
+      } else {
+        // Add favorite
+        await supabase
+          .from('user_favorites')
+          .insert({
+            user_id: user.id,
+            property_id: propertyId,
+          } as any);
+
+        setFavorites((prev) => new Set(prev).add(propertyId));
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
 
   // Load user's properties from Supabase
   useEffect(() => {
@@ -59,6 +151,13 @@ export function FeedPage() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
+
+        console.log('Loaded properties with coordinates:', data?.map((p: any) => ({
+          id: p.id,
+          city: p.city,
+          lat: p.latitude,
+          lng: p.longitude
+        })));
 
         setProperties(data || []);
       } catch (error) {
@@ -142,7 +241,43 @@ export function FeedPage() {
       (!activeFilters.surface || listing.surface >= activeFilters.surface) &&
       (!activeFilters.rooms || listing.rooms >= activeFilters.rooms);
 
-    return matchesSearch && matchesFilter && matchesSurface && matchesPrice && matchesQuartier && matchesActiveFilters;
+    const matchesFavorites = !showFavoritesOnly || favorites.has(parseInt(listing.id));
+
+    return matchesSearch && matchesFilter && matchesSurface && matchesPrice && matchesQuartier && matchesActiveFilters && matchesFavorites;
+  });
+
+  // Sort listings
+  const sortedListings = [...filteredListings].sort((a, b) => {
+    const aProp = properties.find(p => p.id.toString() === a.id);
+    const bProp = properties.find(p => p.id.toString() === b.id);
+    const aScore = propertyScores[aProp?.id];
+    const bScore = propertyScores[bProp?.id];
+
+    switch (sortBy) {
+      case 'score':
+        // Sort by score DESC, then price DESC
+        if (aScore && bScore) {
+          if (bScore.score !== aScore.score) {
+            return bScore.score - aScore.score;
+          }
+        }
+        return b.price - a.price;
+
+      case 'price_asc':
+        return a.price - b.price;
+
+      case 'price_desc':
+        return b.price - a.price;
+
+      case 'date':
+        // Sort by created_at DESC
+        const aDate = new Date(aProp?.created_at || 0).getTime();
+        const bDate = new Date(bProp?.created_at || 0).getTime();
+        return bDate - aDate;
+
+      default:
+        return 0;
+    }
   });
 
   // Check if there are properties of each type
@@ -181,8 +316,36 @@ export function FeedPage() {
 
   return (
     <div className="min-h-screen bg-lumine-neutral-100">
+      {/* Sticky Chat Prompt Header (si profil < 50%) */}
+      {profileCompleteness < 50 && (
+        <div className="w-full bg-gradient-to-r from-lumine-accent to-amber-500 text-white shadow-md sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles size={20} />
+                <div>
+                  <p className="text-sm font-semibold">
+                    Affinez votre recherche avec l'assistant IA
+                  </p>
+                  <p className="text-xs opacity-90">
+                    Votre profil est complété à {profileCompleteness}% - Obtenez de meilleures recommandations !
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowChatModal(true)}
+                className="px-4 py-2 bg-white text-lumine-primary rounded-lg hover:bg-lumine-neutral-100 transition-all duration-200 font-medium text-sm whitespace-nowrap flex items-center gap-2"
+              >
+                <MessageCircle size={16} />
+                Discuter avec l'IA
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <header className="w-full bg-white border-b border-lumine-neutral-400/20 shadow-sm sticky top-0 z-50">
+      <header className="w-full bg-white border-b border-lumine-neutral-400/20 shadow-sm sticky top-0 z-40" style={{ top: profileCompleteness < 50 ? '56px' : '0' }}>
         <div className="w-full px-4 md:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
@@ -198,7 +361,7 @@ export function FeedPage() {
             {/* Search Context - Center */}
             <div className="hidden md:flex items-center justify-center flex-1">
               <div className="text-sm text-lumine-neutral-700">
-                <span className="font-semibold text-lumine-primary">{filteredListings.length} annonces</span>
+                <span className="font-semibold text-lumine-primary">{sortedListings.length} annonces</span>
                 {priceMin > 0 && priceMax > 0 && (
                   <>
                     <span className="mx-2">•</span>
@@ -265,7 +428,7 @@ export function FeedPage() {
 
               {/* Profile */}
               <div
-                onClick={() => navigate('/app/account')}
+                onClick={() => navigate('/app/settings')}
                 className="w-10 h-10 bg-lumine-accent rounded-full flex items-center justify-center cursor-pointer hover:bg-lumine-accent-dark transition-all duration-200"
               >
                 <User className="text-white" size={18} />
@@ -275,13 +438,41 @@ export function FeedPage() {
 
           {/* Mobile Search Context */}
           <div className="md:hidden mt-3 text-xs text-lumine-neutral-700 text-center">
-            <span className="font-semibold text-lumine-primary">{filteredListings.length} annonces</span>
+            <span className="font-semibold text-lumine-primary">{sortedListings.length} annonces</span>
           </div>
         </div>
 
         {/* Filter Chips Bar */}
         <div className="w-full px-4 md:px-6 lg:px-8 py-3 border-t border-lumine-neutral-400/10">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-2 bg-white border border-lumine-neutral-400 rounded-full px-3 py-1.5 whitespace-nowrap flex-shrink-0">
+              <ArrowUpDown size={14} className="text-lumine-neutral-700" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="text-sm text-lumine-neutral-700 bg-transparent border-none outline-none cursor-pointer"
+              >
+                <option value="score">Meilleure note</option>
+                <option value="price_asc">Prix croissant</option>
+                <option value="price_desc">Prix décroissant</option>
+                <option value="date">Plus récentes</option>
+              </select>
+            </div>
+
+            {/* Favorites Filter */}
+            <button
+              onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+              className={`px-3 py-1.5 text-sm border rounded-full transition-all duration-200 whitespace-nowrap flex-shrink-0 flex items-center gap-1 ${
+                showFavoritesOnly
+                  ? 'bg-red-50 border-red-500 text-red-700'
+                  : 'bg-white border-lumine-neutral-400 text-lumine-neutral-700 hover:border-red-500 hover:text-red-700'
+              }`}
+            >
+              <Heart size={14} className={showFavoritesOnly ? 'fill-current' : ''} />
+              Favoris ({favorites.size})
+            </button>
+
             {activeFilters.price && (
               <button
                 onClick={() => setActiveFilters({ ...activeFilters, price: undefined })}
@@ -406,16 +597,18 @@ export function FeedPage() {
                     <p className="text-lumine-neutral-700">Chargement...</p>
                   </div>
                 </div>
-              ) : filteredListings.length === 0 ? (
+              ) : sortedListings.length === 0 ? (
                 <div className="text-center py-20">
                   <p className="text-xl text-lumine-neutral-700">Aucune annonce trouvée</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredListings.map((listing, index) => {
+                  {sortedListings.map((listing, index) => {
                     const prop = properties.find(p => p.id.toString() === listing.id);
                     const score = propertyScores[prop?.id];
                     const monthlyPayment = calculateMonthlyPayment(listing.price);
+                    const isFavorited = favorites.has(prop?.id);
+                    const createdAt = prop?.created_at ? new Date(prop.created_at) : null;
 
                     // Get images
                     const allImages = [
@@ -439,8 +632,8 @@ export function FeedPage() {
                         onClick={() => navigate(`/property/${listing.id}`)}
                       >
                         <div className="flex flex-col sm:flex-row gap-0">
-                          {/* Image */}
-                          <div className="sm:w-32 md:w-40 flex-shrink-0 relative h-40 sm:h-auto bg-gradient-to-br from-lumine-neutral-200 to-lumine-neutral-300 overflow-hidden">
+                          {/* Image - BIGGER SIZE */}
+                          <div className="sm:w-48 md:w-64 lg:w-80 flex-shrink-0 relative h-48 sm:h-auto bg-gradient-to-br from-lumine-neutral-200 to-lumine-neutral-300 overflow-hidden">
                             {currentImg ? (
                               <img
                                 src={currentImg}
@@ -449,7 +642,7 @@ export function FeedPage() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
-                                <Home className="text-lumine-neutral-500" size={32} />
+                                <Home className="text-lumine-neutral-500" size={48} />
                               </div>
                             )}
 
@@ -462,11 +655,26 @@ export function FeedPage() {
 
                             {/* Favorite button */}
                             <div
-                              className="absolute top-2 right-2 bg-white bg-opacity-90 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer hover:bg-opacity-100 transition-all duration-200 z-10"
-                              onClick={(e) => e.stopPropagation()}
+                              className={`absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 z-10 ${
+                                isFavorited
+                                  ? 'bg-red-500'
+                                  : 'bg-white bg-opacity-90 hover:bg-opacity-100'
+                              }`}
+                              onClick={(e) => toggleFavorite(prop?.id, e)}
                             >
-                              <Heart size={14} className="text-lumine-neutral-700 hover:text-red-500" />
+                              <Heart
+                                size={16}
+                                className={isFavorited ? 'text-white fill-current' : 'text-lumine-neutral-700 hover:text-red-500'}
+                              />
                             </div>
+
+                            {/* Date Badge */}
+                            {createdAt && (
+                              <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                                <Calendar size={12} />
+                                {createdAt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                              </div>
+                            )}
                           </div>
 
                           {/* Content */}
@@ -478,12 +686,14 @@ export function FeedPage() {
                                   <div className="text-2xl font-bold text-lumine-primary">
                                     {listing.price.toLocaleString('fr-FR')} €
                                   </div>
-                                  <div className="text-xs text-lumine-neutral-700 mt-1">
+                                  <div className="text-xs text-lumine-neutral-700 mt-1 flex items-center gap-1">
+                                    <DollarSign size={12} />
                                     soit {monthlyPayment.toLocaleString('fr-FR')}€/mois
                                   </div>
                                 </div>
                                 {score && (
-                                  <div className="inline-block bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-semibold">
+                                  <div className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-semibold">
+                                    <TrendingUp size={12} />
                                     {score.score}/10
                                   </div>
                                 )}
@@ -562,10 +772,17 @@ export function FeedPage() {
                   subdomains="abcd"
                   maxZoom={20}
                 />
-                {filteredListings.map((listing) => {
+                {sortedListings.map((listing) => {
                   const prop = properties.find(p => p.id.toString() === listing.id);
-                  const lat = prop?.latitude || 48.8566 + (Math.random() - 0.5) * 0.1;
-                  const lng = prop?.longitude || 2.3522 + (Math.random() - 0.5) * 0.1;
+
+                  // Use real coordinates if available, otherwise skip
+                  if (!prop?.latitude || !prop?.longitude) {
+                    console.warn(`Property ${prop?.id} (${prop?.city}) missing coordinates`);
+                    return null;
+                  }
+
+                  const lat = prop.latitude;
+                  const lng = prop.longitude;
                   const score = propertyScores[prop?.id];
 
                   return (
@@ -618,6 +835,17 @@ export function FeedPage() {
           </div>
         )}
       </div>
+
+      {/* Chat Modal */}
+      <ChatModal isOpen={showChatModal} onClose={() => setShowChatModal(false)} />
+
+      {/* Floating Chat Button (always visible) */}
+      <button
+        onClick={() => setShowChatModal(true)}
+        className="fixed bottom-8 right-8 w-14 h-14 bg-lumine-accent hover:bg-lumine-accent-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-40"
+      >
+        <MessageCircle size={24} />
+      </button>
     </div>
   );
 }
