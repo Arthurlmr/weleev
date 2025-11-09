@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import {
   ArrowLeft, User, Mail, Lock, Bell, Heart, Search, MessageCircle,
-  Sparkles, Shield, LogOut, Trash2, Save, X
+  Sparkles, Shield, LogOut, Trash2, Save
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChatModal } from '@/components/ChatModal';
 
 export function SettingsPage() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -87,7 +86,7 @@ export function SettingsPage() {
   const handleSignOut = async () => {
     const confirm = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
     if (confirm) {
-      await signOut();
+      await supabase.auth.signOut();
       navigate('/');
     }
   };

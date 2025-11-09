@@ -129,7 +129,7 @@ export function FeedPage() {
           .insert({
             user_id: user.id,
             property_id: propertyId,
-          });
+          } as any);
 
         setFavorites((prev) => new Set(prev).add(propertyId));
       }
@@ -152,7 +152,7 @@ export function FeedPage() {
 
         if (error) throw error;
 
-        console.log('Loaded properties with coordinates:', data?.map(p => ({
+        console.log('Loaded properties with coordinates:', data?.map((p: any) => ({
           id: p.id,
           city: p.city,
           lat: p.latitude,
