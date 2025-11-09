@@ -29,6 +29,20 @@ function calculateMonthlyPayment(price: number): number {
   return Math.round(monthlyPayment);
 }
 
+// Get marker color based on property score
+function getMarkerColor(score?: any): string {
+  if (!score || typeof score.score !== 'number') {
+    return '#9CA3AF'; // Gray - no score
+  }
+
+  const scoreValue = score.score;
+
+  if (scoreValue >= 8) return '#10B981'; // Green - excellent
+  if (scoreValue >= 6.5) return '#F59E0B'; // Yellow - good
+  if (scoreValue >= 5) return '#F97316'; // Orange - fair
+  return '#EF4444'; // Red - poor
+}
+
 export function FeedPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -286,19 +300,26 @@ export function FeedPage() {
   const hasApartments = listings.some(listing => listing.propertyType === 'apartment');
   const hasHouses = listings.some(listing => listing.propertyType === 'house');
 
-  // Calculate map center based on properties
+  // Calculate map center based on all properties (centroid)
   const mapCenter: [number, number] = (() => {
-    const firstProp = properties[0];
-    if (firstProp?.latitude && firstProp?.longitude) {
-      return [firstProp.latitude, firstProp.longitude];
+    const propsWithCoords = properties.filter(p => p?.latitude && p?.longitude);
+
+    if (propsWithCoords.length > 0) {
+      // Calculate geographic centroid
+      const avgLat = propsWithCoords.reduce((sum, p) => sum + p.latitude, 0) / propsWithCoords.length;
+      const avgLng = propsWithCoords.reduce((sum, p) => sum + p.longitude, 0) / propsWithCoords.length;
+      return [avgLat, avgLng];
     }
-    // Try to get center from city name
+
+    // Fallback: try to get center from first property's city name
+    const firstProp = properties[0];
     if (firstProp?.city) {
       const cityCoords = getCityCoordinates(firstProp.city);
       if (cityCoords) {
         return [cityCoords.lat, cityCoords.lng];
       }
     }
+
     // Fallback to Paris
     return [48.8566, 2.3522];
   })();
@@ -729,8 +750,8 @@ export function FeedPage() {
                                 </div>
                               </div>
 
-                              {/* Quick Stats - Grid 4 columns */}
-                              <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                              {/* Quick Stats - Grid 3 columns */}
+                              <div className="grid grid-cols-3 gap-2 text-center text-xs">
                                 <div>
                                   <div className="font-semibold text-lumine-primary">
                                     {listing.bedrooms || listing.rooms || '-'}
@@ -748,12 +769,6 @@ export function FeedPage() {
                                     {listing.surface || '-'}
                                   </div>
                                   <div className="text-lumine-neutral-700">m²</div>
-                                </div>
-                                <div>
-                                  <div className="font-semibold text-lumine-primary">
-                                    {listing.yearBuilt || '-'}
-                                  </div>
-                                  <div className="text-lumine-neutral-700">Construit</div>
                                 </div>
                               </div>
                             </div>
@@ -811,6 +826,17 @@ export function FeedPage() {
                   }
 
                   const score = propertyScores[prop?.id];
+                  const markerColor = getMarkerColor(score);
+
+                  // Get images for popup
+                  const allImages = [
+                    ...(Array.isArray(prop?.pictures_remote) && prop.pictures_remote.length > 0 ? prop.pictures_remote : []),
+                    ...(Array.isArray(prop?.images) && prop.images.length > 0 ? prop.images : []),
+                  ].filter(img => img && typeof img === 'string' && img.trim() !== '');
+                  if (allImages.length === 0 && prop?.main_image) {
+                    allImages.push(prop.main_image);
+                  }
+                  const popupImage = allImages[0] || '';
 
                   return (
                     <CircleMarker
@@ -818,7 +844,7 @@ export function FeedPage() {
                       center={[lat, lng]}
                       radius={10}
                       pathOptions={{
-                        fillColor: '#D4A574',
+                        fillColor: markerColor,
                         color: '#FFFFFF',
                         weight: 2,
                         opacity: 1,
@@ -833,25 +859,70 @@ export function FeedPage() {
                         },
                       }}
                     >
-                      <Popup>
-                        <div className="w-64">
-                          <h3 className="font-semibold text-sm mb-2 line-clamp-2">{listing.title}</h3>
-                          <p className="text-lg font-display font-semibold mb-1">
-                            {listing.price.toLocaleString('fr-FR')} €
-                          </p>
-                          {score && (
-                            <p className="text-xs text-lumine-accent mb-2">Score: {score.score}/10</p>
+                      <Popup className="custom-popup" maxWidth={300}>
+                        <div className="w-72 -m-3 overflow-hidden">
+                          {/* Image */}
+                          {popupImage && (
+                            <div className="w-full h-40 bg-gradient-to-br from-lumine-neutral-200 to-lumine-neutral-300 overflow-hidden">
+                              <img
+                                src={popupImage}
+                                alt={listing.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                           )}
-                          <div className="flex flex-wrap gap-2 text-xs text-lumine-neutral-700 mb-3">
-                            {listing.bedrooms > 0 && <span>{listing.bedrooms} chambres</span>}
-                            {listing.surface > 0 && <span>{listing.surface} m²</span>}
+
+                          {/* Content */}
+                          <div className="p-4">
+                            {/* Score badge */}
+                            {score && (
+                              <div className="inline-flex items-center gap-1 px-2 py-1 bg-lumine-accent/10 text-lumine-accent rounded-full text-xs font-medium mb-2">
+                                <Sparkles size={12} />
+                                Score: {score.score}/10
+                              </div>
+                            )}
+
+                            {/* Title */}
+                            <h3 className="font-display font-semibold text-lumine-primary text-base mb-2 line-clamp-2">
+                              {listing.title}
+                            </h3>
+
+                            {/* Price */}
+                            <p className="text-xl font-display font-bold text-lumine-primary mb-3">
+                              {listing.price.toLocaleString('fr-FR')} €
+                            </p>
+
+                            {/* Key data */}
+                            <div className="grid grid-cols-3 gap-2 mb-3 text-center">
+                              {listing.surface > 0 && (
+                                <div className="bg-lumine-neutral-100 rounded-lg py-2 px-1">
+                                  <p className="text-xs text-lumine-neutral-700">Surface</p>
+                                  <p className="text-sm font-semibold text-lumine-primary">{listing.surface} m²</p>
+                                </div>
+                              )}
+                              {listing.bedrooms > 0 && (
+                                <div className="bg-lumine-neutral-100 rounded-lg py-2 px-1">
+                                  <p className="text-xs text-lumine-neutral-700">Chambres</p>
+                                  <p className="text-sm font-semibold text-lumine-primary">{listing.bedrooms}</p>
+                                </div>
+                              )}
+                              {listing.bathrooms > 0 && (
+                                <div className="bg-lumine-neutral-100 rounded-lg py-2 px-1">
+                                  <p className="text-xs text-lumine-neutral-700">SdB</p>
+                                  <p className="text-sm font-semibold text-lumine-primary">{listing.bathrooms}</p>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* CTA Button */}
+                            <button
+                              onClick={() => navigate(`/property/${listing.id}`)}
+                              className="w-full py-2.5 bg-lumine-accent text-white rounded-lg text-sm font-medium hover:bg-lumine-accent-dark transition-all duration-200 flex items-center justify-center gap-2"
+                            >
+                              Voir les détails
+                              <ArrowRight size={16} />
+                            </button>
                           </div>
-                          <button
-                            onClick={() => navigate(`/property/${listing.id}`)}
-                            className="w-full py-2 bg-lumine-accent text-white rounded-lg text-sm hover:bg-lumine-accent-dark transition-colors"
-                          >
-                            Voir détails
-                          </button>
                         </div>
                       </Popup>
                     </CircleMarker>
