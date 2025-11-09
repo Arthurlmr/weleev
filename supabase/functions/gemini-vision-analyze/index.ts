@@ -186,7 +186,32 @@ Sois précis et factuel. Indique ton niveau de confiance (0-1).`
     }
 
     const geminiData = await geminiResponse.json()
-    const generatedText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
+
+    // DEBUG: Log full Gemini response
+    console.log('[gemini-vision-analyze] Gemini response:', JSON.stringify(geminiData, null, 2))
+
+    // Check if candidates exist
+    if (!geminiData.candidates || geminiData.candidates.length === 0) {
+      console.error('[gemini-vision-analyze] No candidates in Gemini response:', geminiData)
+      return new Response(
+        JSON.stringify({
+          error: 'Gemini returned no candidates (possibly blocked by safety filters)',
+          details: geminiData,
+          promptFeedback: geminiData.promptFeedback
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const generatedText = geminiData.candidates[0]?.content?.parts?.[0]?.text || ''
+
+    if (!generatedText) {
+      console.error('[gemini-vision-analyze] Empty text response from Gemini')
+      return new Response(
+        JSON.stringify({ error: 'Empty response from Gemini', details: geminiData }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // Parse JSON response from Gemini
     let analysisResult: VisionAnalysisResponse
@@ -200,7 +225,7 @@ Sois précis et factuel. Indique ton niveau de confiance (0-1).`
 
       analysisResult = JSON.parse(cleanedText)
     } catch (parseError) {
-      console.error('Failed to parse Gemini response:', generatedText)
+      console.error('[gemini-vision-analyze] Failed to parse Gemini response:', generatedText)
       return new Response(
         JSON.stringify({ error: 'Failed to parse Gemini response', raw: generatedText }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

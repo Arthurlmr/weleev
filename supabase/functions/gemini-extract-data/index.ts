@@ -157,7 +157,32 @@ Pour les tags, limite à 5-7 tags les plus pertinents.`
     }
 
     const geminiData = await geminiResponse.json()
-    const generatedText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
+
+    // DEBUG: Log full Gemini response
+    console.log('[gemini-extract-data] Gemini response:', JSON.stringify(geminiData, null, 2))
+
+    // Check if candidates exist
+    if (!geminiData.candidates || geminiData.candidates.length === 0) {
+      console.error('[gemini-extract-data] No candidates in Gemini response:', geminiData)
+      return new Response(
+        JSON.stringify({
+          error: 'Gemini returned no candidates (possibly blocked by safety filters)',
+          details: geminiData,
+          promptFeedback: geminiData.promptFeedback
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const generatedText = geminiData.candidates[0]?.content?.parts?.[0]?.text || ''
+
+    if (!generatedText) {
+      console.error('[gemini-extract-data] Empty text response from Gemini')
+      return new Response(
+        JSON.stringify({ error: 'Empty response from Gemini', details: geminiData }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // Parse JSON response from Gemini
     let extractionResult: ExtractDataResponse
@@ -171,7 +196,7 @@ Pour les tags, limite à 5-7 tags les plus pertinents.`
 
       extractionResult = JSON.parse(cleanedText)
     } catch (parseError) {
-      console.error('Failed to parse Gemini response:', generatedText)
+      console.error('[gemini-extract-data] Failed to parse Gemini response:', generatedText)
       return new Response(
         JSON.stringify({ error: 'Failed to parse Gemini response', raw: generatedText }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
