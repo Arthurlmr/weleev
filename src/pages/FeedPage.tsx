@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { calculatePropertyScore } from '@/lib/gemini-client';
-import { getCityCoordinates, getDefaultMapCenter } from '@/lib/geocoding';
+import { getCityCoordinates } from '@/lib/geocoding';
 import { Listing } from '@/types';
 import {
   SlidersHorizontal, MapPin, Heart, List, X, Home, User, Grid3x3, ArrowRight,
