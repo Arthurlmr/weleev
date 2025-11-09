@@ -491,3 +491,40 @@ BEGIN
   RAISE NOTICE 'Policies RLS activées';
   RAISE NOTICE 'Triggers et fonctions créés';
 END $$;
+
+-- ==========================================================================
+-- Migration 6: Table user_favorites - Favoris utilisateur
+-- ==========================================================================
+
+CREATE TABLE IF NOT EXISTS user_favorites (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  property_id INTEGER NOT NULL REFERENCES melo_properties(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+
+  UNIQUE(user_id, property_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_favorites_user ON user_favorites(user_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_property ON user_favorites(property_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_created ON user_favorites(created_at DESC);
+
+COMMENT ON TABLE user_favorites IS 'Propriétés favorites des utilisateurs';
+COMMENT ON COLUMN user_favorites.user_id IS 'Utilisateur qui a mis en favori';
+COMMENT ON COLUMN user_favorites.property_id IS 'Propriété mise en favori';
+
+-- RLS Policy pour user_favorites
+ALTER TABLE user_favorites ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own favorites"
+  ON user_favorites FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own favorites"
+  ON user_favorites FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own favorites"
+  ON user_favorites FOR DELETE
+  USING (auth.uid() = user_id);
+

@@ -8,6 +8,7 @@ import { FeedPage } from './pages/FeedPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { AccountPage } from './pages/AccountPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { MainLayout } from './components/MainLayout';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -89,6 +90,16 @@ function App() {
           }
         />
 
+        {/* Settings route (standalone, no MainLayout) */}
+        <Route
+          path="/app/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Protected app routes */}
         <Route
           path="/app"
@@ -98,7 +109,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/feed" replace />} />
+          <Route index element={<Navigate to="/app/feed" replace />} />
           <Route path="feed" element={<FeedPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
           <Route path="account" element={<AccountPage />} />

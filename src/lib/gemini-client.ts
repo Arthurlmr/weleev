@@ -109,6 +109,7 @@ export async function analyzePropertyImages(
  */
 export async function extractPropertyData(
   propertyId: number,
+  imageUrls: string[],
   description: string
 ): Promise<ExtractDataResult> {
   const {
@@ -127,6 +128,7 @@ export async function extractPropertyData(
     },
     body: JSON.stringify({
       propertyId,
+      imageUrls,
       description,
       userId: session.user.id,
     }),
@@ -221,7 +223,7 @@ export async function analyzePropertyComplete(
 }> {
   const [vision, extraction] = await Promise.all([
     analyzePropertyImages(propertyId, imageUrls),
-    extractPropertyData(propertyId, description),
+    extractPropertyData(propertyId, imageUrls, description),
   ])
 
   return { vision, extraction }
