@@ -3,17 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
-import { getPropertyEnrichment } from '../lib/gemini-client';
+import { getPropertyEnrichment, enrichPropertyFromDescription } from '../lib/gemini-client';
 import {
   ArrowLeft, MapPin, Home, Phone, Zap, BadgeCheck,
   Share2, Heart, ChevronLeft, ChevronRight,
   Sparkles, Shield, Wrench, CheckCircle,
-  X, MessageCircle, TrendingUp, TrendingDown, Navigation
+  X, MessageCircle, TrendingUp, TrendingDown, Navigation, FileText
 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChatModal } from '../components/ChatModal';
+import { EnrichmentModal } from '../components/EnrichmentModal';
 
 // Calculate monthly payment
 function calculateMonthlyPayment(
@@ -46,6 +47,10 @@ export function PropertyDetailPage() {
   const [loadingEnrichment, setLoadingEnrichment] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
+  const [showEnrichmentModal, setShowEnrichmentModal] = useState(false);
+  const [enrichmentResult, setEnrichmentResult] = useState<any>(null);
+  const [enrichmentLoading, setEnrichmentLoading] = useState(false);
+  const [enrichmentError, setEnrichmentError] = useState<string | null>(null);
 
   // Financial simulator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
@@ -152,6 +157,42 @@ export function PropertyDetailPage() {
       alert('Erreur lors de l\'analyse IA. Veuillez réessayer.');
     } finally {
       setLoadingEnrichment(false);
+    }
+  };
+
+  // Trigger enrichment from description (no images)
+  const triggerEnrichment = async () => {
+    if (!property) return;
+
+    setShowEnrichmentModal(true);
+    setEnrichmentLoading(true);
+    setEnrichmentError(null);
+    setEnrichmentResult(null);
+
+    try {
+      const propertyData = {
+        title: property.title,
+        price: property.price,
+        surface: property.surface,
+        rooms: property.rooms,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        floor: property.floor,
+        city: property.city,
+        zipcode: property.zipcode,
+        description: property.description || '',
+        property_type: property.property_type,
+        dpe_category: property.dpe_category,
+        construction_year: property.construction_year,
+      };
+
+      const result = await enrichPropertyFromDescription(propertyData);
+      setEnrichmentResult(result);
+    } catch (error: any) {
+      console.error('Error enriching property:', error);
+      setEnrichmentError(error.message || 'Erreur lors de l\'enrichissement');
+    } finally {
+      setEnrichmentLoading(false);
     }
   };
 
@@ -359,6 +400,13 @@ export function PropertyDetailPage() {
                               Analyser avec IA
                             </>
                           )}
+                        </Button>
+                        <Button
+                          onClick={triggerEnrichment}
+                          className="w-full bg-lumine-primary hover:bg-lumine-primary-dark text-white"
+                        >
+                          <FileText className="mr-2" size={16} />
+                          Enrichir depuis la description
                         </Button>
                       </div>
                     ) : (
@@ -921,6 +969,15 @@ export function PropertyDetailPage() {
       <ChatModal
         isOpen={showChatModal}
         onClose={() => setShowChatModal(false)}
+      />
+
+      {/* Enrichment Modal */}
+      <EnrichmentModal
+        isOpen={showEnrichmentModal}
+        onClose={() => setShowEnrichmentModal(false)}
+        isLoading={enrichmentLoading}
+        result={enrichmentResult}
+        error={enrichmentError}
       />
     </div>
   );
