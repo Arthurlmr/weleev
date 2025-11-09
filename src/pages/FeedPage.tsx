@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { ChatModal } from '@/components/ChatModal';
+import { MapCenterController } from '@/components/MapCenterController';
 import 'leaflet/dist/leaflet.css';
 
 // Calculate monthly payment estimate
@@ -284,6 +285,23 @@ export function FeedPage() {
   // Check if there are properties of each type
   const hasApartments = listings.some(listing => listing.propertyType === 'apartment');
   const hasHouses = listings.some(listing => listing.propertyType === 'house');
+
+  // Calculate map center based on properties
+  const mapCenter: [number, number] = (() => {
+    const firstProp = properties[0];
+    if (firstProp?.latitude && firstProp?.longitude) {
+      return [firstProp.latitude, firstProp.longitude];
+    }
+    // Try to get center from city name
+    if (firstProp?.city) {
+      const cityCoords = getCityCoordinates(firstProp.city);
+      if (cityCoords) {
+        return [cityCoords.lat, cityCoords.lng];
+      }
+    }
+    // Fallback to Paris
+    return [48.8566, 2.3522];
+  })();
 
   // Reset filter to 'all' if the selected type doesn't exist
   useEffect(() => {
@@ -762,26 +780,12 @@ export function FeedPage() {
           <div className={`${viewMode === 'hybrid' ? 'lg:col-span-1 hidden lg:flex flex-col bg-lumine-neutral-200 relative' : 'w-full'}`}>
             <div className={`${viewMode === 'hybrid' ? 'flex-1' : 'h-[calc(100vh-200px)]'} relative overflow-hidden`}>
               <MapContainer
-                center={(() => {
-                  // Try to get center from first property
-                  const firstProp = properties[0];
-                  if (firstProp?.latitude && firstProp?.longitude) {
-                    return [firstProp.latitude, firstProp.longitude];
-                  }
-                  // Try to get center from city name
-                  if (firstProp?.city) {
-                    const cityCoords = getCityCoordinates(firstProp.city);
-                    if (cityCoords) {
-                      return [cityCoords.lat, cityCoords.lng];
-                    }
-                  }
-                  // Fallback to Paris
-                  return [48.8566, 2.3522];
-                })()}
+                center={mapCenter}
                 zoom={12}
                 className="h-full w-full"
                 style={{ zIndex: 0 }}
               >
+                <MapCenterController center={mapCenter} zoom={12} />
                 <TileLayer
                   attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
                   url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
