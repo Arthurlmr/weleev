@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles, Loader2 } from 'lucide-react';
-import { getChatbotResponse } from '@/lib/gemini-client';
+import { X, Send, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
+import { CriteriaChecklist } from './CriteriaChecklist';
 
 interface ChatModalProps {
   isOpen: boolean;
@@ -13,8 +13,22 @@ interface ChatModalProps {
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  options?: string[];
-  type?: 'text' | 'choice' | 'range';
+  quickReplies?: string[];
+  evasiveReplies?: string[];
+}
+
+interface ChatStructuredResponse {
+  nextQuestion: {
+    id: number;
+    text: string;
+    quickReplies: string[];
+    evasiveReplies: string[];
+  } | null;
+  extractedCriteria: Record<string, any>;
+  allCriteriaFilled: boolean;
+  profileCompleteness: number;
+  criteriaFilled: number;
+  assistantMessage: string;
 }
 
 export function ChatModal({ isOpen, onClose }: ChatModalProps) {
@@ -23,6 +37,11 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [profileCompleteness, setProfileCompleteness] = useState(0);
+  const [criteriaFilled, setCriteriaFilled] = useState(0);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [allCriteriaFilled, setAllCriteriaFilled] = useState(false);
+  const [currentQuickReplies, setCurrentQuickReplies] = useState<string[]>([]);
+  const [currentEvasiveReplies, setCurrentEvasiveReplies] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -34,14 +53,14 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     scrollToBottom();
   }, [messages]);
 
-  // Load existing conversation on mount
+  // Load profile and start conversation
   useEffect(() => {
     if (isOpen && user) {
-      loadConversationHistory();
+      loadProfileAndStartConversation();
     }
   }, [isOpen, user]);
 
-  const loadConversationHistory = async () => {
+  const loadProfileAndStartConversation = async () => {
     if (!user) return;
 
     try {
@@ -51,98 +70,101 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
         .eq('user_id', user.id)
         .single();
 
-      if (profile && (profile as any).conversation_history && (profile as any).conversation_history.length > 0) {
-        // Convert history to messages
-        const historyMessages: Message[] = [];
-        (profile as any).conversation_history.forEach((item: any) => {
-          historyMessages.push({
-            role: 'assistant',
-            content: item.question,
-            options: item.options,
-            type: item.type || 'text',
-          });
-          historyMessages.push({
-            role: 'user',
-            content: item.answer,
-          });
-        });
-        setMessages(historyMessages);
-        setProfileCompleteness((profile as any).profile_completeness || 0);
-      } else {
-        // Start with welcome message
-        setMessages([
-          {
-            role: 'assistant',
-            content:
-              "Bonjour ! Je suis l'assistant LUMIN<span class='text-xs align-super'>ᵉ</span>. Je vais vous poser quelques questions pour mieux comprendre vos besoins et vous proposer les biens immobiliers les plus adaptés. Commençons : quel type de bien recherchez-vous ?",
-            type: 'text',
-          },
-        ]);
+      if (profile) {
+        setUserProfile(profile);
+        setProfileCompleteness((profile as any).profile_completeness_score || 0);
+        setCriteriaFilled((profile as any).criteria_filled || 0);
+
+        // Check if profile is complete
+        if ((profile as any).criteria_filled >= 19) {
+          setAllCriteriaFilled(true);
+          setMessages([
+            {
+              role: 'assistant',
+              content:
+                "Parfait ! Votre profil de recherche est complet. Je peux maintenant vous proposer des biens parfaitement adaptés à vos critères. N'hésitez pas à modifier vos préférences si vos besoins évoluent.",
+            },
+          ]);
+        } else {
+          // Start conversation
+          setMessages([
+            {
+              role: 'assistant',
+              content:
+                "Bonjour ! Je suis l'assistant LUMIN<span class='text-xs align-super'>ᵉ</span>. Je vais vous poser quelques questions pour mieux comprendre vos besoins et vous proposer les biens immobiliers les plus adaptés. Vous pouvez répondre librement ou utiliser les boutons de réponse rapide. Commençons !",
+            },
+          ]);
+
+          // Send empty message to get first question
+          await handleSendMessage('Bonjour', true);
+        }
       }
     } catch (error) {
-      console.error('Error loading conversation history:', error);
-      // Start fresh on error
+      console.error('Error loading profile:', error);
       setMessages([
         {
           role: 'assistant',
           content:
-            "Bonjour ! Je suis l'assistant LUMIN<span class='text-xs align-super'>ᵉ</span>. Je vais vous poser quelques questions pour mieux comprendre vos besoins et vous proposer les biens immobiliers les plus adaptés. Commençons : quel type de bien recherchez-vous ?",
-          type: 'text',
+            "Bonjour ! Je suis l'assistant LUMIN<span class='text-xs align-super'>ᵉ</span>. Je vais vous poser quelques questions pour mieux comprendre vos besoins. Commençons !",
         },
       ]);
     }
   };
 
-  const handleSendMessage = async (message?: string) => {
+  const handleSendMessage = async (message?: string, skipUserMessage = false) => {
     const textToSend = message || inputValue.trim();
     if (!textToSend || isLoading || !user) return;
 
-    // Add user message to chat
-    const userMessage: Message = {
-      role: 'user',
-      content: textToSend,
-    };
-    setMessages((prev) => [...prev, userMessage]);
+    // Add user message to chat (if not skipped)
+    if (!skipUserMessage) {
+      const userMessage: Message = {
+        role: 'user',
+        content: textToSend,
+      };
+      setMessages((prev) => [...prev, userMessage]);
+    }
+
     setInputValue('');
     setIsLoading(true);
 
     try {
-      // Build conversation history for API
-      const conversationHistory = messages
-        .filter((msg) => msg.role === 'user')
-        .map((msg, index) => ({
-          question: messages[index * 2]?.content || '',
-          answer: msg.content,
-        }));
+      // Call new gemini-chat-structured Edge Function
+      const { data, error } = await supabase.functions.invoke('gemini-chat-structured', {
+        body: {
+          userId: user.id,
+          message: textToSend,
+        },
+      });
 
-      // Call Gemini chatbot
-      const response = await getChatbotResponse(textToSend, conversationHistory);
+      if (error) throw error;
+
+      const response: ChatStructuredResponse = data;
 
       // Add assistant response
       const assistantMessage: Message = {
         role: 'assistant',
-        content: response.question,
-        options: response.options,
-        type: response.type,
+        content: response.assistantMessage,
+        quickReplies: response.nextQuestion?.quickReplies || [],
+        evasiveReplies: response.nextQuestion?.evasiveReplies || [],
       };
+
       setMessages((prev) => [...prev, assistantMessage]);
       setProfileCompleteness(response.profileCompleteness);
+      setCriteriaFilled(response.criteriaFilled);
+      setAllCriteriaFilled(response.allCriteriaFilled);
+      setCurrentQuickReplies(response.nextQuestion?.quickReplies || []);
+      setCurrentEvasiveReplies(response.nextQuestion?.evasiveReplies || []);
 
-      // Update conversation in database
-      await supabase.from('conversational_profiles').upsert({
-        user_id: user.id,
-        conversation_history: [
-          ...conversationHistory,
-          {
-            question: response.question,
-            answer: textToSend,
-            type: response.type,
-          },
-        ],
-        extracted_preferences: response.extractedPreferences,
-        profile_completeness: response.profileCompleteness,
-        updated_at: new Date().toISOString(),
-      } as any);
+      // Reload profile to update checklist
+      const { data: updatedProfile } = await supabase
+        .from('conversational_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages((prev) => [
@@ -151,7 +173,6 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
           role: 'assistant',
           content:
             "Désolé, une erreur s'est produite. Pouvez-vous reformuler votre réponse ?",
-          type: 'text',
         },
       ]);
     } finally {
@@ -159,8 +180,8 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     }
   };
 
-  const handleOptionClick = (option: string) => {
-    handleSendMessage(option);
+  const handleQuickReplyClick = (reply: string) => {
+    handleSendMessage(reply);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -185,108 +206,141 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-lumine-neutral-100 rounded-2xl shadow-2xl w-full max-w-2xl h-[80vh] flex flex-col"
+          className="bg-lumine-neutral-100 rounded-2xl shadow-2xl w-full max-w-6xl h-[85vh] flex flex-col lg:flex-row overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-lumine-primary to-lumine-neutral-800 text-lumine-neutral-100 p-6 rounded-t-2xl flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-lumine-accent flex items-center justify-center">
-                <Sparkles className="text-lumine-primary" size={20} />
-              </div>
-              <div>
-                <h2 className="font-display font-bold text-xl">
-                  Assistant LUMIN<span className="text-xs align-super">ᵉ</span>
-                </h2>
-                <p className="text-sm text-lumine-neutral-300">
-                  Profil complété à {profileCompleteness}%
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full bg-lumine-neutral-100/10 hover:bg-lumine-neutral-100/20 flex items-center justify-center transition-colors"
-            >
-              <X size={24} />
-            </button>
+          {/* Left Sidebar - Criteria Checklist (Desktop) */}
+          <div className="hidden lg:block w-80 bg-white border-r border-lumine-neutral-400/20 p-4 overflow-y-auto">
+            <CriteriaChecklist profile={userProfile} />
           </div>
 
-          {/* Progress Bar */}
-          <div className="bg-lumine-neutral-200 h-2">
-            <div
-              className="bg-lumine-accent h-full transition-all duration-500"
-              style={{ width: `${profileCompleteness}%` }}
-            />
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-2xl p-4 ${
-                    msg.role === 'user'
-                      ? 'bg-lumine-accent text-lumine-primary'
-                      : 'bg-white text-lumine-neutral-900 shadow-sm'
-                  }`}
-                >
-                  <div
-                    className="text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: msg.content }}
-                  />
-
-                  {/* Options (for choice questions) */}
-                  {msg.options && msg.options.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                      {msg.options.map((option, optIndex) => (
-                        <button
-                          key={optIndex}
-                          onClick={() => handleOptionClick(option)}
-                          disabled={isLoading}
-                          className="w-full text-left px-4 py-2 rounded-lg bg-lumine-neutral-100 hover:bg-lumine-accent hover:text-lumine-primary transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
+          {/* Main Chat Area */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-lumine-primary to-lumine-neutral-800 text-lumine-neutral-100 p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-lumine-accent flex items-center justify-center">
+                  {allCriteriaFilled ? (
+                    <CheckCircle2 className="text-lumine-primary" size={20} />
+                  ) : (
+                    <Sparkles className="text-lumine-primary" size={20} />
                   )}
                 </div>
+                <div>
+                  <h2 className="font-display font-bold text-xl">
+                    Assistant LUMIN<span className="text-xs align-super">ᵉ</span>
+                  </h2>
+                  <p className="text-sm text-lumine-neutral-300">
+                    {allCriteriaFilled
+                      ? 'Profil complété !'
+                      : `${criteriaFilled}/19 critères remplis`}
+                  </p>
+                </div>
               </div>
-            ))}
+              <button
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-lumine-neutral-100/10 hover:bg-lumine-neutral-100/20 flex items-center justify-center transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
 
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="bg-white rounded-2xl p-4 shadow-sm">
-                  <Loader2 className="text-lumine-accent animate-spin" size={20} />
+            {/* Progress Bar */}
+            <div className="bg-lumine-neutral-200 h-2">
+              <div
+                className="bg-lumine-accent h-full transition-all duration-500"
+                style={{ width: `${profileCompleteness}%` }}
+              />
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-lumine-neutral-100">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-2xl p-4 ${
+                      msg.role === 'user'
+                        ? 'bg-lumine-accent text-lumine-primary'
+                        : 'bg-white text-lumine-neutral-900 shadow-sm'
+                    }`}
+                  >
+                    <div
+                      className="text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: msg.content }}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-white rounded-2xl p-4 shadow-sm">
+                    <Loader2 className="text-lumine-accent animate-spin" size={20} />
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Quick Replies (if available) */}
+            {currentQuickReplies.length > 0 && !isLoading && !allCriteriaFilled && (
+              <div className="px-6 py-3 bg-white border-t border-lumine-neutral-300">
+                <p className="text-xs text-lumine-neutral-700 mb-2">Réponses rapides :</p>
+                <div className="flex flex-wrap gap-2">
+                  {currentQuickReplies.map((reply, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleQuickReplyClick(reply)}
+                      className="px-4 py-2 rounded-lg bg-lumine-accent/10 hover:bg-lumine-accent hover:text-white transition-colors text-sm font-medium border border-lumine-accent text-lumine-primary"
+                    >
+                      {reply}
+                    </button>
+                  ))}
+                  {currentEvasiveReplies.length > 0 && (
+                    <>
+                      {currentEvasiveReplies.map((reply, index) => (
+                        <button
+                          key={`evasive-${index}`}
+                          onClick={() => handleQuickReplyClick(reply)}
+                          className="px-4 py-2 rounded-lg bg-lumine-neutral-200 hover:bg-lumine-neutral-300 transition-colors text-sm text-lumine-neutral-700"
+                        >
+                          {reply}
+                        </button>
+                      ))}
+                    </>
+                  )}
                 </div>
               </div>
             )}
 
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input */}
-          <div className="p-4 bg-white border-t border-lumine-neutral-300">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Tapez votre réponse..."
-                disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl border border-lumine-neutral-300 focus:outline-none focus:ring-2 focus:ring-lumine-accent text-lumine-neutral-900 placeholder-lumine-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-              <button
-                onClick={() => handleSendMessage()}
-                disabled={!inputValue.trim() || isLoading}
-                className="px-6 py-3 rounded-xl bg-lumine-accent hover:bg-lumine-accent-dark text-lumine-primary font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <Send size={20} />
-              </button>
+            {/* Input */}
+            <div className="p-4 bg-white border-t border-lumine-neutral-300">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder={
+                    allCriteriaFilled
+                      ? 'Votre profil est complet !'
+                      : 'Tapez votre réponse ou utilisez les boutons...'
+                  }
+                  disabled={isLoading || allCriteriaFilled}
+                  className="flex-1 px-4 py-3 rounded-xl border border-lumine-neutral-300 focus:outline-none focus:ring-2 focus:ring-lumine-accent text-lumine-neutral-900 placeholder-lumine-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <button
+                  onClick={() => handleSendMessage()}
+                  disabled={!inputValue.trim() || isLoading || allCriteriaFilled}
+                  className="px-6 py-3 rounded-xl bg-lumine-accent hover:bg-lumine-accent-dark text-lumine-primary font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Send size={20} />
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>
