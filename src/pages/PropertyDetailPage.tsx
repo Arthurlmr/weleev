@@ -180,11 +180,11 @@ export function PropertyDetailPage() {
 
       // Save enriched data to database
       // Note: New columns added by migration, Supabase types will be regenerated after deployment
-      const updateData: any = {
+      const updateData = {
         ai_enriched_data: enrichmentResult.nouvelles_informations,
         ai_enriched_at: new Date().toISOString(),
       };
-      await supabase
+      await (supabase as any)
         .from('melo_properties')
         .update(updateData)
         .eq('id', property.id);
