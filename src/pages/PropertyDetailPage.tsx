@@ -179,13 +179,14 @@ export function PropertyDetailPage() {
       setEnrichmentData(mergedData);
 
       // Save enriched data to database
-      // @ts-expect-error - New columns added by migration, types not yet updated
+      // Note: New columns added by migration, Supabase types will be regenerated after deployment
+      const updateData: any = {
+        ai_enriched_data: enrichmentResult.nouvelles_informations,
+        ai_enriched_at: new Date().toISOString(),
+      };
       await supabase
         .from('melo_properties')
-        .update({
-          ai_enriched_data: enrichmentResult.nouvelles_informations,
-          ai_enriched_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', property.id);
 
     } catch (error) {
