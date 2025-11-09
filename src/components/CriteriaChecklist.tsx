@@ -156,7 +156,7 @@ function formatDisplayValue(key: string, value: any): string {
 }
 
 // Check if criterion is filled
-function isCriterionFilled(key: string, value: any): boolean {
+function isCriterionFilled(_key: string, value: any): boolean {
   if (value === null || value === undefined) return false;
 
   if (Array.isArray(value)) {

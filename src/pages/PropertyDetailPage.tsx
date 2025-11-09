@@ -184,7 +184,7 @@ export function PropertyDetailPage() {
         .update({
           ai_enriched_data: enrichmentResult.nouvelles_informations,
           ai_enriched_at: new Date().toISOString(),
-        })
+        } as any)
         .eq('id', property.id);
 
     } catch (error) {
@@ -1004,15 +1004,6 @@ export function PropertyDetailPage() {
       <ChatModal
         isOpen={showChatModal}
         onClose={() => setShowChatModal(false)}
-      />
-
-      {/* Enrichment Modal */}
-      <EnrichmentModal
-        isOpen={showEnrichmentModal}
-        onClose={() => setShowEnrichmentModal(false)}
-        isLoading={enrichmentLoading}
-        result={enrichmentResult}
-        error={enrichmentError}
       />
     </div>
   );
